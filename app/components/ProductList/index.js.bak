@@ -1,0 +1,559 @@
+import React from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import * as productService from '../../services/product-service';
+
+const telescopeType = {
+  'arecibo': 'arecibo',
+  'GBT': 'GBT',
+  'parkes': 'parkes'
+};
+let libraries = {};
+let order= 'desc';
+
+function enumFormatter(cell, row, enumObject) {
+  return enumObject[cell];
+}
+
+class BSTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { showModal: false, hiddenColumns: {}, meas: {}, product: [] };
+    this.openColumnDialog = this.openColumnDialog.bind(this);
+    this.closeColumnDialog = this.closeColumnDialog.bind(this);
+  }
+  cellButton(cell, row, enumObject, rowIndex) {
+    return (
+      <Button
+      onClick={this.openColumnDialog.bind(this, row)}
+      style={{flex: 1, textAlign: 'center', alignItems: 'center', justifyContent: 'center', fontSize: 12, backgroundColor:'rgb(242,195,53)'}
+      }>
+      Info { rowIndex }
+      </Button>
+    );
+  }
+  onClickProductSelected(cell, row, rowIndex){
+  }
+  closeColumnDialog() {
+    this.setState({ showModal: false });
+  }
+  openColumnDialog(meas) {
+    this.setState({ showModal: true, meas });
+    //window.open('auth/google', '_blank');
+  }
+  componentDidMount() {
+    this.findFRB();
+  }
+
+  findFRB() {
+    productService.findByFRB({search: "", frb_name: this.props.frb_name, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        product: data.products,
+        page: data.page,
+        pageSize: data.pageSize,
+        total: data.total
+      });
+    });
+  }
+
+  findProducts() {
+    productService.findAll({search: "", min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        product: data.products,
+        page: data.page,
+        pageSize: data.pageSize,
+        total: data.total
+      });
+    });
+  }
+
+  render() {
+    const { showModal, meas } = this.state;
+    if (Object.keys(this.state.product).length != 0) {
+      return (
+        <div>
+        <Modal show={this.state.showModal} onHide={this.closeColumnDialg}>
+        <Modal.Header closeButton onClick={this.closeColumnDialog}>
+        <Modal.Title>Observation overview</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <table width='100%'>
+        <tbody>
+        <tr><td width='50%'>
+        <table className='standard' width='50%'>
+        <tbody>
+        <tr><th colSpan='3'>FRB Parameters</th></tr>
+        <tr>
+        <td width='50%'><b>Name</b></td>
+        <td colSpan='2'>{meas.frb_name}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>UTC</b></td>
+        <td colSpan='2'>{meas.frb_utc}</td>
+        </tr>
+        </tbody>
+        </table>
+        <p></p>
+        <table className='standard' width='100%'>
+        <tbody>
+        <tr><th colSpan='3'>Observation parameters</th></tr>
+        <tr>
+        <td width='50%'><b>Telescope</b></td>
+        <td colSpan='2'>{meas.obs_telescope}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Receiver</b></td>
+        <td colSpan='2'>{meas.rop_receiver}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Backend</b></td>
+        <td colSpan='2'>{meas.rop_backend}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Beam</b></td>
+        <td colSpan='2'>{meas.rop_beam}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Sampling time</b></td>
+        <td width='30%'>{meas.rop_sampling_time}</td>
+        <td width='20%'>[ms]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Bandwidth</b></td>
+        <td width='30%'>{meas.rop_bandwidth}</td>
+        <td width='20%'>[MHz]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Centre frequency</b></td>
+        <td width='30%'>{meas.rop_centre_frequency}</td>
+        <td width='20%'>[MHz]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Number of polarisations</b></td>
+        <td colSpan='2'>{meas.rop_npol}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Channel bandwidth</b></td>
+        <td width='30%'>{meas.channel_bandwidth}</td>
+        <td width='20%'>[MHz]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Bits per sample</b></td>
+        <td colSpan='2'>{meas.bits_per_sample}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Gain</b></td>
+        <td width='30%'>{meas.rop_gain}</td>
+        <td width='20%'>[K/Jy]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>System temperature</b></td>
+        <td colSpan='2'>{meas.rop_tsys}</td>
+        </tr>
+        </tbody>
+        </table>
+        </td></tr></tbody>
+        </table>
+        </Modal.Body>
+        <Modal.Footer>
+        <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
+        </Modal.Footer>
+        </Modal>
+        <BootstrapTable data={ this.state.product } maxHeight='300px' scrollTop={ 'Bottom' }>
+      <TableHeaderColumn
+      dataField='button'
+      dataFormat={this.cellButton.bind(this)}
+      width='80'
+      />
+      <TableHeaderColumn dataField='frb_name' isKey={ true }>FRB</TableHeaderColumn>
+      <TableHeaderColumn dataField='obs_telescope'>Telescope</TableHeaderColumn>
+      <TableHeaderColumn dataField='obs_type'>Observation type</TableHeaderColumn>
+      </BootstrapTable>
+      </div>);
+    } else {
+      return (<p>?</p>);
+    }
+  }
+}
+export default class FRBTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { showModal: false,
+      hiddenColumns: { 
+        obs_type: true,
+        rop_receiver: true,
+        rop_backend: true,
+        rop_beam: true,
+        rop_pointing_error: true,
+        rop_sampling_time: true,
+        rop_npol: true,
+        rop_channel_bandwidth: true,
+        rop_bits_per_sample: true,
+        rop_gain: true,
+        rop_tsys: true,
+        rop_ne2001_dm_limit: true,
+      },
+      product : {}
+    };
+    this.openColumnDialog = this.openColumnDialog.bind(this);
+    this.closeColumnDialog = this.closeColumnDialog.bind(this);
+    this.expandComponent = this.expandComponent.bind(this);
+    // set sorting options
+    this.options = {
+      defaultSortName: 'obs_telescope',  // default sort column name
+      defaultSortOrder: 'desc',  // default sort order
+      sizePerPage: 25,
+      sizePerPageList: [ {
+        text: '10', value: 10
+      }, {
+        text: '25', value: 25
+      }, {
+        text: '50', value: 50
+      } ],
+      prePage: 'Prev', // Previous page button text
+      nextPage: 'Next', // Next page button text
+      firstPage: 'First', // First page button text
+      lastPage: 'Last', // Last page button text
+      expandRowBgColor: 'rgb(242, 255, 163)',
+      expandBy: 'row',
+    };
+  }
+  createCustomModalHeader(onClose, onSave) {
+    const headerStyle = {
+      fontWeight: 'bold',
+      fontSize: 'large',
+      textAlign: 'center',
+      backgroundColor: '#eeeeee'
+    };
+    return (
+      <div className='modal-header' style={ headerStyle }>
+      <h3>That is my custom header</h3>
+      <button className='btn btn-info' onClick={ onClose }>Close it!</button>
+      </div>
+    );
+  }
+  // column formatter for exporting to csv
+  csvFormatter(cell, row) {
+    return `${row.id}: ${cell} USD`;
+  }
+
+  closeColumnDialog() {
+    this.setState({ showModal: false });
+  }
+  openColumnDialog() {
+    this.setState({ showModal: true });
+  }
+  changeColumn(cname) {
+    return () => {
+      if (cname === 'frb_name') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { frb_name: !this.state.hiddenColumns.frb_name }) });
+      } else if (cname === 'obs_telescope') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { obs_telescope: !this.state.hiddenColumns.obs_telescope }) });
+      } else if (cname === 'obs_type') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { obs_type: !this.state.hiddenColumns.obs_type }) });
+      } else if (cname === 'rop_receiver') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_receiver: !this.state.hiddenColumns.rop_receiver }) });
+      } else if (cname === 'rop_backend') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_backend: !this.state.hiddenColumns.rop_backend }) });
+      } else if (cname === 'rop_beam') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam: !this.state.hiddenColumns.rop_beam }) });
+      } else if (cname === 'rop_raj') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_raj: !this.state.hiddenColumns.rop_raj }) });
+      } else if (cname === 'rop_decj') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_decj: !this.state.hiddenColumns.rop_decj }) });
+      } else if (cname === 'rop_gl') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gl: !this.state.hiddenColumns.rop_gl }) });
+      } else if (cname === 'rop_gb') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gb: !this.state.hiddenColumns.rop_gb }) });
+      } else if (cname === 'rop_pointing_error') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_pointing_error: !this.state.hiddenColumns.rop_pointing_error }) });
+      } else if (cname === 'rop_fwhm') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_fwhm: !this.state.hiddenColumns.rop_fwhm }) });
+      } else if (cname === 'rop_sampling_time') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_sampling_time: !this.state.hiddenColumns.rop_sampling_time }) });
+      } else if (cname === 'rop_bandwidth') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_bandwidth: !this.state.hiddenColumns.rop_bandwidth }) });
+      } else if (cname === 'rop_centre_frequency') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_centre_frequency: !this.state.hiddenColumns.rop_centre_frequency }) });
+      } else if (cname === 'rop_npol') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_npol: !this.state.hiddenColumns.rop_npol }) });
+      } else if (cname === 'rop_channel_bandwidth') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_channel_bandwidth: !this.state.hiddenColumns.rop_channel_bandwidth }) });
+      } else if (cname === 'rop_bits_per_sample') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_bits_per_sample: !this.state.hiddenColumns.rop_bits_per_sample }) });
+      } else if (cname === 'rop_gain') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gain: !this.state.hiddenColumns.rop_gain }) });
+      } else if (cname === 'rop_tsys') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_tsys: !this.state.hiddenColumns.rop_tsys }) });
+      } else if (cname === 'rop_ne2001_dm_limit') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_ne2001_dm_limit: !this.state.hiddenColumns.rop_ne2001_dm_limit }) });
+      }
+    };
+  }
+
+  // pagination settings
+  sizePerPageListChange(sizePerPage) {
+    alert(`sizePerPage: ${sizePerPage}`);
+  }
+
+  onPageChange(page, sizePerPage) {
+    alert(`page: ${page}, sizePerPage: ${sizePerPage}`);
+  }
+
+  isExpandableRow(row) {
+    if (row.id > 3) return true;
+    else return true;
+  }
+
+  expandComponent(row) {
+    return (
+      <BSTable frb_name={ row.frb_name } />
+    );
+  }
+  handlerClickCleanFiltered() {
+    // remove all filters
+    this.refs.frb_name.cleanFiltered();
+    this.refs.obs_telescope.cleanFiltered();
+    this.refs.obs_type.cleanFiltered();
+    this.refs.rop_receiver.cleanFiltered();
+    this.refs.rop_backend.cleanFiltered();
+    this.refs.rop_beam.cleanFiltered();
+    this.refs.rop_raj.cleanFiltered();
+    this.refs.rop_decj.cleanFiltered();
+    this.refs.rop_gl.cleanFiltered();
+    this.refs.rop_gb.cleanFiltered();
+    this.refs.rop_pointing_error.cleanFiltered();
+    this.refs.rop_fwhm.cleanFiltered();
+    this.refs.rop_sampling_time.cleanFiltered();
+    this.refs.rop_bandwidth.cleanFiltered();
+    this.refs.rop_centre_frequency.cleanFiltered();
+    this.refs.rop_npol.cleanFiltered();
+    this.refs.rop_bits_per_sample.cleanFiltered();
+    this.refs.rop_gain.cleanFiltered();
+    this.refs.rop_tsys.cleanFiltered();
+    this.refs.rop_ne2001_dm_limit.cleanFiltered();
+  }
+
+  render() {
+    //productService.findByFRB({frb_name: 'FRB010125'})
+    //  .then(data => {
+    //    this.setState({
+    //      product: data
+    //    });
+    //  });
+    console.log(this.props.products);
+    const selectRow = {
+      mode: 'checkbox',
+      clickToSelect: true,  // click to select, default is false
+      clickToExpand: true,  // click to expand row, default is false
+      bgColor: 'rgb(242,195,53)'
+    };
+    return (
+      <div className="reacttable">
+      <Button onClick={this.openColumnDialog}>Visible columns</Button>
+      <Button onClick={this.handlerClickCleanFiltered.bind(this) }>Clear filters</Button>
+      <Modal show={this.state.showModal} onHide={this.closeColumnDialg}>
+        <Modal.Header closeButton onClick={this.closeColumnDialog}>
+        <Modal.Title>Select visible columns</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input type="checkbox" onChange={this.changeColumn('frb_name')} checked={!this.state.hiddenColumns.frb_name} /> FRB <br />
+          <input type="checkbox" onChange={this.changeColumn('obs_telescope')} checked={!this.state.hiddenColumns.obs_telescope} /> Telescope <br />
+          <input type="checkbox" onChange={this.changeColumn('obs_type')} checked={!this.state.hiddenColumns.obs_type} /> Observation type <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_receiver')} checked={!this.state.hiddenColumns.rop_receiver} /> Receiver <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_backend')} checked={!this.state.hiddenColumns.rop_backend} /> Backend <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_beam')} checked={!this.state.hiddenColumns.rop_beam} /> Beam <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_raj')} checked={!this.state.hiddenColumns.rop_raj} /> RAJ <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_decj')} checked={!this.state.hiddenColumns.rop_decj} /> DECJ <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_gl')} checked={!this.state.hiddenColumns.rop_gl} /> GL <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_gb')} checked={!this.state.hiddenColumns.rop_gb} /> GB <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_fwhm')} checked={!this.state.hiddenColumns.rop_fwhm} /> FWHM <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_sampling_time')} checked={!this.state.hiddenColumns.rop_sampling_time} /> Sampling time <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_bandwidth')} checked={!this.state.hiddenColumns.rop_bandwidth} /> Bandwidth <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_centre_frequency')} checked={!this.state.hiddenColumns.centre_frequency} /> Centre frequency <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_npol')} checked={!this.state.hiddenColumns.rop_npol} /> Number of polarisations <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_channel_bandwidth')} checked={!this.state.hiddenColumns.rop_channel_bandwidth} /> Channel bandwidth <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_bits_per_sample')} checked={!this.state.hiddenColumns.rop_bits_per_sample} /> Bits per sample <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_gain')} checked={!this.state.hiddenColumns.rop_gain} /> Gain <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_tsys')} checked={!this.state.hiddenColumns.rop_tsys} /> System temperature <br />
+          <input type="checkbox" onChange={this.changeColumn('rop_ne2001_dm_limit')} checked={!this.state.hiddenColumns.rop_ne2001_dm_limit} /> ne2001_dm_limit <br />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
+        </Modal.Footer>
+        </Modal>
+        <BootstrapTable ref='table'
+                        data={ this.props.products } 
+                        exportCSV={ true }
+                        pagination={ true}
+                        hover={ true }
+                        options={ this.options} 
+                        expandableRow={ this.isExpandableRow }
+                        expandComponent={ this.expandComponent }
+                        selectRow={ selectRow } 
+                        expandColumnOptions={
+                          {expandColumnVisible: true,
+                          expandColumnBeforeSelectColumn: false } }>
+        <TableHeaderColumn ref='frb_name'
+                           dataField='frb_name'
+                           isKey={ true }
+                           hidden={this.state.hiddenColumns.frb_name}
+                           filter={ { type: 'TextFilter', delay: 1000 } }
+                           dataSort>
+                           FRB
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='obs_telescope'
+                           dataField='obs_telescope'
+                           hidden={this.state.hiddenColumns.obs_telescope}
+                           formatExtraData={ telescopeType }
+                           filter={ { type: 'SelectFilter', options: telescopeType } }
+                           dataSort>
+                           Telescope
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='obs_type'
+                           dataField='obs_type'
+                           hidden={this.state.hiddenColumns.obs_type}
+                           dataSort>
+                           Observation type
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_receiver'
+                           dataField='rop_receiver'
+                           hidden={this.state.hiddenColumns.rop_receiver}
+                           dataSort>
+                           Receiver
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_backend'
+                           dataField='rop_backend'
+                           hidden={this.state.hiddenColumns.rop_backend}
+                           dataSort>
+                           Backend
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_beam'
+                           dataField='rop_beam'
+                           hidden={this.state.hiddenColumns.rop_beam}
+                           dataSort>
+                           Beam
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_raj'
+                           dataField='rop_raj'
+                           hidden={this.state.hiddenColumns.rop_raj}
+                           dataSort>
+                           RAJ
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_decj'
+                           dataField='rop_decj'
+                           hidden={this.state.hiddenColumns.rop_decj}
+                           dataSort>
+                           DECJ
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_gl'
+                           dataField='rop_gl'
+                           hidden={this.state.hiddenColumns.rop_gl}
+                           dataSort
+                           filter={ {
+                             type: 'NumberFilter',
+                              delay: 1000,
+                              numberComparators: [ '=', '>', '<']
+                           } }>
+                           GL
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_gb'
+                           dataField='rop_gb'
+                           hidden={this.state.hiddenColumns.rop_gb}
+                           dataSort
+                           filter={ {
+                             type: 'NumberFilter',
+                              delay: 1000,
+                              numberComparators: [ '=', '>', '<' ]
+                           } }>
+                           GB
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_pointing_error'
+                           dataField='rop_pointing_error'
+                           hidden={this.state.hiddenColumns.rop_pointing_error}
+                           dataSort>
+                           Pointing error
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_fwhm'
+                           dataField='rop_fwhm'
+                           hidden={this.state.hiddenColumns.rop_fwhm}
+                           dataSort
+                           filter={ {
+                             type: 'NumberFilter',
+                             delay: 1000,
+                             numberComparators: [ '=', '>', '<' ]
+                           } }>
+                           FWHM
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_sampling_time'
+                           dataField='rop_sampling_time'
+                           hidden={this.state.hiddenColumns.rop_sampling_time}
+                           dataSort>
+                           Sampling time
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_bandwidth'
+                           dataField='rop_bandwidth'
+                           hidden={this.state.hiddenColumns.rop_bandwidth}
+                           dataSort
+                           filter={ {
+                             type: 'NumberFilter',
+                             delay: 1000,
+                             numberComparators: [ '=', '>', '<' ]
+                           } }>
+                           Bandwidth
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_centre_frequency'
+                           dataField='rop_centre_frequency'
+                           hidden={this.state.hiddenColumns.rop_centre_frequency}
+                           dataSort
+                           filter={ {
+                             type: 'NumberFilter',
+                             delay: 1000,
+                             numberComparators: [ '=', '>', '<' ]
+                           } }>
+                           Centre frequency
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_npol'
+                           dataField='rop_npol'
+                           hidden={this.state.hiddenColumns.rop_npol}
+                           dataSort>
+                           Number of polarisations
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_channel_bandwidth'
+                           dataField='rop_channel_bandwidth'
+                           hidden={this.state.hiddenColumns.rop_channel_bandwidth}
+                           dataSort>
+                           Channel bandwidth
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_bits_per_sample'
+                           dataField='rop_bits_per_sample'
+                           hidden={this.state.hiddenColumns.rop_bits_per_sample}
+                           dataSort>
+                           Bits per sample
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_gain'
+                           dataField='rop_gain'
+                           hidden={this.state.hiddenColumns.rop_gain}
+                           dataSort>
+                           Gain
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_tsys'
+                           dataField='rop_tsys'
+                           hidden={this.state.hiddenColumns.rop_tsys}
+                           dataSort>
+                           System temperature
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_ne2001_dm_limit'
+                           dataField='rop_ne2001_dm_limit'
+                           hidden={this.state.hiddenColumns.rop_ne2001_dm_limit}
+                           dataSort>
+                           ne2001_dm_limit
+                           </TableHeaderColumn>
+        </BootstrapTable>
+        </div>
+    );
+  }
+}

@@ -1,0 +1,169 @@
+a:link,
+a:visited,
+a:hover {
+    color: #F25C05;
+}
+
+.footer {
+    margin-top: 50px;
+    padding-top: 12px;
+    padding-bottom: 8px;
+    border-top: solid 1px #EEE;
+    color: #4F6A92;
+}
+
+.level {
+    opacity: 1;
+    height: 32px;
+    width: 32px;
+    background: #F25C05;
+    border-radius: 50%;
+    display: inline-block;
+    color: #ffffff;
+    padding-top: 8px;
+    font-size: 12px;
+    text-align: center;
+    padding-left: 0 !important;
+    margin: 6px 0 10px 0;
+}
+
+.search-bar {
+    width: 500px;
+    position: relative;
+}
+
+.search-bar button {
+    position: absolute;
+    right: 8px;
+    top: -20px;
+}
+
+input[type="search"]:focus {
+    border-color: #CFD7E6;
+    box-shadow: 0 0 4px #F25C05 !important;
+}
+
+.slider {
+    width: 100%;
+    max-width: 500px;
+    height: 40px;
+    margin: 4px 0;
+}
+
+.handle {
+    font-size: 0.9em;
+    text-align: center;
+    background-color: #F25C05;
+    color: white;
+    cursor: pointer;
+}
+
+.handle.active {
+    background-color: #F25C05;
+}
+
+.bar {
+    position: relative;
+    background: #EEF1F6;
+    border-radius: 4px;
+}
+
+.bar.bar-1 {
+    background: #F25C05;
+}
+
+.bar.bar-2 {
+    background: #EEF1F6;
+}
+
+.slider .bar {
+    top: 20px;
+    height: 10px;
+}
+
+.slider .handle {
+    top: 7px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 50%;
+    color:#FFF;
+}
+
+.slds-card {
+    background-color: #FFFFFF;
+}
+
+.slds-pill {
+    border-radius: 2px;
+    padding: 2px 4px;
+    margin: 0 2px 2px 0 !important;
+}
+
+.slds-page-header {
+    background-color: #F2C335;
+    border: none;
+    color: #ffffff;
+}
+
+.slds-page-header__title {
+    font-size: 32px;
+    margin-top: -4px;
+    font-family: 'Yanone Kaffeesatz', 'Open Sans', sans-serif;
+}
+
+.slds-card__header {
+    padding: 8px;
+    padding-top: 16px !important;
+    margin-bottom: 4px !important;
+
+}
+
+.slds-card {
+    height: 186px;
+}
+
+.slds-button, .slds-button:focus, .slds-button:hover {
+    color: #F25C05;
+}
+
+.slds-button:active, .slds-button:focus {
+    box-shadow: 0 0 4px #F25C05 !important;
+}
+
+.search-bar .slds-button:active, .search-bar .slds-button:focus {
+    box-shadow: none !important;
+
+}
+
+.slds-card__body {
+    padding-top: 4px;
+}
+
+.slds-card img {
+    margin: 4px;
+}
+body{
+  max-width: 1080px;
+  margin: 0 auto !important;
+  float: none !important;
+}
+.reacttable {
+  font-size: 12px;
+}
+
+span.subsup {
+position: relative;
+}
+
+span.subsup sup {
+position: absolute;
+left: 0.3em;
+top: -0.4em;
+}
+
+span.subsup sub {
+position: absolute;
+left: 0.3em;
+bottom: -0.3em;
+}
