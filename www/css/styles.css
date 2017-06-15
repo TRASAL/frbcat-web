@@ -167,3 +167,34 @@ position: absolute;
 left: 0.3em;
 bottom: -0.3em;
 }
+
+/* STANDARD TABLE FORMAT STYLES
+ *   ----------------------------------------------------*/
+table.standard {
+  border:0; width:98%;
+}
+
+table.standard th {
+  background:#fafafa;
+  border:1px solid #e1e1e1;
+  border-width:1px 0;
+  text-align:left;
+  padding:5px;
+}
+
+table.standard td {
+  padding:3px 5px;
+  vertical-align:top;
+}
+
+table.standard tr.alt {
+  background: #FBFBFB;
+}
+
+table.standard tr:hover td {
+  background:#f4f4f4;
+}
+
+tbody.selectcol {
+  vertical-align: top;
+}

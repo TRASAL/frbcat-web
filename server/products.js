@@ -32,8 +32,8 @@ let findAll = (req, res, next) => {
                "rop.ne2001_dm_limit as rop_ne2001_dm_limit, ",
                "COALESCE(rmp.dm::text || '&plusmn' || rmp.dm_error::text, rmp.dm::text) AS rmp_dm, ",
                "rmp.snr as rmp_snr, ",
-               "COALESCE(rmp.width::text || '<span class=''subsup''><sup>+' || rmp.width_error_upper::text || '</sup><sub>-'|| rmp.width_error_lower::text || '</sub></span>', rmp.width::text) as rmp_width, ",
-               "COALESCE(rmp.flux::text || '<span class=''subsup''><sup>+' || rmp.flux_error_upper::text || '</sup><sub>-'|| rmp.flux_error_lower::text || '</sub></span>', rmp.flux::text) as rmp_flux, ",
+               "COALESCE(rmp.width::text || '<span className=''subsup''><sup>+' || rmp.width_error_upper::text || '</sup><sub>-'|| rmp.width_error_lower::text || '</sub></span>', rmp.width::text) as rmp_width, ",
+               "COALESCE(rmp.flux::text || '<span className=''subsup''><sup>+' || rmp.flux_error_upper::text || '</sup><sub>-'|| rmp.flux_error_lower::text || '</sub></span>', rmp.flux::text) as rmp_flux, ",
                "COALESCE(rmp.dm_index::text || '&plusmn' || rmp.dm_index_error::text, rmp.dm_index::text) AS rmp_dm_index, ",
                "COALESCE(rmp.scattering_index::text || '&plusmn' || rmp.scattering_index_error::text, rmp.scattering_index::text) AS rmp_scattering_index, ",
                "COALESCE(rmp.scattering_time::text || '&plusmn' || rmp.scattering_time_error::text, rmp.scattering_time::text) AS rmp_scattering_time, ",
@@ -47,26 +47,11 @@ let findAll = (req, res, next) => {
                "JOIN radio_measured_params rmp ON (rop.id = rmp.rop_id) ",
                "JOIN authors armp ON (rmp.author_id = armp.id) ",
                "WHERE (rmp.rank = 1) ORDER BY f.name,o.utc"].join('\n');
-    db.query(countSql, values)
-        .then(result => {
-            let total = parseInt(result[0].count);
             db.query(sql, values.concat([]))
                 .then(products => {
-                    return res.json({"pageSize": pageSize, "page": page, "total": total, "products": products});
+                    return res.json({"products": products});
                 })
                 .catch(next);
-        })
-        .catch(next);
-};
-
-let findById = (req, res, next) => {
-  let id = req.params.id;
-
-  let sql = "SELECT * from spot_view WHERE frb_name = $1";
-
-  db.query(sql, ['FRB010125'])
-  .then(product => res.json(product[0]))
-  .catch(next);
 };
 
 let findByFRB = (req, res, next) => {
@@ -78,9 +63,6 @@ let findByFRB = (req, res, next) => {
   whereParts = [],
   values = [];
   let frb_name = req.params.frb_name;
-  let where = whereParts.length > 0 ? ("WHERE " + whereParts.join(" AND ")) : "";
-  let countSql = "SELECT COUNT(*) from spot_view WHERE frb_name = '" + frb_name + "'";
-  //let sql = "SELECT * from spot_view WHERE frb_name = '" + frb_name + "'";
   let sql = ["SELECT f.name as frb_name, ",
   "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS') as utc, ",
   "rop.raj as rop_raj, rop.decj as rop_decj, ",
@@ -95,8 +77,8 @@ let findByFRB = (req, res, next) => {
   "rop.ne2001_dm_limit as rop_ne2001_dm_limit, ",
   "COALESCE(rmp.dm::text || '&plusmn' || rmp.dm_error::text, rmp.dm::text) AS rmp_dm, ",
   "rmp.snr as rmp_snr, ",
-  "COALESCE(rmp.width::text || '<span class=''subsup''><sup>+' || rmp.width_error_upper::text || '</sup><sub>-'|| rmp.width_error_lower::text || '</sub></span>', rmp.width::text) as rmp_width, ",
-  "COALESCE(rmp.flux::text || '<span class=''subsup''><sup>+' || rmp.flux_error_upper::text || '</sup><sub>-'|| rmp.flux_error_lower::text || '</sub></span>', rmp.flux::text) as rmp_flux, ",
+  "COALESCE(rmp.width::text || '<span className=''subsup''><sup>+' || rmp.width_error_upper::text || '</sup><sub>-'|| rmp.width_error_lower::text || '</sub></span>', rmp.width::text) as rmp_width, ",
+  "COALESCE(rmp.flux::text || '<span className=''subsup''><sup>+' || rmp.flux_error_upper::text || '</sup><sub>-'|| rmp.flux_error_lower::text || '</sub></span>', rmp.flux::text) as rmp_flux, ",
   "COALESCE(rmp.dm_index::text || '&plusmn' || rmp.dm_index_error::text, rmp.dm_index::text) AS rmp_dm_index, ",
   "COALESCE(rmp.scattering_index::text || '&plusmn' || rmp.scattering_index_error::text, rmp.scattering_index::text) AS rmp_scattering_index, ",
   "COALESCE(rmp.scattering_time::text || '&plusmn' || rmp.scattering_time_error::text, rmp.scattering_time::text) AS rmp_scattering_time, ",
@@ -110,19 +92,13 @@ let findByFRB = (req, res, next) => {
   "JOIN radio_measured_params rmp ON (rop.id = rmp.rop_id) ",
   "JOIN authors armp ON (rmp.author_id = armp.id) ",
   "WHERE (f.name = '" + frb_name + "') ORDER BY f.name,o.utc"].join('\n');
-  db.query(countSql, values)
-  .then(result => {
-    let total = parseInt(result[0].count);
     db.query(sql, values.concat([]))
     .then(products => {
-      return res.json({"pageSize": pageSize, "page": page, "total": total, "products": products});
+      return res.json({"products": products});
     })
     .catch(next);
-  })
-  .catch(next);
 };
 
 
 exports.findAll = findAll;
-exports.findById = findById;
 exports.findByFRB = findByFRB;

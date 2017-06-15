@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ButtonGroup, ExportCSVButton} from 'react-bootstrap-table';
 import * as productService from '../../services/product-service';
 import ReactDOMServer from 'react-dom/server'
 import {
@@ -10,35 +10,13 @@ import {
 } from 'react-router-dom'
 import Lightbox from 'react-images';
 import String from 'natural-compare-lite';
+import he from 'he';
 
-const telescopeType = {
-  'arecibo': 'arecibo',
-  'GBT': 'GBT',
-  'parkes': 'parkes'
-};
 let libraries = {};
 let order= 'desc';
 
 function enumFormatter(cell, row, enumObject) {
   return enumObject[cell];
-}
-
-function NaturalSortFuncOrig(a, b, order, sortField) { // order is desc or asc
-  var ax = [], bx = [];
-  if (order === 'asc') {
-    a[sortField].replace(/(\d+)|(\D+)/g, function(_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
-    b[sortField].replace(/(\d+)|(\D+)/g, function(_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
-  } else {
-    a[sortField].replace(/(\d+)|(\D+)/g, function(_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
-    b[sortField].replace(/(\d+)|(\D+)/g, function(_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
-  }
-  while(ax.length && bx.length) {
-    var an = ax.shift();
-    var bn = bx.shift();
-    var nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
-    if(nn) return nn;
-  }
-  return ax.length - bx.length;
 }
 
 function NaturalSortFunc(a, b, order, sortField) {
@@ -107,7 +85,7 @@ class BSTable extends React.Component {
   }
   cellButton(cell, row, enumObject, rowIndex) {
     return (
-      <button type="button" className="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+      <button type="button" className="btn btn-info btn-circle"><i className="glyphicon glyphicon-ok"></i></button>
     );
   }
   customInfoButton(cell, row, enumObject, rowIndex) {
@@ -117,6 +95,7 @@ class BSTable extends React.Component {
       btnContextual='btn-info'
       className='btn btn-info btn-circle'
       btnGlyphicon='glyphicon-info-sign'
+      onContextMenu={this.openColumnDialog.bind(this, row)}
       onClick={this.openColumnDialog.bind(this, row)}/>
     );
   }
@@ -124,7 +103,6 @@ class BSTable extends React.Component {
     return (
       <Router>
         <Link to='/some/route'>
-        {cell}Info
         </Link>
       </Router>
     );
@@ -137,22 +115,28 @@ class BSTable extends React.Component {
   closeColumnDialog() {
     this.setState({ showModal: false });
   }
-  openColumnDialog(meas) {
-    this.setState({ showModal: true, meas });
+
+  openColumnDialog(meas, e) {
+    if (e.button == 2) {
+      alert("Right click");
+      window.open("http://www.google.com", '_blank');
+    }
+    else {
+      this.setState({ showModal: true, meas });
+    }
     //window.open('auth/google', '_blank');
   }
+  
   componentDidMount() {
     this.findFRB();
   }
 
   findFRB() {
+    console.log('findfrb');
     productService.findByFRB({search: "", frb_name: this.props.frb_name, min: 0, max: 30, page: 1})
     .then(data => {
       this.setState({
         product: data.products,
-        page: data.page,
-        pageSize: data.pageSize,
-        total: data.total
       });
     });
   }
@@ -169,9 +153,9 @@ class BSTable extends React.Component {
         </Modal.Header>
         <Modal.Body>
         <table width='100%'>
-        <tbody>
+        <tbody className='selectcol'>
         <tr><td width='50%'>
-        <table className='standard' width='50%'>
+        <table className='standard' cellPadding='5px' width='300px'>
         <tbody>
         <tr><th colSpan='3'>FRB Parameters</th></tr>
         <tr>
@@ -180,17 +164,41 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>UTC</b></td>
-        <td colSpan='2'>{meas.frb_utc}</td>
+        <td colSpan='2'>{meas.utc}</td>
         </tr>
         </tbody>
         </table>
-        <p></p>
-        <table className='standard' width='100%'>
+        <p>Notes:</p>
+        <ul>
+        <li>Incorrectly published as FRB 011025. [E. Petroff 2015-10-19]</li>
+        </ul>
+        </td>
+        <td width='50%'>
+        <form name='getval'>
+        <table className='standard'>
         <tbody>
-        <tr><th colSpan='3'>Observation parameters</th></tr>
+        <tr><th colSpan='2'>Cosmological Parameters</th></tr>
+        <tr><td>Omega<sub>M</sub></td><td><input type='text' name='tWM' id='tWM' defaultValue='0.286' size='4' autoComplete='false'></input></td></tr>
+        <tr><td>H<sub>o</sub></td><td><input type='text' name='tH0' id='tH0' defaultValue='69.6' size='4'></input></td></tr>
+        <tr><td>Omega<sub>vac</sub></td><td><input type='text' name='tWV' id='tWV' defaultValue='0.714' size='4'></input></td></tr>
+        </tbody>
+        </table>
+        <input type='button' onClick={this.closeColumnDialog} value='Update Derived Params'/>
+        </form>
+        <font size='-2'>Calculation Method: <a href='http://adsabs.harvard.edu/abs/2006PASP..118.1711W'>Wright (2006, PASP, 118, 1711)</a></font>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        <table width='100%'>
+        <tbody>
+        <tr><td width='50%'>
+        <table className='standard' cellPadding='5px' width='100%'>
+        <tbody>
+        <tr><th colSpan='3'>Observation Parameters</th></tr>
         <tr>
         <td width='50%'><b>Telescope</b></td>
-        <td colSpan='2'>{meas.obs_telescope}</td>
+        <td colSpan='2'>{meas.telescope}</td>
         </tr>
         <tr>
         <td width='50%'><b>Receiver</b></td>
@@ -205,7 +213,7 @@ class BSTable extends React.Component {
         <td colSpan='2'>{meas.rop_beam}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Sampling time</b></td>
+        <td width='50%'><b>Sampling Time</b></td>
         <td width='30%'>{meas.rop_sampling_time}</td>
         <td width='20%'>[ms]</td>
         </tr>
@@ -215,22 +223,22 @@ class BSTable extends React.Component {
         <td width='20%'>[MHz]</td>
         </tr>
         <tr>
-        <td width='50%'><b>Centre frequency</b></td>
+        <td width='50%'><b>Centre Frequency</b></td>
         <td width='30%'>{meas.rop_centre_frequency}</td>
         <td width='20%'>[MHz]</td>
         </tr>
         <tr>
-        <td width='50%'><b>Number of polarisations</b></td>
+        <td width='50%'><b>Number of Polarisations</b></td>
         <td colSpan='2'>{meas.rop_npol}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Channel bandwidth</b></td>
-        <td width='30%'>{meas.channel_bandwidth}</td>
+        <td width='50%'><b>Channel Bandwidth</b></td>
+        <td width='30%'>{meas.rop_channel_bandwidth}</td>
         <td width='20%'>[MHz]</td>
         </tr>
         <tr>
         <td width='50%'><b>Bits per sample</b></td>
-        <td colSpan='2'>{meas.bits_per_sample}</td>
+        <td colSpan='2'>{meas.rop_bits_per_sample}</td>
         </tr>
         <tr>
         <td width='50%'><b>Gain</b></td>
@@ -238,12 +246,150 @@ class BSTable extends React.Component {
         <td width='20%'>[K/Jy]</td>
         </tr>
         <tr>
-        <td width='50%'><b>System temperature</b></td>
+        <td width='50%'><b>System Temperature</b></td>
         <td colSpan='2'>{meas.rop_tsys}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Reference</b></td>
+        <td colSpan='2'><a href='http://adsabs.harvard.edu/abs/2014ApJ...792...19B'>Burke-Spolaor et al</a></td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Raw Data</b></td>
+        <td colSpan='2'><a href='http://supercomputing.swin.edu.au/data-sharing-cluster/parkes-frbs-archival-data/'>Link to Data Portal</a></td>
         </tr>
         </tbody>
         </table>
-        </td></tr></tbody>
+        <p>Notes:</p>
+        <ul>
+        <li>Corrected number of bits per sample from 2 to 1. [ebarr 2016-01-23]</li>
+        </ul>
+        <div className='rmp'>
+        <table className='standard' cellPadding='5p'x width='100%'>
+        <tbody>
+        <tr><th colSpan='3'>Measured Parameters</th></tr>
+        <tr>
+        <td width='50%'><b>RAJ<sup>a</sup></b></td>
+        <td width='30%'>{meas.rop_raj}</td>
+        <td width='20%'>[J2000]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>DECJ<sup>a</sup></b></td>
+        <td width='30%'>{meas.rop_decj}</td>
+        <td width='20%'>[J2000]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>gl<sup>a</sup></b></td>
+        <td width='30%'>{meas.rop_gl}</td>
+        <td width='20%'>[deg]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>gb<sup>a</sup></b></td>
+        <td width='30%'>{meas.rop_gb}</td>
+        <td width='20%'>[deg]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Positional uncertainty<sup>b</sup></b></td>
+        <td width='30%'>{meas.rop_pointing_error}</td>
+        <td width='20%'>[arcmin]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>DM</b></td>
+        <td width='30%'>{htmlFormatter(meas.rmp_dm)}</td>
+        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>S/N</b></td>
+        <td colSpan='2'>{meas.rmp_snr}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>W<sub>obs</sub></b></td>
+        <td width='30%'>{htmlFormatter(meas.rmp_width)}</td>
+        <td width='20%'>[ms]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>S<sub>peak,obs</sub></b></td>
+        <td width='30%'>{meas.rpm_flux}</td>
+        <td width='20%'>[Jy]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>F<sub>obs</sub></b></td>
+        <td width='30%'>fluence</td>
+        <td width='20%'>[Jy ms]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>DM Index</b></td>
+        <td colSpan='2'>{meas.rmp_dm_index}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Scattering Index</b></td>
+        <td colSpan='2'>{meas.rmp_scattering_index}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Scattering Time</b></td>
+        <td colSpan='2'>{meas.rmp_scattering_time}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Linear Poln Fraction</b></td>
+        <td colSpan='2'>{meas.rmp_linear_poln_frac}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Circular Poln Fraction</b></td>
+        <td colSpan='2'>{meas.rmp_circular_poln_frac}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Host Photometric Redshift</b></td>
+        <td colSpan='2'>{meas.rmp_z_phot}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Host Spectroscopic Redshift</b></td>
+        <td colSpan='2'>{meas.rmp_z_spec}</td>
+        </tr>
+        </tbody>
+        </table>
+        <input type='hidden' name='fluence_field' id='0_0_fluence' value='2.82'/>
+        <input type='hidden' name='bandwidth_field' id='0_0_bandwidth' value='288'/>
+        <input type='hidden' name='redshift_field' id='0_0_redshift' value='0.57'/>
+        <table className='standard' cellPadding='5px' width='100%'>
+        <tbody>
+        <tr><th colSpan='3'>Derived Parameters</th></tr>
+        <tr>
+        <td width='50%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
+        <td width='30%'>110</td>
+        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>DM<sub>excess</sub></b></td>
+        <td width='30%'>680</td>
+        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>z<sup>d</sup></b></td>
+        <td colSpan='2'>0.57</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
+        <td width='30%' id='0_0_dist_comoving'>&nbsp;</td>
+        <td width='20%'>[Gpc]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>D<sub>luminosity</sub><sup>d</sup></b></td>
+        <td width='30%' id='0_0_dist_luminosity'>&nbsp;</td>
+        <td width='20%'>[Gpc]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Energy<sup>d</sup></b></td>
+        <td width='30%' id='0_0_energy'>&nbsp;</td>
+        <td width='20%'>[10<sup>32</sup> J]</td>
+        </tr>
+        </tbody>
+        </table>
+        <input type='hidden' name='fluence_field' id='0_1_fluence' value='5.724'/>
+        <input type='hidden' name='bandwidth_field' id='0_1_bandwidth' value='288'/>
+        <input type='hidden' name='redshift_field' id='0_1_redshift' value='0.57'/>
+        </div>
+        </td>
+        </tr>
+        </tbody>
         </table>
         <div><img src='https://placehold.it/350x150' /></div>
         </Modal.Body>
@@ -275,7 +421,6 @@ class BSTable extends React.Component {
       <TableHeaderColumn ref='telescope'
       dataField='telescope'
       hidden={this.state.hiddenColumns.telescope}
-      formatExtraData={ telescopeType }
       dataSort>
       Telescope
       </TableHeaderColumn>
@@ -483,6 +628,14 @@ class BSTable extends React.Component {
   }
 }
 
+function htmlFormatter(cell) {
+  if ((cell === '-1')) {
+    return;
+  } else {
+    return he.decode(`${cell}`);
+  }
+}
+
 function priceFormatter(cell, row) {
   if ((cell === '-1')) {
     return;
@@ -533,6 +686,7 @@ export default class FRBTable extends React.Component {
     this.openColumnDialog = this.openColumnDialog.bind(this);
     this.closeColumnDialog = this.closeColumnDialog.bind(this);
     this.expandComponent = this.expandComponent.bind(this);
+    this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
     // set sorting options
     this.options = {
       defaultSortName: 'frb_name',  // default sort column name
@@ -552,28 +706,11 @@ export default class FRBTable extends React.Component {
       expandRowBgColor: 'rgb(242, 255, 163)',
       expandBy: 'row',
       clearSearch: true,
-      clearSearchBtn: this.createCustomClearButton
+      clearSearchBtn: this.createCustomClearButton,
+      btnGroup: this.createCustomButtonGroup,
+      toolbar: this.createCustomToolbar
     };
   }
-  createCustomModalHeader(onClose, onSave) {
-    const headerStyle = {
-      fontWeight: 'bold',
-      fontSize: 'large',
-      textAlign: 'center',
-      backgroundColor: '#eeeeee'
-    };
-    return (
-      <div className='modal-header' style={ headerStyle }>
-      <h3>That is my custom header</h3>
-      <button className='btn btn-info' onClick={ onClose }>Close it!</button>
-      </div>
-    );
-  }
-  // column formatter for exporting to csv
-  csvFormatter(cell, row) {
-    return `${row.id}: ${cell} USD`;
-  }
-
   closeColumnDialog() {
     this.setState({ showModal: false });
   }
@@ -723,6 +860,22 @@ export default class FRBTable extends React.Component {
     );
   }
 
+  createCustomButtonGroup() {
+    return (
+      <ButtonGroup className='my-custom-class' sizeClass='btn-group-md'>
+      <button type='button'
+      className={ `btn btn-primary` }
+      onClick={this.openColumnDialog}>
+      Visible columns
+      </button>
+      <ExportCSVButton
+      btnText='Export to CSV'
+      btnContextual='btn-success'
+      className='my-custom-class'
+      btnGlyphicon='glyphicon-export'
+      />
+      </ButtonGroup>    );
+  }
   render() {
     const selectRow = {
       mode: 'checkbox',
@@ -730,197 +883,196 @@ export default class FRBTable extends React.Component {
       clickToExpand: true,  // click to expand row, default is false
       bgColor: 'rgb(242,195,53)'
     };
-
     return (
       <div className="reacttable">
-      <Button onClick={this.openColumnDialog}>Visible columns</Button>
       <Modal show={this.state.showModal} onHide={this.closeColumnDialg}>
         <Modal.Header closeButton onClick={this.closeColumnDialog}>
         <Modal.Title>Select visible columns</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <table className='standard' width='100%'>
+        <table width='100%'>
+        <tbody className='selectcol'>
+        <tr><td width='33%'>
+        <table className='standard' cellPadding='5px' width='300px'>
         <tbody>
+        <tr><th colSpan='1'>FRB parameters</th></tr>
         <tr>
-        <td width='33%'>General</td>
-        <td width='33%'>Observation params</td>
-        <td width='33%'>Measured params</td>
+        <td colSpan='1'>
+        <input type="checkbox" onChange={this.changeColumn('frb_name')} checked={!this.state.hiddenColumns.frb_name} /> FRB <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('frb_name')} checked={!this.state.hiddenColumns.frb_name} /> FRB <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_raj')} checked={!this.state.hiddenColumns.rop_raj} /> RAJ <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_dm')} checked={!this.state.hiddenColumns.rmp_dm} /> DM <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('telescope')} checked={!this.state.hiddenColumns.telescope} /> Telescope <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('telescope')} checked={!this.state.hiddenColumns.telescope} /> Telescope <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_decj')} checked={!this.state.hiddenColumns.rop_decj} /> DECJ <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_width')} checked={!this.state.hiddenColumns.rmp_width} /> Width <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('utc')} checked={!this.state.hiddenColumns.utc} /> UTC <br />
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        </td>
+        <td width='33%'>
+        <table className='standard'>
+        <tbody>
+        <tr><th colSpan='1'>Observation parameters</th></tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_raj')} checked={!this.state.hiddenColumns.rop_raj} /> RAJ <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('utc')} checked={!this.state.hiddenColumns.utc} /> UTC <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_gl')} checked={!this.state.hiddenColumns.rop_gl} /> GL <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_snr')} checked={!this.state.hiddenColumns.rmp_snr} /> SNR <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_decj')} checked={!this.state.hiddenColumns.rop_decj} /> DECJ <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_gb')} checked={!this.state.hiddenColumns.rop_gb} /> GB <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_dm_index')} checked={!this.state.hiddenColumns.rmp_dm_index} /> DM index <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_gl')} checked={!this.state.hiddenColumns.rop_gl} /> GL <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_receiver')} checked={!this.state.hiddenColumns.rop_receiver} /> Receiver <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_scattering_index')} checked={!this.state.hiddenColumns.rmp_scattering_index} /> Scattering index <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_gb')} checked={!this.state.hiddenColumns.rop_gb} /> GB <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_backend')} checked={!this.state.hiddenColumns.rop_backend} /> Backend <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_scattering_time')} checked={!this.state.hiddenColumns.rmp_scattering_time} /> Scattering time <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_receiver')} checked={!this.state.hiddenColumns.rop_receiver} /> Receiver <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_beam')} checked={!this.state.hiddenColumns.rop_beam} /> Beam <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_linear_poln_frac')} checked={!this.state.hiddenColumns.rmp_linear_poln_frac} /> Linear poln frac <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_backend')} checked={!this.state.hiddenColumns.rop_backend} /> Backend <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_circular_poln_frac')} checked={!this.state.hiddenColumns.rmp_circular_poln_frac} /> Circular poln frac <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_beam')} checked={!this.state.hiddenColumns.rop_beam} /> Beam <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_fwhm')} checked={!this.state.hiddenColumns.rop_fwhm} /> FWHM <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_spectral_index')} checked={!this.state.hiddenColumns.rmp_spectral_index} /> Spectral index <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_sampling_time')} checked={!this.state.hiddenColumns.rop_sampling_time} /> Sampling time <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_z_phot')} checked={!this.state.hiddenColumns.rmp_z_phot} /> Z phot <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_fwhm')} checked={!this.state.hiddenColumns.rop_fwhm} /> FWHM <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_bandwidth')} checked={!this.state.hiddenColumns.rop_bandwidth} /> Bandwidth <br />
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rmp_z_spec')} checked={!this.state.hiddenColumns.rmp_z_spec} /> Z spec <br />
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_sampling_time')} checked={!this.state.hiddenColumns.rop_sampling_time} /> Sampling time <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_centre_frequency')} checked={!this.state.hiddenColumns.rop_centre_frequency} /> Centre frequency <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_bandwidth')} checked={!this.state.hiddenColumns.rop_bandwidth} /> Bandwidth <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_npol')} checked={!this.state.hiddenColumns.rop_npol} /> Npol <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_centre_frequency')} checked={!this.state.hiddenColumns.rop_centre_frequency} /> Centre frequency <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_channel_bandwidth')} checked={!this.state.hiddenColumns.rop_channel_bandwidth} /> Channel bandwidth <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_npol')} checked={!this.state.hiddenColumns.rop_npol} /> Npol <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_bits_per_sample')} checked={!this.state.hiddenColumns.rop_bits_per_sample} /> Bits per sample <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_channel_bandwidth')} checked={!this.state.hiddenColumns.rop_channel_bandwidth} /> Channel bandwidth <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_gain')} checked={!this.state.hiddenColumns.rop_gain} /> Gain <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_bits_per_sample')} checked={!this.state.hiddenColumns.rop_bits_per_sample} /> Bits per sample <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_tsys')} checked={!this.state.hiddenColumns.rop_tsys} /> Tsys <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_gain')} checked={!this.state.hiddenColumns.rop_gain} /> Gain <br />
+        </td>
         </tr>
         <tr>
-          <td width='33%'>
-          </td>
-          <td width='33%'>
-          <input type="checkbox" onChange={this.changeColumn('rop_ne2001_dm_limit')} checked={!this.state.hiddenColumns.rop_ne2001_dm_limit} /> Ne2001_dm_limit <br />
-          </td>
-          <td width='33%'>
-          </td>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_tsys')} checked={!this.state.hiddenColumns.rop_tsys} /> Tsys <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_ne2001_dm_limit')} checked={!this.state.hiddenColumns.rop_ne2001_dm_limit} /> Ne2001_dm_limit <br />
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        </td>
+        <td width='33%'>
+        <table className='standard'>
+        <tbody>
+        <tr><th colSpan='1'>Measured parameters</th></tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_dm')} checked={!this.state.hiddenColumns.rmp_dm} /> DM <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_width')} checked={!this.state.hiddenColumns.rmp_width} /> Width <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_snr')} checked={!this.state.hiddenColumns.rmp_snr} /> SNR <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_dm_index')} checked={!this.state.hiddenColumns.rmp_dm_index} /> DM index <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_index')} checked={!this.state.hiddenColumns.rmp_scattering_index} /> Scattering index <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_time')} checked={!this.state.hiddenColumns.rmp_scattering_time} /> Scattering time <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_linear_poln_frac')} checked={!this.state.hiddenColumns.rmp_linear_poln_frac} /> Linear poln frac <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_circular_poln_frac')} checked={!this.state.hiddenColumns.rmp_circular_poln_frac} /> Circular poln frac <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_spectral_index')} checked={!this.state.hiddenColumns.rmp_spectral_index} /> Spectral index <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_z_phot')} checked={!this.state.hiddenColumns.rmp_z_phot} /> Z phot <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_z_spec')} checked={!this.state.hiddenColumns.rmp_z_spec} /> Z spec <br />
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        </td>
         </tr>
         </tbody>
         </table>
@@ -934,10 +1086,10 @@ export default class FRBTable extends React.Component {
                         exportCSV={ true }
                         pagination={ true}
                         hover={ true }
-                        options={ this.options} 
+                        options={ this.options}
+                        exportCSV={ true }
                         expandableRow={ this.isExpandableRow }
                         expandComponent={ this.expandComponent }
-                        selectRow={ selectRow }
                         search={ true }
                         expandColumnOptions={
                           {expandColumnVisible: true,
@@ -961,7 +1113,6 @@ export default class FRBTable extends React.Component {
         <TableHeaderColumn ref='telescope'
                            dataField='telescope'
                            hidden={this.state.hiddenColumns.telescope}
-                           formatExtraData={ telescopeType }
                            dataSort
                            width='100px'>
                            Telescope
