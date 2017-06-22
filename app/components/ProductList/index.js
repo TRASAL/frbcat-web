@@ -2,21 +2,192 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, ButtonGroup, ExportCSVButton} from 'react-bootstrap-table';
 import * as productService from '../../services/product-service';
-import ReactDOMServer from 'react-dom/server'
+import Lightbox from 'react-images';
+import String from 'natural-compare-lite';
+import he from 'he';
 import {
   BrowserRouter as Router,
   Route,
   Link
 } from 'react-router-dom'
-import Lightbox from 'react-images';
-import String from 'natural-compare-lite';
-import he from 'he';
 
 let libraries = {};
 let order= 'desc';
 
+// begin values from cosmocalc.js
+var i=0;  // index
+var n=1000; // number of points in integrals
+var nda = 1;  // number of digits in angular size distance
+var H0 = 69.6;  // Hubble constant
+var WM = 0.286; // Omega(matter)
+var WV = 0.714; // Omega(vacuum) or lambda
+var WR = 0; // Omega(radiation)
+var WK = 0; // Omega curvaturve = 1-Omega(total)
+var z = 3.0;  // redshift of the object
+var h = 0.696 // H0/100
+var c = 299792.458; // velocity of light in km/sec
+var Tyr = 977.8; // coefficent for converting 1/H into Gyr
+var DTT = 0.5;  // time from z to now in units of 1/H0
+var DTT_Gyr = 0.0;  // value of DTT in Gyr
+var age = 0.5;  // age of Universe in units of 1/H0
+var age_Gyr = 0.0;  // value of age in Gyr
+var zage = 0.1; // age of Universe at redshift z in units of 1/H0
+var zage_Gyr = 0.0; // value of zage in Gyr
+var DCMR = 0.0; // comoving radial distance in units of c/H0
+var DCMR_Mpc = 0.0;
+var DCMR_Gyr = 0.0;
+var DA = 0.0; // angular size distance
+var DA_Mpc = 0.0;
+var DA_Gyr = 0.0;
+var kpc_DA = 0.0;
+var DL = 0.0; // luminosity distance
+var DL_Mpc = 0.0;
+var DL_Gyr = 0.0; // DL in units of billions of light years
+var V_Gpc = 0.0;
+var a = 1.0;  // 1/(1+z), the scale factor of the Universe
+var az = 0.5; // 1/(1+z(object))
+
+// calculate the actual results
+function compute()
+{
+  h = H0/100;
+  WR = 4.165E-5/(h*h);  // includes 3 massless neutrino species, T0 = 2.72528
+  WK = 1-WM-WR-WV;
+  az = 1.0/(1+1.0*z);
+  age = 0;
+  for (i = 0; i != n; i++) {
+    a = az*(i+0.5)/n;
+    var adot = Math.sqrt(WK+(WM/a)+(WR/(a*a))+(WV*a*a));
+    age = age + 1/adot;
+  };
+  zage = az*age/n;
+// correction for annihilations of particles not present now like e+/e-
+// added 13-Aug-03 based on T_vs_t.f
+  var lpz = Math.log((1+1.0*z))/Math.log(10.0);
+  var dzage = 0;
+  if (lpz >  7.500) dzage = 0.002 * (lpz -  7.500);
+  if (lpz >  8.000) dzage = 0.014 * (lpz -  8.000) +  0.001;
+  if (lpz >  8.500) dzage = 0.040 * (lpz -  8.500) +  0.008;
+  if (lpz >  9.000) dzage = 0.020 * (lpz -  9.000) +  0.028;
+  if (lpz >  9.500) dzage = 0.019 * (lpz -  9.500) +  0.039;
+  if (lpz > 10.000) dzage = 0.048;
+  if (lpz > 10.775) dzage = 0.035 * (lpz - 10.775) +  0.048;
+  if (lpz > 11.851) dzage = 0.069 * (lpz - 11.851) +  0.086;
+  if (lpz > 12.258) dzage = 0.461 * (lpz - 12.258) +  0.114;
+  if (lpz > 12.382) dzage = 0.024 * (lpz - 12.382) +  0.171;
+  if (lpz > 13.055) dzage = 0.013 * (lpz - 13.055) +  0.188;
+  if (lpz > 14.081) dzage = 0.013 * (lpz - 14.081) +  0.201;
+  if (lpz > 15.107) dzage = 0.214;
+  zage = zage*Math.pow(10.0,dzage);
+//
+  zage_Gyr = (Tyr/H0)*zage;
+  DTT = 0.0;
+  DCMR = 0.0;
+// do integral over a=1/(1+z) from az to 1 in n steps, midpoint rule
+  for (i = 0; i != n; i++) {
+    a = az+(1-az)*(i+0.5)/n;
+    adot = Math.sqrt(WK+(WM/a)+(WR/(a*a))+(WV*a*a));
+    DTT = DTT + 1/adot;
+    DCMR = DCMR + 1/(a*adot);
+  };
+  DTT = (1-az)*DTT/n;
+  DCMR = (1-az)*DCMR/n;
+  age = DTT+zage;
+  age_Gyr = age*(Tyr/H0);
+  DTT_Gyr = (Tyr/H0)*DTT;
+  DCMR_Gyr = (Tyr/H0)*DCMR;
+  DCMR_Mpc = (c/H0)*DCMR;
+  DA = az*DCMT();
+  DA_Mpc = (c/H0)*DA;
+  kpc_DA = DA_Mpc/206.264806;
+  DA_Gyr = (Tyr/H0)*DA;
+  DL = DA/(az*az);
+  DL_Mpc = (c/H0)*DL;
+  DL_Gyr = (Tyr/H0)*DL;
+  V_Gpc = 4*Math.PI*Math.pow(0.001*c/H0,3)*VCM();
+
+  return;
+}
+// tangential comoving distance
+function DCMT() {
+  var ratio = 1.00;
+  var x;
+  var y;
+  x = Math.sqrt(Math.abs(WK))*DCMR;
+  // document.writeln("DCMR = " + DCMR + "<BR>");
+  // document.writeln("x = " + x + "<BR>");
+  if (x > 0.1) {
+    ratio =  (WK > 0) ? 0.5*(Math.exp(x)-Math.exp(-x))/x : Math.sin(x)/x;
+    // document.writeln("ratio = " + ratio + "<BR>");
+    y = ratio*DCMR;
+    return y;
+  };
+  y = x*x;
+// statement below fixed 13-Aug-03 to correct sign error in expansion
+  if (WK < 0) y = -y;
+  ratio = 1 + y/6 + y*y/120;
+  // document.writeln("ratio = " + ratio + "<BR>");
+  y= ratio*DCMR;
+  return y;
+}
+// comoving volume computation
+function VCM() {
+  var ratio = 1.00;
+  var x;
+  var y;
+  x = Math.sqrt(Math.abs(WK))*DCMR;
+  if (x > 0.1) {
+    ratio =  (WK > 0) ? (0.125*(Math.exp(2*x)-Math.exp(-2*x))-x/2)/(x*x*x/3) :
+    (x/2 - Math.sin(2*x)/4)/(x*x*x/3) ;
+    y = ratio*DCMR*DCMR*DCMR/3;
+    return y;
+  };
+  y = x*x;
+// statement below fixed 13-Aug-03 to correct sign error in expansion
+  if (WK < 0) y = -y;
+  ratio = 1 + y/5 + (2/105)*y*y;
+  y= ratio*DCMR*DCMR*DCMR/3;
+  return y;
+}
+// computing energy
+function computeEnergy (fluence, dl, bandwidth, z)
+{
+  var e1 = fluence * Math.pow(10,-26) * 0.001;
+  var e2 = Math.pow((dl * 3.08567758 * Math.pow(10,25)),2);
+  var e3 = bandwidth * (1 + z);
+  var e4 = Math.pow(10,32);
+  var energy = (e1 * e2 * e3) / e4;
+  return energy;
+}
+// end values from cosmocalc.js
+
 function enumFormatter(cell, row, enumObject) {
   return enumObject[cell];
+}
+
+function supsub_formatter(variable, upper_error, lower_error) {
+  // return variable with upper/lower error if available, else return variable
+  if (!isNaN(parseFloat(upper_error)) && !isNaN(parseFloat(lower_error))) {
+    //return variable with upper and lower error
+    return <div>{variable}<span className='supsub'><sup>{upper_error}</sup><sub>{lower_error}</sub></span></div>;
+  } 
+  else {
+    // return variable without error
+    return variable;
+  }
+}
+
+function isRNaN(a) { return a !== a; };
+
+function plusmn_formatter(variable, error) {
+  // return variable with +-error if available, else return variable
+  if (!isNaN(parseFloat(error))) {
+    return <div>{variable}&plusmn;{error}</div>;
+  }
+  else {
+    // return variable
+    return variable;
+  }
 }
 
 function NaturalSortFunc(a, b, order, sortField) {
@@ -79,9 +250,60 @@ function NaturalSortFunc(a, b, order, sortField) {
 class BSTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { showModal: false, hiddenColumns: this.props.hiddencols, meas: {}, product: [] };
+    this.state = { showModal: false,
+                   hiddenColumns: this.props.hiddencols, 
+                   meas: {},
+                   product: [],
+                   // initialize input fields
+                   input_fields_tWM: 0.286,
+                   input_fields_tH0: 69.6,
+                   input_fields_tWV: 0.714,
+                   // initialize derived variables
+                   derived_fluence: '',
+                   derived_fluence_error_upper: '',
+                   derived_fluence_error_lower: '',
+                   derived_dm_excess: '',
+                   derived_dm_excess_error_upper: '',
+                   derived_dm_excess_error_lower: '',
+                   derived_redshift: '',
+                   derived_redshift_error_upper: '',
+                   derived_redshift_error_lower: '',
+                   derived_dist_comoving: '',
+                   derived_dist_comoving_error_upper: {},
+                   derived_dist_comoving_error_lower: {},
+                   derived_dist_luminosity: '',
+                   derived_dist_luminosity_error_upper: {},
+                   derived_dist_luminosity_error_lower: {},
+                   derived_energy: '',
+                   derived_energy_error_upper: {},
+                   derived_energy_error_lower: {},
+                   
+                   derived: {
+                     fluence: {},
+                     fluence_error_upper: {},
+                     fluence_error_lower: {},
+                     dm_excess: {},
+                     dm_excess_error_upper: {},
+                     dm_excess_error_lower: {},
+                     redshift: {},
+                     redshift_error_upper: {},
+                     redshift_error_lower: {},
+                     dist_comoving: {},
+                     dist_comoving_error_upper: {},
+                     dist_comoving_error_lower: {},
+                     dist_luminosity: {},
+                     dist_luminosity_error_upper: {},
+                     dist_luminosity_error_lower: {},
+                     energy: {},
+                     energy_error_upper: {},
+                     energy_error_lower: {},
+                   },
+    };
     this.openColumnDialog = this.openColumnDialog.bind(this);
     this.closeColumnDialog = this.closeColumnDialog.bind(this);
+    this.updateDerived = this.updateDerived.bind(this);
+    this.updateField = this.updateField.bind(this);
+    this.calculateDerived = this.calculateDerived.bind(this);
   }
   cellButton(cell, row, enumObject, rowIndex) {
     return (
@@ -115,14 +337,112 @@ class BSTable extends React.Component {
   closeColumnDialog() {
     this.setState({ showModal: false });
   }
+ updateField(e) {
+   this.setState({ [e.target.name]: e.target.value});
+   }
+  
+  calculateDerived(meas) {
+    // initial calculation of derived parameters
+    // fluence
+    if (meas.rmp_width != meas.rmp_flux) {
+      if (!isNaN(parseFloat(meas.rmp_width)) && !isNaN(parseFloat(meas.rmp_flux))) {
+        var fluence = meas.rmp_width * meas.rmp_flux;
+        this.setState({ derived_fluence: fluence })
+        if (!isNaN(parseFloat(meas.rmp_flux_error_upper)) && !isNaN(parseFloat(meas.rmp_flux_error_lower)) && !isNaN(parseFloat(meas.rmp_width_error_upper)) && !isNaN(parseFloat(meas.rmp_width_error_lower))) {
+          var flux_error_upper = parseFloat(meas.flux_error_upper);
+          var flux_error_lower = parseFloat(meas.flux_error_lower);
+          var width_error_upper = parseFloat(meas.width_error_upper);
+          var width_error_lower = parseFloat(meas.width_error_lower);
+          var fluence_error_upper = ((meas.rmp_flux + flux_error_upper) * (meas.rmp_width + width_error_upper)) - fluence;
+          var fluence_error_lower = ((meas.rmp_flux + flux_error_lower) * (meas.rmp_width + width_error_lower)) - fluence;
+          this.setState({ derived_fluence_error_upper: fluence_error_upper,
+                          derived_fluence_error_lower: fluence_error_lower
+                        });
+        }
+      }
+    }
+    // dm_excess, redshift
+    if (!isNaN(parseFloat(meas.rmp_dm)) && !isNaN(parseFloat(meas.rop_ne2001_dm_limit))) {
+      var dm = parseFloat(meas.rmp_dm);
+      var ne2001_dm_limit = parseFloat(meas.rop_ne2001_dm_limit);
+      // calculate dm_excess
+      var dm_excess = dm - ne2001_dm_limit;
+      var dm_excess_error_upper = dm - (0.5 * ne2001_dm_limit);
+      var dm_excess_error_lower = dm - (1.5 * ne2001_dm_limit);
+      // calculate redshift
+      var redshift = dm_excess / 1200.0;
+      var redshift_error_upper = dm_excess_error_upper / 1200.0;
+      var redshift_error_lower = dm_excess_error_lower / 1200.0;
+      // update state
+      this.setState({ derived_dm_excess: dm_excess,
+                      derived_dm_excess_error_upper: dm_excess_error_upper,
+                      derived_dm_excess_error_lower: dm_excess_error_lower,
+                      derived_redshift: redshift,
+                      derived_redshift_error_upper: redshift_error_upper,
+                      derived_redshift_error_lower: redshift_error_lower
+                    });
+    }
+    // input fields
+    var tH0 = this.state.input_fields_tH0;
+    var tWM = this.state.input_fields_tWM;
+    var tWV = this.state.input_fields_tWV;
+    // first compute actual error values
+    var bandwidth = meas.rop_bandwidth * Math.pow(10,6);
+    H0 = tH0;
+    h = H0/100;
+    WM = tWM;
+    WV = tWV;
+    z = redshift;
+    WR = 4.165E-5/(h*h);  // includes 3 massless neutrino species, T0 = 2.72528
+    WK = 1-WM-WR-WV;
+    compute();
+    var dist_comoving = DCMR_Mpc / 1000.0;
+    var dist_luminosity = DL_Mpc / 1000.0;
+    var energy = computeEnergy (fluence, dist_luminosity, bandwidth, z);
+    // update state
+    this.setState( { derived_dist_luminosity: dist_luminosity,
+                     derived_dist_comoving: dist_comoving,
+                     derived_energy: energy
+                   });
+  }
 
+  updateDerived() {
+    // set 
+    var tH0 = this.state.input_fields_tH0;
+    var tWM = this.state.input_fields_tWM;
+    var tWV = this.state.input_fields_tWV;
+    // first compute actual error values
+    var bandwidth = this.state.meas.rop_bandwidth * Math.pow(10,6);
+    H0 = tH0;
+    h = H0/100;
+    WM = tWM;
+    WV = tWV;
+    z = this.state.derived_redshift;
+    var fluence = this.state.derived_fluence;
+    var dist_luminosity = this.state.derived_dist_luminosity;
+    WR = 4.165E-5/(h*h);  // includes 3 massless neutrino species, T0 = 2.72528
+    WK = 1-WM-WR-WV;
+    compute();
+    var dist_comoving = DCMR_Mpc / 1000.0;
+    var dist_luminosity = DL_Mpc / 1000.0;
+    var energy = computeEnergy (fluence, dist_luminosity, bandwidth, z);
+    // update state
+    this.setState( { derived_dist_luminosity: dist_luminosity,
+                     derived_dist_comoving: dist_comoving,
+                     derived_energy: energy
+                   });
+  }
+  
   openColumnDialog(meas, e) {
     if (e.button == 2) {
       alert("Right click");
       window.open("http://www.google.com", '_blank');
     }
     else {
-      this.setState({ showModal: true, meas });
+      this.calculateDerived(meas);
+      //this.updateDerived();
+      this.setState({ showModal: true,
+                      meas });
     }
     //window.open('auth/google', '_blank');
   }
@@ -132,7 +452,6 @@ class BSTable extends React.Component {
   }
 
   findFRB() {
-    console.log('findfrb');
     productService.findByFRB({search: "", frb_name: this.props.frb_name, min: 0, max: 30, page: 1})
     .then(data => {
       this.setState({
@@ -141,9 +460,8 @@ class BSTable extends React.Component {
     });
   }
 
-
   render() {
-    const { showModal, meas } = this.state;
+    const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
       return (
         <div>
@@ -178,12 +496,14 @@ class BSTable extends React.Component {
         <table className='standard'>
         <tbody>
         <tr><th colSpan='2'>Cosmological Parameters</th></tr>
-        <tr><td>Omega<sub>M</sub></td><td><input type='text' name='tWM' id='tWM' defaultValue='0.286' size='4' autoComplete='false'></input></td></tr>
-        <tr><td>H<sub>o</sub></td><td><input type='text' name='tH0' id='tH0' defaultValue='69.6' size='4'></input></td></tr>
-        <tr><td>Omega<sub>vac</sub></td><td><input type='text' name='tWV' id='tWV' defaultValue='0.714' size='4'></input></td></tr>
+        <tr><td>Omega<sub>M</sub></td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        <tr><td>H<sub>o</sub></td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
+                                      onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        <tr><td>Omega<sub>vac</sub></td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
+                                      onChange={this.updateField.bind(this)} size='4'></input></td></tr>
         </tbody>
         </table>
-        <input type='button' onClick={this.closeColumnDialog} value='Update Derived Params'/>
+        <input type='button' onClick={this.updateDerived.bind(this)} value='Update Derived Params'/>
         </form>
         <font size='-2'>Calculation Method: <a href='http://adsabs.harvard.edu/abs/2006PASP..118.1711W'>Wright (2006, PASP, 118, 1711)</a></font>
         </td>
@@ -284,7 +604,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>gb<sup>a</sup></b></td>
-        <td width='30%'>{meas.rop_gb}</td>
+          <td width='30%'>{meas.rop_gb}</td>
         <td width='20%'>[deg]</td>
         </tr>
         <tr>
@@ -294,7 +614,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>DM</b></td>
-        <td width='30%'>{htmlFormatter(meas.rmp_dm)}</td>
+        <td width='30%'>{plusmn_formatter(meas.rmp_dm, meas.rmp_dm_error)}</td>
         <td width='20%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
@@ -303,89 +623,83 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>W<sub>obs</sub></b></td>
-        <td width='30%'>{htmlFormatter(meas.rmp_width)}</td>
+        <td width='30%'>{supsub_formatter(meas.rmp_width, meas.rmp_width_error_upper, meas.rmp_width_error_lower)}</td>
         <td width='20%'>[ms]</td>
         </tr>
         <tr>
         <td width='50%'><b>S<sub>peak,obs</sub></b></td>
-        <td width='30%'>{meas.rpm_flux}</td>
+        <td width='30%'>{supsub_formatter(meas.rmp_flux, meas.rmp_flux_error_upper, meas.rmp_flux_error_lower)}</td>
         <td width='20%'>[Jy]</td>
         </tr>
         <tr>
         <td width='50%'><b>F<sub>obs</sub></b></td>
-        <td width='30%'>fluence</td>
+        <td width='30%'>{supsub_formatter(this.state.derived_fluence, this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
         <td width='20%'>[Jy ms]</td>
         </tr>
         <tr>
         <td width='50%'><b>DM Index</b></td>
-        <td colSpan='2'>{meas.rmp_dm_index}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_dm_index, meas.rmp_dm_index_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Scattering Index</b></td>
-        <td colSpan='2'>{meas.rmp_scattering_index}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Scattering Time</b></td>
-        <td colSpan='2'>{meas.rmp_scattering_time}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_time, meas.rmp_scattering_time_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Linear Poln Fraction</b></td>
-        <td colSpan='2'>{meas.rmp_linear_poln_frac}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_linear_poln_frac, meas.rmp_linear_poln_frac_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Circular Poln Fraction</b></td>
-        <td colSpan='2'>{meas.rmp_circular_poln_frac}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Host Photometric Redshift</b></td>
-        <td colSpan='2'>{meas.rmp_z_phot}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_z_phot, meas.rmp_z_phot_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Host Spectroscopic Redshift</b></td>
-        <td colSpan='2'>{meas.rmp_z_spec}</td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_z_spec, meas.rmp_z_spec_error)}</td>
         </tr>
         </tbody>
         </table>
-        <input type='hidden' name='fluence_field' id='0_0_fluence' value='2.82'/>
-        <input type='hidden' name='bandwidth_field' id='0_0_bandwidth' value='288'/>
-        <input type='hidden' name='redshift_field' id='0_0_redshift' value='0.57'/>
         <table className='standard' cellPadding='5px' width='100%'>
         <tbody>
         <tr><th colSpan='3'>Derived Parameters</th></tr>
         <tr>
         <td width='50%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
-        <td width='30%'>110</td>
+        <td width='30%'>{meas.rop_ne2001_dm_limit}</td>
         <td width='20%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
         <td width='50%'><b>DM<sub>excess</sub></b></td>
-        <td width='30%'>680</td>
+        <td width='30%'>{this.state.derived_dm_excess}</td>
         <td width='20%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
         <td width='50%'><b>z<sup>d</sup></b></td>
-        <td colSpan='2'>0.57</td>
+        <td colSpan='2'>{this.state.derived_redshift}</td>
         </tr>
         <tr>
         <td width='50%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
-        <td width='30%' id='0_0_dist_comoving'>&nbsp;</td>
+        <td width='30%'>{this.state.derived_dist_comoving}</td>
         <td width='20%'>[Gpc]</td>
         </tr>
         <tr>
         <td width='50%'><b>D<sub>luminosity</sub><sup>d</sup></b></td>
-        <td width='30%' id='0_0_dist_luminosity'>&nbsp;</td>
+        <td width='30%'>{this.state.derived_dist_luminosity}</td>
         <td width='20%'>[Gpc]</td>
         </tr>
         <tr>
         <td width='50%'><b>Energy<sup>d</sup></b></td>
-        <td width='30%' id='0_0_energy'>&nbsp;</td>
+        <td width='30%'>{this.state.derived_energy}</td>
         <td width='20%'>[10<sup>32</sup> J]</td>
         </tr>
         </tbody>
         </table>
-        <input type='hidden' name='fluence_field' id='0_1_fluence' value='5.724'/>
-        <input type='hidden' name='bandwidth_field' id='0_1_bandwidth' value='288'/>
-        <input type='hidden' name='redshift_field' id='0_1_redshift' value='0.57'/>
         </div>
         </td>
         </tr>
@@ -403,7 +717,6 @@ class BSTable extends React.Component {
       dataFormat={this.customInfoButton.bind(this)}
       width='55'
       />
-      <TableHeaderColumn dataField='id' dataFormat={ this.colFormatter.bind(this) }>my header</TableHeaderColumn>
       <TableHeaderColumn ref='frb_name'
       dataField='frb_name'
       isKey={ true }
@@ -672,6 +985,7 @@ export default class FRBTable extends React.Component {
         rop_fwhm: true,
         rop_bandwidth: true,
         rop_centre_frequency: true,
+        rmp_flux: true,
         rmp_dm_index: true,
         rmp_scattering_index: true,
         rmp_scattering_time: true,
@@ -703,12 +1017,11 @@ export default class FRBTable extends React.Component {
       nextPage: 'Next', // Next page button text
       firstPage: 'First', // First page button text
       lastPage: 'Last', // Last page button text
-      expandRowBgColor: 'rgb(242, 255, 163)',
+      expandRowBgColor: 'rgb(207, 216, 220)',
       expandBy: 'row',
       clearSearch: true,
       clearSearchBtn: this.createCustomClearButton,
       btnGroup: this.createCustomButtonGroup,
-      toolbar: this.createCustomToolbar
     };
   }
   closeColumnDialog() {
@@ -771,6 +1084,8 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_tsys: !this.state.hiddenColumns.rop_tsys }) });
       } else if (cname === 'rop_ne2001_dm_limit') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_ne2001_dm_limit: !this.state.hiddenColumns.rop_ne2001_dm_limit }) });
+      } else if (cname === 'rmp_flux') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
       } else if (cname === 'rmp_dm_index') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dm_index: !this.state.hiddenColumns.rmp_dm_index }) });
       } else if (cname === 'rmp_scattering_index') {
@@ -801,8 +1116,7 @@ export default class FRBTable extends React.Component {
   }
 
   isExpandableRow(row) {
-    if (row.id > 3) return true;
-    else return true;
+    return true;
   }
 
   expandComponent(row) {
@@ -849,7 +1163,9 @@ export default class FRBTable extends React.Component {
   handleClearButtonClick(onClick) {
     this.props.search('');
   }
-
+  showall(onClick) {
+    console.log('handle show all/verified')
+  }
   createCustomClearButton(onClick) {
     return (
       <ClearSearchButton
@@ -860,7 +1176,7 @@ export default class FRBTable extends React.Component {
     );
   }
 
-  createCustomButtonGroup() {
+  createCustomButtonGroup(props) {
     return (
       <ButtonGroup className='my-custom-class' sizeClass='btn-group-md'>
       <button type='button'
@@ -868,12 +1184,12 @@ export default class FRBTable extends React.Component {
       onClick={this.openColumnDialog}>
       Visible columns
       </button>
-      <ExportCSVButton
-      btnText='Export to CSV'
-      btnContextual='btn-success'
-      className='my-custom-class'
-      btnGlyphicon='glyphicon-export'
-      />
+      <button type='button'
+      className={ `btn btn-info` }
+      onClick={this.showall}>
+      Show all/verified
+      </button>
+      { props.exportCSVBtn }
       </ButtonGroup>    );
   }
   render() {
@@ -881,7 +1197,6 @@ export default class FRBTable extends React.Component {
       mode: 'checkbox',
       clickToSelect: true,  // click to select, default is false
       clickToExpand: true,  // click to expand row, default is false
-      bgColor: 'rgb(242,195,53)'
     };
     return (
       <div className="reacttable">
@@ -1033,6 +1348,11 @@ export default class FRBTable extends React.Component {
         <tr>
         <td>
         <input type="checkbox" onChange={this.changeColumn('rmp_dm_index')} checked={!this.state.hiddenColumns.rmp_dm_index} /> DM index <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_flux')} checked={!this.state.hiddenColumns.rmp_flux} /> Flux <br />
         </td>
         </tr>
         <tr>

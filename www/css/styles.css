@@ -101,9 +101,9 @@ input[type="search"]:focus {
 }
 
 .slds-page-header {
-    background-color: #F2C335;
+  background-color: #90a4ae;
     border: none;
-    color: #ffffff;
+    color: #000000;
 }
 
 .slds-page-header__title {
@@ -121,14 +121,6 @@ input[type="search"]:focus {
 
 .slds-card {
     height: 186px;
-}
-
-.slds-button, .slds-button:focus, .slds-button:hover {
-    color: #F25C05;
-}
-
-.slds-button:active, .slds-button:focus {
-    box-shadow: 0 0 4px #F25C05 !important;
 }
 
 .search-bar .slds-button:active, .search-bar .slds-button:focus {
@@ -168,6 +160,21 @@ left: 0.3em;
 bottom: -0.3em;
 }
 
+.supsub {
+  display: inline-block;
+}
+
+.supsub sup,
+.supsub sub {
+  position: relative;
+  display: block;
+  font-size: .5em;
+  line-height: 1.2;
+}
+
+.supsub sub {
+  top: .3em;
+}
 /* STANDARD TABLE FORMAT STYLES
  *   ----------------------------------------------------*/
 table.standard {
