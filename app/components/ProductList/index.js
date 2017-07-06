@@ -254,6 +254,7 @@ class BSTable extends React.Component {
                    hiddenColumns: this.props.hiddencols, 
                    meas: {},
                    product: [],
+                   image: [],
                    // initialize input fields
                    input_fields_tWM: 0.286,
                    input_fields_tH0: 69.6,
@@ -277,7 +278,6 @@ class BSTable extends React.Component {
                    derived_energy: '',
                    derived_energy_error_upper: {},
                    derived_energy_error_lower: {},
-                   
                    derived: {
                      fluence: {},
                      fluence_error_upper: {},
@@ -449,6 +449,7 @@ class BSTable extends React.Component {
   
   componentDidMount() {
     this.findFRB();
+//    this.findImages();
   }
 
   findFRB() {
@@ -459,7 +460,16 @@ class BSTable extends React.Component {
       });
     });
   }
-
+/*
+  findImages() {
+    productService.findImages({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        image: data.products,
+      });
+    });
+  }
+*/  
   render() {
     const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
@@ -705,6 +715,7 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
+        <div><img src="data:image/png;base64,${meas.ri_image}"/></div>
         <div><img src='https://placehold.it/350x150' /></div>
         </Modal.Body>
         <Modal.Footer>
@@ -969,6 +980,7 @@ export default class FRBTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = { showModal: false,
+      btnTitle: 'Show verified',
       hiddenColumns: { 
         obs_type: true,
         rop_receiver: true,
@@ -998,6 +1010,7 @@ export default class FRBTable extends React.Component {
       product : {}
     };
     this.openColumnDialog = this.openColumnDialog.bind(this);
+    this.showall = this.showall.bind(this);
     this.closeColumnDialog = this.closeColumnDialog.bind(this);
     this.expandComponent = this.expandComponent.bind(this);
     this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
@@ -1164,8 +1177,24 @@ export default class FRBTable extends React.Component {
     this.props.search('');
   }
   showall(onClick) {
-    console.log('handle show all/verified')
+    if ( this.state.verified === true) {
+        // set state to verified=false
+        this.setState({verified: false});
+        // change button title
+        this.setState({btnTitle: 'Show all'});
+        // remove filter  # TODO use verified entry in database
+        this.refs.telescope.cleanFiltered();
+
+    } else {
+        // set state to verified=true
+        this.setState({verified: true});
+        // change button title
+        this.setState({btnTitle: 'Show verified'});
+        // apply filter  # TODO use verified entry in database
+        this.refs.telescope.applyFilter('parkes');
+    }
   }
+
   createCustomClearButton(onClick) {
     return (
       <ClearSearchButton
@@ -1187,7 +1216,7 @@ export default class FRBTable extends React.Component {
       <button type='button'
       className={ `btn btn-info` }
       onClick={this.showall}>
-      Show all/verified
+      {this.state.btnTitle}
       </button>
       { props.exportCSVBtn }
       </ButtonGroup>    );
@@ -1434,6 +1463,7 @@ export default class FRBTable extends React.Component {
                            dataField='telescope'
                            hidden={this.state.hiddenColumns.telescope}
                            dataSort
+                           filter={{type: 'TextFilter', delay: 1000}}
                            width='100px'>
                            Telescope
                            </TableHeaderColumn>
