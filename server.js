@@ -29,7 +29,9 @@ app.all('*', function (req, res, next) {
 app.get('/products', products.findAll);
 //app.get('/products/:id', products.findById);
 app.get('/product/:frb_name', products.findByFRB);
-//app.get('/images/:rmp_id', products.findImages);
+app.get('/ropnotes/:rop_id', products.findropnotes);
+app.get('/rmpnotes/:rmp_id', products.findrmpnotes);
+app.get('/frbnotes/:frb_id', products.findfrbnotes);
 
 app.listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

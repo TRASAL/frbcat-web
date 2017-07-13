@@ -1,11 +1,11 @@
 a:link,
-a:visited,
+a:visited ,
 a:hover {
-    color: #F25C05;
+    color: #F19F4D;
 }
 
 .footer {
-    margin-top: 50px;
+    margin-top: 30px;
     padding-top: 12px;
     padding-bottom: 8px;
     border-top: solid 1px #EEE;
@@ -101,22 +101,22 @@ input[type="search"]:focus {
 }
 
 .slds-page-header {
-  background-color: #90a4ae;
+  background-color: #002E49;
     border: none;
-    color: #000000;
+    color: #FFFFFF;
+    margin-top: -16px;
 }
 
 .slds-page-header__title {
-    font-size: 32px;
-    margin-top: -4px;
-    font-family: 'Yanone Kaffeesatz', 'Open Sans', sans-serif;
+    font-size: 48px;
+    font-family: "Times New Roman", Times, serif;
+    font-weight: bold;
 }
 
 .slds-card__header {
     padding: 8px;
-    padding-top: 16px !important;
-    margin-bottom: 4px !important;
-
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
 }
 
 .slds-card {
@@ -137,9 +137,15 @@ input[type="search"]:focus {
 }
 body{
   max-width: 1080px;
-  margin: 0 auto !important;
+  margin:0px auto !important;
+  padding: 8px;
   float: none !important;
+  font-family: "Arial, Helvetica, sans-serif;
 }
+html {
+  background-color: #E9E9E9;
+}
+
 .reacttable {
   font-size: 12px;
 }
@@ -205,3 +211,103 @@ table.standard tr:hover td {
 tbody.selectcol {
   vertical-align: top;
 }
+
+/* begin pagination button */
+.pagination>li.active>a {
+  background: #0E65B2;
+  color: #fff;
+}
+.pagination>li.active:hover>a {
+  background: #0C518E;
+  color: #fff;
+}
+/* end pagination button */
+
+.logo {
+	margin-top: 60px;
+	margin-bottom: 40px;
+	width: 100%;
+}
+.fund_logo	{
+  padding: 10px;
+}
+.flex-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  height: 60px;
+  background: white;
+}
+
+.flex-item {
+  margin: auto;
+}
+.flex-container img {
+  height: 60px;
+}
+
+/* begin custom bootstrap buttons */
+.btn-viscol {
+    background: #0E65B2;
+    border-color: #0E65B2;
+    color: #FFFFFF;
+    outline:none !important;
+}
+
+.btn-viscol:hover {
+    background: #0C518E;
+    border-color: #0C518E;
+    color: #FFFFFF;
+    outline:none !important;
+}
+.btn-viscol:active {
+    background: #0A3D6A;
+    border-color: #0A3D6A;
+    color: #FFFFFF;
+    outline:none !important;
+}
+.btn-viscol:focus {
+    color: #FFFFFF;
+    outline:none !important;
+}
+.btn-search {
+    background: #F19F4D;
+    border-color: #F19F4D;
+    color: #FFFFFF;
+}
+
+.btn-search:hover {
+    background: #C17F3D;
+    border-color: #C17F3D;
+    color: #FFFFFF;
+}
+.btn-search:active {
+    background: #915F2D;
+    border-color: #915F2D;
+    color: #FFFFFF;
+}
+.btn-search:focus {
+    color: #FFFFFF;
+}
+.btn-infbtn {
+    background: #0E65B2;
+    border-color: #0E65B2;
+    color: #FFFFFF;
+}
+
+.btn-infbtn:hover {
+    background: #0C518E;
+    border-color: #0C518E;
+    color: #FFFFFF;
+}
+.btn-infbtn:active {
+    background: #0A3D6A;
+    border-color: #0A3D6A;
+    color: #FFFFFF;
+}
+.btn-infbtn:focus {
+    color: #FFFFFF;
+}
+/* end custom bootstrap buttons */
+
+

@@ -64,6 +64,7 @@ let findByFRB = (req, res, next) => {
   values = [];
   let frb_name = req.params.frb_name;
   let sql = ["SELECT f.name as frb_name, ",
+  "f.id as frb_id, ",
   "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS') as utc, ",
   "rop.raj as rop_raj, rop.decj as rop_decj, ",
   "rop.gl as rop_gl, rop.gb as rop_gb, ",
@@ -75,6 +76,7 @@ let findByFRB = (req, res, next) => {
   "rop.bits_per_sample as rop_bits_per_sample, ",
   "rop.gain as rop_gain, rop.tsys as rop_tsys, ",
   "rop.ne2001_dm_limit as rop_ne2001_dm_limit, ",
+  "rop.id as rop_id, ",
   "rmp.dm as rmp_dm, rmp.dm_error as rmp_dm_error, ",
   "rmp.snr as rmp_snr, ",
   "rmp.width as rmp_width, ",
@@ -97,7 +99,8 @@ let findByFRB = (req, res, next) => {
   "rmp.z_phot as rmp_z_phot, rmp.z_phot_error as rmp_z_phot_error, ",
   "rmp.z_phot as rmp_z_spec, rmp.z_phot_error as rmp_z_spec_error, ",
   "rmp.id as rmp_id, ",
-  // begin add extra formatting
+  "rop_notes.note as rop_notes_note, rop_notes.author as rop_notes_author, ",
+  "to_char(rop_notes.last_modified, 'YYYY/MM/DD') as rop_notes_last_modified, ",
   "COALESCE(rmp.dm::text || '&plusmn' || rmp.dm_error::text, rmp.dm::text) AS rmp_dm_frmt, ",
   "rmp.snr as rmp_snr_frmt, ",
   "COALESCE(rmp.width::text || '<span className=''supsub''><sup>+' || rmp.width_error_upper::text || '</sup><sub>-'|| rmp.width_error_lower::text || '</sub></span>', rmp.width::text) as rmp_width_frmt, ",
@@ -110,14 +113,65 @@ let findByFRB = (req, res, next) => {
   "COALESCE(rmp.spectral_index::text || '&plusmn' || rmp.spectral_index_error::text, rmp.spectral_index::text) AS rmp_spectral_index_frmt, ",
   "COALESCE(rmp.z_phot::text || '&plusmn' || rmp.z_phot_error::text, rmp.z_phot::text) AS rmp_z_phot_frmt, ",
   "COALESCE(rmp.z_spec::text || '&plusmn' || rmp.z_spec_error::text, rmp.z_spec::text) AS rmp_z_spec_frmt ",
-  // end add extra formatting
   "FROM frbs f JOIN observations o ON (f.id = o.frb_id) ",
   "JOIN radio_observations_params rop ON (o.id = rop.obs_id) ",
   "JOIN radio_measured_params rmp ON (rop.id = rmp.rop_id) ",
   "JOIN authors armp ON (rmp.author_id = armp.id) ",
+  "LEFT OUTER JOIN radio_observations_params_notes rop_notes ON (rop.id = rop_notes.rop_id) ",
   "WHERE (f.name = '" + frb_name + "') ORDER BY f.name,o.utc"].join('\n');
   console.log(sql);
     db.query(sql, values.concat([]))
+    .then(products => {
+      return res.json({"products": products});
+    })
+    .catch(next);
+};
+
+let findropnotes = (req, res, next) => {
+  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
+  page = req.query.page ? parseInt(req.query.page) : 1,
+  search = req.query.search,
+  min = req.query.min,
+  max = req.query.max,
+  values = [];
+  let ropid = req.params.rop_id;
+  //let ropid = 1;
+  let sql = "SELECT * from radio_observations_params_notes rop_notes WHERE (rop_notes.rop_id = '" + ropid + "')";
+      db.query(sql, values.concat([]))
+    .then(products => {
+      return res.json({"products": products});
+    })
+    .catch(next);
+};
+
+let findrmpnotes = (req, res, next) => {
+  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
+  page = req.query.page ? parseInt(req.query.page) : 1,
+  search = req.query.search,
+  min = req.query.min,
+  max = req.query.max,
+  values = [];
+  let rmpid = req.params.rmp_id;
+  //let ropid = 1;
+  let sql = "SELECT * from radio_measured_params_notes rmp_notes WHERE (rmp_notes.rmp_id = '" + rmpid + "')";
+      db.query(sql, values.concat([]))
+    .then(products => {
+      return res.json({"products": products});
+    })
+    .catch(next);
+};
+
+let findfrbnotes = (req, res, next) => {
+  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
+  page = req.query.page ? parseInt(req.query.page) : 1,
+  search = req.query.search,
+  min = req.query.min,
+  max = req.query.max,
+  values = [];
+  let frbid = req.params.frb_id;
+  //let ropid = 1;
+  let sql = "SELECT * from frbs_notes frbs_notes WHERE (frbs_notes.frb_id = '" + frbid + "')";
+      db.query(sql, values.concat([]))
     .then(products => {
       return res.json({"products": products});
     })
@@ -150,4 +204,8 @@ let findImages = (req, res, next) => {
 
 exports.findAll = findAll;
 exports.findByFRB = findByFRB;
+exports.findropnotes = findropnotes;
+exports.findrmpnotes = findrmpnotes;
+exports.findfrbnotes = findfrbnotes;
+
 //exports.findImages = findImages;

@@ -247,6 +247,123 @@ function NaturalSortFunc(a, b, order, sortField) {
   }
 }
 
+class RopNotesComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { rop_notes: [],
+    };
+  }
+  componentDidMount() {
+    this.findROPnotes();
+  }
+  findROPnotes() {
+    productService.findropnotes({search: "", rop_id: this.props.rop_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        rop_notes: data.products,
+      });
+    });
+  }
+  render () {
+          if ( this.state.rop_notes[0] == null ) {
+            return (
+            <div></div>
+            );
+          } else {
+          return (
+     <div>
+        Notes:
+        <ul>
+          {
+            this.state.rop_notes.map(function(item, i){
+            return <li key={i}>{item.note} [{item.author} {item.last_modified}]</li>
+            })
+         }
+        </ul>
+      </div>
+      );
+    }
+  }
+}
+
+class RmpNotesComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { rmp_notes: [],
+    };
+  }
+  componentDidMount() {
+    this.findRMPnotes();
+  }
+  findRMPnotes() {
+    productService.findrmpnotes({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        rmp_notes: data.products,
+      });
+    });
+  }
+  render () {
+          if ( this.state.rmp_notes[0] == null ) {
+            return (
+            <div></div>
+            );
+          } else {
+          return (
+     <div>
+        Notes:
+        <ul>
+          {
+            this.state.rmp_notes.map(function(item, i){
+            return <li key={i}>{item.note} [{item.author} {item.last_modified}]</li>
+            })
+         }
+        </ul>
+      </div>
+      );
+    }
+  }
+}
+
+class FrbNotesComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { frb_notes: [],
+    };
+  }
+  componentDidMount() {
+    this.findFRBnotes();
+  }
+  findFRBnotes() {
+    productService.findfrbnotes({search: "", frb_id: this.props.frb_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        frb_notes: data.products,
+      });
+    });
+  }
+  render () {
+          if ( this.state.frb_notes[0] == null ) {
+            return (
+            <div></div>
+            );
+          } else {
+          return (
+     <div>
+        Notes:
+        <ul>
+          {
+            this.state.frb_notes.map(function(item, i){
+            return <li key={i}>{item.note} [{item.author} {item.last_modified}]</li>
+            })
+         }
+        </ul>
+      </div>
+      );
+    }
+  }
+}
+
 class BSTable extends React.Component {
   constructor(props) {
     super(props);
@@ -254,6 +371,7 @@ class BSTable extends React.Component {
                    hiddenColumns: this.props.hiddencols, 
                    meas: {},
                    product: [],
+                   rop_notes: [],
                    image: [],
                    // initialize input fields
                    input_fields_tWM: 0.286,
@@ -312,15 +430,27 @@ class BSTable extends React.Component {
   }
   customInfoButton(cell, row, enumObject, rowIndex) {
     return (
+    <button type="button"
+            style = {{ 'borderRadius': '50%', 'fontSize': '16px'}}
+            className="btn btn-viscol"
+            onContextMenu={this.openColumnDialog.bind(this, row)}
+            onClick={this.openColumnDialog.bind(this, row)}>
+  <span className="glyphicon glyphicon-info-sign"></span>
+</button>
+    );
+  }
+  /*
       <InsertButton
       btnText=''
       btnContextual='btn-info'
       className='btn btn-info btn-circle'
       btnGlyphicon='glyphicon-info-sign'
+      style = {{ 'borderRadius': '50%', background: '#0E65B2', 'fontSize': '16px','height':'20px','width':'20px' }}
       onContextMenu={this.openColumnDialog.bind(this, row)}
       onClick={this.openColumnDialog.bind(this, row)}/>
     );
   }
+*/
   colFormatter(cell, row) {
     return (
       <Router>
@@ -439,6 +569,7 @@ class BSTable extends React.Component {
       window.open("http://www.google.com", '_blank');
     }
     else {
+      console.log(this.state.rop_notes);
       this.calculateDerived(meas);
       //this.updateDerived();
       this.setState({ showModal: true,
@@ -449,6 +580,7 @@ class BSTable extends React.Component {
   
   componentDidMount() {
     this.findFRB();
+//    this.findROPnotes();
 //    this.findImages();
   }
 
@@ -460,6 +592,15 @@ class BSTable extends React.Component {
       });
     });
   }
+  findROPnotes() {
+    productService.findropnotes({search: "", rop_id: this.props.rop_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        rop_notes: data.products,
+      });
+    });
+  }
+
 /*
   findImages() {
     productService.findImages({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
@@ -470,6 +611,7 @@ class BSTable extends React.Component {
     });
   }
 */  
+  
   render() {
     const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
@@ -496,10 +638,7 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
-        <p>Notes:</p>
-        <ul>
-        <li>Incorrectly published as FRB 011025. [E. Petroff 2015-10-19]</li>
-        </ul>
+        <FrbNotesComponent frb_id={meas.frb_id} />
         </td>
         <td width='50%'>
         <form name='getval'>
@@ -589,10 +728,7 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
-        <p>Notes:</p>
-        <ul>
-        <li>Corrected number of bits per sample from 2 to 1. [ebarr 2016-01-23]</li>
-        </ul>
+        <RopNotesComponent rop_id={meas.rop_id} />
         <div className='rmp'>
         <table className='standard' cellPadding='5p'x width='100%'>
         <tbody>
@@ -676,6 +812,7 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
+        <RmpNotesComponent rmp_id={meas.rmp_id} />
         <table className='standard' cellPadding='5px' width='100%'>
         <tbody>
         <tr><th colSpan='3'>Derived Parameters</th></tr>
@@ -715,7 +852,6 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
-        <div><img src="data:image/png;base64,${meas.ri_image}"/></div>
         <div><img src='https://placehold.it/350x150' /></div>
         </Modal.Body>
         <Modal.Footer>
@@ -1030,7 +1166,7 @@ export default class FRBTable extends React.Component {
       nextPage: 'Next', // Next page button text
       firstPage: 'First', // First page button text
       lastPage: 'Last', // Last page button text
-      expandRowBgColor: 'rgb(207, 216, 220)',
+      expandRowBgColor: '#B6C1C7',
       expandBy: 'row',
       clearSearch: true,
       clearSearchBtn: this.createCustomClearButton,
@@ -1200,7 +1336,7 @@ export default class FRBTable extends React.Component {
       <ClearSearchButton
       btnText='Clear'
       btnContextual='btn-warning'
-      className='my-custom-class'
+      className='btn btn-search'
       onClick={ onClick }/>
     );
   }
@@ -1209,7 +1345,7 @@ export default class FRBTable extends React.Component {
     return (
       <ButtonGroup className='my-custom-class' sizeClass='btn-group-md'>
       <button type='button'
-      className={ `btn btn-primary` }
+      className={ `btn btn-viscol` }
       onClick={this.openColumnDialog}>
       Visible columns
       </button>
