@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Header from './components/Header';
+import Footer from './components/Footer';
 import FRBCatTXT from './components/FRBCatTXT';
 import ProductList from './components/ProductList';
 import * as productService from './services/product-service';
@@ -60,6 +61,7 @@ class App extends React.Component {
                 <Header text="FRB Catalogue"/>
                 <FRBCatTXT/>
                 <ProductList products={this.state.products} total={this.state.total} onSearchKeyChange={this.searchKeyChangeHandler.bind(this)}/>
+                <Footer text="footer"/>
             </div>
         );
     }

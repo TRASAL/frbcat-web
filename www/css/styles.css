@@ -5,9 +5,9 @@ a:hover {
 }
 
 .footer {
-    margin-top: 30px;
-    padding-top: 12px;
-    padding-bottom: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    padding-bottom: 12px;
     border-top: solid 1px #EEE;
     color: #4F6A92;
 }
@@ -98,6 +98,16 @@ input[type="search"]:focus {
     border-radius: 2px;
     padding: 2px 4px;
     margin: 0 2px 2px 0 !important;
+}
+
+.page-footer {
+  background-color: #002E49;
+  border: none;
+  color: #FFFFFF;
+  margin-top: 16px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  padding: 8px;
 }
 
 .slds-page-header {
@@ -237,6 +247,8 @@ tbody.selectcol {
   justify-content: space-between;
   height: 60px;
   background: white;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 .flex-item {
