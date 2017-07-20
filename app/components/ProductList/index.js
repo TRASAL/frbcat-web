@@ -737,22 +737,6 @@ class BSTable extends React.Component {
         </table>
         <FrbNotesComponent frb_id={meas.frb_id} />
         </td>
-        <td width='50%'>
-        <form name='getval'>
-        <table className='standard'>
-        <tbody>
-        <tr><th colSpan='2'>Cosmological Parameters</th></tr>
-        <tr><td>Omega<sub>M</sub></td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>H<sub>o</sub></td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
-                                      onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>Omega<sub>vac</sub></td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
-                                      onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        </tbody>
-        </table>
-        <input type='button' onClick={this.updateDerived.bind(this)} value='Update Derived Params'/>
-        </form>
-        <font size='-2'>Calculation Method: <a href='http://adsabs.harvard.edu/abs/2006PASP..118.1711W'>Wright (2006, PASP, 118, 1711)</a></font>
-        </td>
         </tr>
         </tbody>
         </table>
@@ -876,7 +860,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>F<sub>obs</sub></b></td>
-        <td width='30%'>{supsub_formatter(this.state.derived_fluence, this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
+        <td width='30%'>{supsub_formatter(parseFloat(this.state.derived_fluence).toFixed(2), this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
         <td width='20%'>[Jy ms]</td>
         </tr>
         <tr>
@@ -910,40 +894,65 @@ class BSTable extends React.Component {
         </tbody>
         </table>
         <RmpNotesComponent rmp_id={meas.rmp_id} />
-        <table className='standard' cellPadding='5px' width='100%'>
+        <table width='100%'>
+        <tbody className='selectcol'>
+        <tr><td width='50%'>
+
+        <table className='standard' cellPadding='5px' width='50%'>
         <tbody>
         <tr><th colSpan='3'>Derived Parameters</th></tr>
         <tr>
-        <td width='50%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
-        <td width='30%'>{meas.rop_ne2001_dm_limit}</td>
-        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        <td width='40%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
+        <td width='30%'>{parseFloat(meas.rop_ne2001_dm_limit).toFixed(2)}</td>
+        <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
-        <td width='50%'><b>DM<sub>excess</sub></b></td>
-        <td width='30%'>{this.state.derived_dm_excess}</td>
-        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        <td width='40%'><b>DM<sub>excess</sub></b></td>
+        <td width='30%'>{parseFloat(this.state.derived_dm_excess).toFixed(2)}</td>
+        <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
-        <td width='50%'><b>z<sup>d</sup></b></td>
-        <td colSpan='2'>{this.state.derived_redshift}</td>
+        <td width='40%'><b>z<sup>d</sup></b></td>
+        <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
         </tr>
         <tr>
-        <td width='50%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
-        <td width='30%'>{this.state.derived_dist_comoving}</td>
-        <td width='20%'>[Gpc]</td>
+        <td width='40%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
+        <td width='30%'>{parseFloat(this.state.derived_dist_comoving).toFixed(2)}</td>
+        <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
-        <td width='50%'><b>D<sub>luminosity</sub><sup>d</sup></b></td>
-        <td width='30%'>{this.state.derived_dist_luminosity}</td>
-        <td width='20%'>[Gpc]</td>
+        <td width='40%'><b>D<sub>luminosity</sub><sup>d</sup></b></td>
+        <td width='30%'>{parseFloat(this.state.derived_dist_luminosity).toFixed(2)}</td>
+        <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
-        <td width='50%'><b>Energy<sup>d</sup></b></td>
-        <td width='30%'>{this.state.derived_energy}</td>
-        <td width='20%'>[10<sup>32</sup> J]</td>
+        <td width='40%'><b>Energy<sup>d</sup></b></td>
+        <td width='30%'>{parseFloat(this.state.derived_energy).toFixed(2)}</td>
+        <td width='30%'>[10<sup>32</sup> J]</td>
         </tr>
         </tbody>
         </table>
+        </td>
+        <td width='50%'>
+        <form name='getval'>
+        <table className='standard'>
+        <tbody>
+        <tr><th colSpan='2'>Cosmological Parameters</th></tr>
+        <tr><td>Omega<sub>M</sub></td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        <tr><td>H<sub>o</sub></td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
+        onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        <tr><td>Omega<sub>vac</sub></td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
+        onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        </tbody>
+        </table>
+        <input type='button' onClick={this.updateDerived.bind(this)} value='Update Derived Params'/>
+        </form>
+        <font size='-2'>Calculation Method: <a href='http://adsabs.harvard.edu/abs/2006PASP..118.1711W'>Wright (2006, PASP, 118, 1711)</a></font>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        
         </div>
         </td>
         </tr>
