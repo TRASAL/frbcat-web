@@ -2,9 +2,8 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, ButtonGroup, ExportCSVButton} from 'react-bootstrap-table';
 import * as productService from '../../services/product-service';
-import Lightbox from 'react-images';
 import String from 'natural-compare-lite';
-import he from 'he';
+import Gallery from 'react-grid-gallery';
 import {
   BrowserRouter as Router,
   Route,
@@ -190,6 +189,7 @@ function plusmn_formatter(variable, error) {
   }
 }
 
+
 function NaturalSortFunc(a, b, order, sortField) {
   /*
    * Based on the
@@ -246,6 +246,16 @@ function NaturalSortFunc(a, b, order, sortField) {
     else if (oFxNcL > oFyNcL) { return 1; }
   }
 }
+
+function uint8ToBase64(buffer) {
+     var binary = '';
+     var len = buffer.byteLength;
+     for (var i = 0; i < len; i++) {
+         binary += String.fromCharCode(buffer[i]);
+     }
+     return window.btoa( binary );
+}
+
 
 class RopNotesComponent extends React.Component {
   constructor(props) {
@@ -364,6 +374,94 @@ class FrbNotesComponent extends React.Component {
   }
 }
 
+class RmpImagesComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { rmp_images: [],
+                   dimensions: [],
+                   objrow: [],
+    };
+    this.finddim = this.finddim.bind(this);
+    this.finddims = this.finddims.bind(this);
+  }
+  componentDidMount() {
+    this.findRMPimages();
+  }
+  findRMPimages() {
+    productService.findrmpimages({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
+    .then(data => {
+        var imagesize = this.finddims(data.products);
+      this.setState({
+        rmp_images: data.products,
+       });
+    });
+  }
+  finddims(simage) {
+      var dims = []; 
+      var singledim = {};
+      for (var i = 0; i < Object.keys(simage).length; i++) {
+        var imgsrc = `data:image/jpeg;base64,${simage[i].image}`
+        this.finddim(simage[i]);
+
+        }
+  }
+  finddim(simage) {
+    var imgsrc = `data:image/jpeg;base64,${simage.image}`
+    var newImg = new Image();
+    newImg.onload = function() {
+      var height = newImg.height;
+      var width = newImg.width;
+      var dimensions = this.state.dimensions;
+      var objrow = this.state.objrow;
+      var thumbnailheight = 200;
+      // extend dimensions array for new image
+      dimensions.push({width: newImg.width, height: newImg.height});
+      var obj = {
+        src: `data:image/jpeg;base64,${simage.image}`,
+        thumbnail: `data:image/jpeg;base64,${simage.image}`,
+        thumbnailHeight: thumbnailheight,
+        thumbnailWidth: this.calcwidth({width: newImg.width, height: newImg.height}, thumbnailheight),
+        tags: [{value: `${simage.title}`, title: `${simage.title}`}], 
+        caption: `${simage.caption}`}
+      objrow.push(obj);
+      // update state dimensions
+      this.setState({
+        dimensions: dimensions,
+        objrow: objrow,
+      });
+    }.bind(this)
+    // this must be done AFTER setting onload
+    newImg.src = imgsrc
+  }
+  calcwidth(dimensions, thumbnailheight) {
+    //return 320
+    var ratio = thumbnailheight/dimensions.height;
+    return dimensions.width * ratio
+  }
+  render () {
+    // make sure we have all images loaded before rendering the gallery
+    if ( this.state.objrow[Object.keys(this.state.rmp_images).length - 1] == null ) {
+      return (
+        <div></div>
+      );
+    } else {
+      return (
+        <div className='dataproducts'>
+        <table className='standard' cellPadding='5px' width='100%'>
+        <tbody>
+        <tr><th colSpan='3'>Data Products</th></tr>
+        <tr><th colSpan='3'>
+        <Gallery images={this.state.objrow}
+                 enableImageSelection={false}
+                 rowHeight={200}
+                 margin={5}/>
+                 </th></tr></tbody>
+                 </table>
+        </div>
+      );
+    }
+  }
+}
 class BSTable extends React.Component {
   constructor(props) {
     super(props);
@@ -569,7 +667,6 @@ class BSTable extends React.Component {
       window.open("http://www.google.com", '_blank');
     }
     else {
-      console.log(this.state.rop_notes);
       this.calculateDerived(meas);
       //this.updateDerived();
       this.setState({ showModal: true,
@@ -730,7 +827,7 @@ class BSTable extends React.Component {
         </table>
         <RopNotesComponent rop_id={meas.rop_id} />
         <div className='rmp'>
-        <table className='standard' cellPadding='5p'x width='100%'>
+        <table className='standard' cellPadding='5px' width='100%'>
         <tbody>
         <tr><th colSpan='3'>Measured Parameters</th></tr>
         <tr>
@@ -852,7 +949,7 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
-        <div><img src='https://placehold.it/350x150' /></div>
+        <RmpImagesComponent rmp_id={meas.rmp_id} />
         </Modal.Body>
         <Modal.Footer>
         <Button type="button" onClick={this.closeColumnDialog}>Close</Button>

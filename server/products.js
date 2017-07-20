@@ -178,6 +178,24 @@ let findfrbnotes = (req, res, next) => {
     .catch(next);
 };
 
+let findrmpimages = (req, res, next) => {
+  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
+  page = req.query.page ? parseInt(req.query.page) : 1,
+  search = req.query.search,
+  min = req.query.min,
+  max = req.query.max,
+  values = [];
+  let rmpid = req.params.rmp_id;
+  //let ropid = 1;
+  let sql = ["SELECT encode(ri.image::bytea, 'base64') as image, ri.caption as caption, ri.title as title from radio_images ri ",
+"JOIN radio_images_have_radio_measured_params ri_rmp ON (ri.id=ri_rmp.radio_image_id) ",
+"WHERE (ri_rmp.rmp_id = '" + rmpid + "')"].join('\n');
+      db.query(sql, values.concat([]))
+    .then(products => {
+      return res.json({"products": products});
+    })
+    .catch(next);
+};
 /*
 let findImages = (req, res, next) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
@@ -207,5 +225,5 @@ exports.findByFRB = findByFRB;
 exports.findropnotes = findropnotes;
 exports.findrmpnotes = findrmpnotes;
 exports.findfrbnotes = findfrbnotes;
-
+exports.findrmpimages = findrmpimages;
 //exports.findImages = findImages;

@@ -67,6 +67,17 @@ export let findfrbnotes = (values) => {
         .then(data => data = JSON.parse(data))
 }
 
+export let findrmpimages = (values) => {
+    let qs = "";
+    if (values) {
+        qs = Object.keys(values).map(key => {
+            return encodeURIComponent(key) + '=' + encodeURIComponent(values[key]);
+        }).join('&');
+        qs = "?" + qs;
+    }
+    return request({url: baseURL + "/rmpimages/" + values.rmp_id})
+        .then(data => data = JSON.parse(data))
+}
 
 /*
 export let findImages = (values) => {
