@@ -28,7 +28,7 @@
     "bootstrap": "^3.3.7",
     "react": "^15.2.0",
     "react-bootstrap": "^0.30.8",
-    "react-bootstrap-table": "^3.3.7",
+    "react-bootstrap-table": "^3.4.6",
     "react-dom": "^15.2.0",
     "react-modal": "^1.7.2",
     "react-slider": "^0.6.1",

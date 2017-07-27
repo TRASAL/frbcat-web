@@ -590,13 +590,13 @@ class BSTable extends React.Component {
       }
     }
     // dm_excess, redshift
-    if (!isNaN(parseFloat(meas.rmp_dm)) && !isNaN(parseFloat(meas.rop_ne2001_dm_limit))) {
+    if (!isNaN(parseFloat(meas.rmp_dm)) && !isNaN(parseFloat(meas.rop_mw_dm_limit))) {
       var dm = parseFloat(meas.rmp_dm);
-      var ne2001_dm_limit = parseFloat(meas.rop_ne2001_dm_limit);
+      var mw_dm_limit = parseFloat(meas.rop_mw_dm_limit);
       // calculate dm_excess
-      var dm_excess = dm - ne2001_dm_limit;
-      var dm_excess_error_upper = dm - (0.5 * ne2001_dm_limit);
-      var dm_excess_error_lower = dm - (1.5 * ne2001_dm_limit);
+      var dm_excess = dm - mw_dm_limit;
+      var dm_excess_error_upper = dm - (0.5 * mw_dm_limit);
+      var dm_excess_error_lower = dm - (1.5 * mw_dm_limit);
       // calculate redshift
       var redshift = dm_excess / 1200.0;
       var redshift_error_upper = dm_excess_error_upper / 1200.0;
@@ -872,8 +872,8 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Scattering Time</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_time, meas.rmp_scattering_time_error)}</td>
+        <td width='50%'><b>Scattering</b></td>
+        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>Linear Poln Fraction</b></td>
@@ -884,12 +884,8 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Host Photometric Redshift</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_z_phot, meas.rmp_z_phot_error)}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Host Spectroscopic Redshift</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_z_spec, meas.rmp_z_spec_error)}</td>
+        <td width='40%'><b>z<sup>d</sup></b></td>
+        <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
         </tr>
         </tbody>
         </table>
@@ -897,23 +893,18 @@ class BSTable extends React.Component {
         <table width='100%'>
         <tbody className='selectcol'>
         <tr><td width='50%'>
-
         <table className='standard' cellPadding='5px' width='50%'>
         <tbody>
         <tr><th colSpan='3'>Derived Parameters</th></tr>
         <tr>
         <td width='40%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
-        <td width='30%'>{parseFloat(meas.rop_ne2001_dm_limit).toFixed(2)}</td>
+        <td width='30%'>{parseFloat(meas.rop_mw_dm_limit).toFixed(2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
         <td width='40%'><b>DM<sub>excess</sub></b></td>
         <td width='30%'>{parseFloat(this.state.derived_dm_excess).toFixed(2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>z<sup>d</sup></b></td>
-        <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
         </tr>
         <tr>
         <td width='40%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
@@ -952,7 +943,6 @@ class BSTable extends React.Component {
         </tr>
         </tbody>
         </table>
-        
         </div>
         </td>
         </tr>
@@ -1008,6 +998,24 @@ class BSTable extends React.Component {
       dataSort>
       Beam
       </TableHeaderColumn>
+      <TableHeaderColumn ref='rop_beam_semi_major_axis'
+      dataField='rop_beam_semi_major_axis'
+      hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
+      dataSort>
+      Beam semi-major axis
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rop_beam_semi_minor_axis'
+      dataField='rop_beam_semi_minor_axis'
+      hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
+      dataSort>
+      Beam semi-minor axis
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rop_beam_rotation_angle'
+      dataField='rop_beam_rotation_angle'
+      hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
+      dataSort>
+      Beam rotation angle
+      </TableHeaderColumn>
       <TableHeaderColumn ref='rop_raj'
       dataField='rop_raj'
       hidden={this.state.hiddenColumns.rop_raj}
@@ -1039,12 +1047,6 @@ class BSTable extends React.Component {
       hidden={this.state.hiddenColumns.rop_pointing_error}
       dataSort>
       Pointing error
-      </TableHeaderColumn>
-      <TableHeaderColumn ref='rop_fwhm'
-      dataField='rop_fwhm'
-      hidden={this.state.hiddenColumns.rop_fwhm}
-      dataSort>
-      FWHM
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_sampling_time'
       dataField='rop_sampling_time'
@@ -1094,11 +1096,11 @@ class BSTable extends React.Component {
       dataSort>
       Tsys
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rop_ne2001_dm_limit'
-      dataField='rop_ne2001_dm_limit'
-      hidden={this.state.hiddenColumns.rop_ne2001_dm_limit}
+      <TableHeaderColumn ref='rop_mw_dm_limit'
+      dataField='rop_mw_dm_limit'
+      hidden={this.state.hiddenColumns.rop_mw_dm_limit}
       dataSort>
-      Ne2001_dm_limit
+      Mw_dm_limit
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dm'
       dataField='rmp_dm'
@@ -1144,12 +1146,12 @@ class BSTable extends React.Component {
       dataSort>
       Scattering index
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_scattering_time'
-      dataField='rmp_scattering_time'
+      <TableHeaderColumn ref='rmp_scattering'
+      dataField='rmp_scattering'
       dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_scattering_time}
+      hidden={this.state.hiddenColumns.rmp_scattering}
       dataSort>
-      Scattering time
+      Scattering
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_linear_poln_frac'
       dataField='rmp_linear_poln_frac'
@@ -1172,19 +1174,19 @@ class BSTable extends React.Component {
       dataSort>
       Spectral index
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_z_phot'
-      dataField='rmp_z_phot'
+      <TableHeaderColumn ref='rmp_rm'
+      dataField='rmp_rm'
       dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_z_phot}
+      hidden={this.state.hiddenColumns.rmp_rm}
       dataSort>
-      Z phot
+      RM
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_z_spec'
-      dataField='rmp_z_spec'
+      <TableHeaderColumn ref='rmp_redshift'
+      dataField='rmp_redshift'
       dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_z_spec}
+      hidden={this.state.hiddenColumns.rmp_redshift}
       dataSort>
-      Z spec
+      Redshift
       </TableHeaderColumn>
       </BootstrapTable>
       </div>);
@@ -1223,11 +1225,16 @@ export default class FRBTable extends React.Component {
     super(props);
     this.state = { showModal: false,
       btnTitle: 'Show verified',
-      hiddenColumns: { 
+      verified: true,
+      hiddenColumns: {
+        verified: true,
         obs_type: true,
         rop_receiver: true,
         rop_backend: true,
         rop_beam: true,
+        rop_beam_semi_major_axis: true,
+        rop_beam_semi_minor_axis: true,
+        rop_beam_rotation_angle: true,
         rop_pointing_error: true,
         rop_sampling_time: true,
         rop_npol: true,
@@ -1235,19 +1242,18 @@ export default class FRBTable extends React.Component {
         rop_bits_per_sample: true,
         rop_gain: true,
         rop_tsys: true,
-        rop_ne2001_dm_limit: true,
-        rop_fwhm: true,
+        rop_mw_dm_limit: true,
         rop_bandwidth: true,
         rop_centre_frequency: true,
         rmp_flux: true,
         rmp_dm_index: true,
         rmp_scattering_index: true,
-        rmp_scattering_time: true,
+        rmp_scattering: true,
         rmp_linear_poln_frac: true,
         rmp_circular_poln_frac: true,
         rmp_spectral_index: true,
-        rmp_z_phot: true,
-        rmp_z_spec: true,
+        rmp_rm: true,
+        rmp_redshift: true,
       },
       product : {}
     };
@@ -1301,6 +1307,12 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_backend: !this.state.hiddenColumns.rop_backend }) });
       } else if (cname === 'rop_beam') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam: !this.state.hiddenColumns.rop_beam }) });
+      } else if (cname === 'rop_beam_semi_major_axis') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_semi_major_axis: !this.state.hiddenColumns.rop_beam_semi_major_axis }) });
+      } else if (cname === 'rop_beam_semi_minor_axis') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_semi_minor_axis: !this.state.hiddenColumns.rop_beam_semi_minor_axis }) });
+      } else if (cname === 'rop_beam_rotation_angle') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_rotation_angle: !this.state.hiddenColumns.rop_beam_rotation_angle }) });
       } else if (cname === 'rop_raj') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_raj: !this.state.hiddenColumns.rop_raj }) });
       } else if (cname === 'rop_decj') {
@@ -1319,8 +1331,6 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
       } else if (cname === 'rop_pointing_error') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_pointing_error: !this.state.hiddenColumns.rop_pointing_error }) });
-      } else if (cname === 'rop_fwhm') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_fwhm: !this.state.hiddenColumns.rop_fwhm }) });
       } else if (cname === 'rop_sampling_time') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_sampling_time: !this.state.hiddenColumns.rop_sampling_time }) });
       } else if (cname === 'rop_bandwidth') {
@@ -1337,15 +1347,15 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gain: !this.state.hiddenColumns.rop_gain }) });
       } else if (cname === 'rop_tsys') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_tsys: !this.state.hiddenColumns.rop_tsys }) });
-      } else if (cname === 'rop_ne2001_dm_limit') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_ne2001_dm_limit: !this.state.hiddenColumns.rop_ne2001_dm_limit }) });
+      } else if (cname === 'rop_mw_dm_limit') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_mw_dm_limit: !this.state.hiddenColumns.rop_mw_dm_limit }) });
       } else if (cname === 'rmp_flux') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
       } else if (cname === 'rmp_dm_index') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dm_index: !this.state.hiddenColumns.rmp_dm_index }) });
       } else if (cname === 'rmp_scattering_index') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_index: !this.state.hiddenColumns.rmp_scattering_index }) });
-      } else if (cname === 'rmp_scattering_time') {
+      } else if (cname === 'rmp_scattering') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_time: !this.state.hiddenColumns.rmp_scattering_time }) });
       } else if (cname === 'rmp_linear_poln_frac') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_linear_poln_frac: !this.state.hiddenColumns.rmp_linear_poln_frac }) });
@@ -1353,10 +1363,10 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_circular_poln_frac: !this.state.hiddenColumns.rmp_circular_poln_frac }) });
       } else if (cname === 'rmp_spectral_index') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_spectral_index: !this.state.hiddenColumns.rmp_spectral_index }) });
-      } else if (cname === 'rmp_z_phot') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_z_phot: !this.state.hiddenColumns.rmp_z_phot }) });
-      } else if (cname === 'rmp_z_spec') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_z_spec: !this.state.hiddenColumns.rmp_z_spec }) });
+      } else if (cname === 'rmp_rm') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_rm: !this.state.hiddenColumns.rmp_rm }) });
+      } else if (cname === 'rmp_redshift') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift: !this.state.hiddenColumns.rmp_redshift }) });
       }
     };
   }
@@ -1391,8 +1401,10 @@ export default class FRBTable extends React.Component {
     this.refs.rop_receiver.cleanFiltered();
     this.refs.rop_backend.cleanFiltered();
     this.refs.rop_beam.cleanFiltered();
+    this.refs.rop_beam_semi_major_axis.cleanFiltered();
+    this.refs.rop_beam_semi_minor_axis.cleanFiltered();
+    this.refs.rop_beam_rotation_angle.cleanFiltered();
     this.refs.rop_pointing_error.cleanFiltered();
-    this.refs.rop_fwhm.cleanFiltered();
     this.refs.rop_sampling_time.cleanFiltered();
     this.refs.rop_bandwidth.cleanFiltered();
     this.refs.rop_centre_frequency.cleanFiltered();
@@ -1401,19 +1413,19 @@ export default class FRBTable extends React.Component {
     this.refs.rop_bits_per_sample.cleanFiltered();
     this.refs.rop_gain.cleanFiltered();
     this.refs.rop_tsys.cleanFiltered();
-    this.refs.rop_ne2001_dm_limit.cleanFiltered();
+    this.refs.rop_mw_dm_limit.cleanFiltered();
     this.refs.rmp_dm.cleanFiltered();
     this.refs.rmp_width.cleanFiltered();
     this.refs.rmp_snr.cleanFiltered();
     this.refs.rmp_flux.cleanFiltered();
     this.refs.rmp_dm_index.cleanFiltered();
     this.refs.rmp_scattering_index.cleanFiltered();
-    this.refs.rmp_scattering_time.cleanFiltered();
+    this.refs.rmp_scattering.cleanFiltered();
     this.refs.rmp_linear_poln_frac.cleanFiltered();
     this.refs.rmp_circular_poln_frac.cleanFiltered();
     this.refs.rmp_spectral_index.cleanFiltered();
-    this.refs.rmp_z_phot.cleanFiltered();
-    this.refs.rmp_z_spec.cleanFiltered();
+    this.refs.rmp_rm.cleanFiltered();
+    this.refs.rmp_redshift.cleanFiltered();
   }
   handleClearButtonClick(onClick) {
     this.props.search('');
@@ -1424,16 +1436,16 @@ export default class FRBTable extends React.Component {
         this.setState({verified: false});
         // change button title
         this.setState({btnTitle: 'Show all'});
-        // remove filter  # TODO use verified entry in database
-        this.refs.telescope.cleanFiltered();
-
+        // remove filter
+        //this.refs.verified.cleanFiltered(); // broken
+        this.refs.verified.applyFilter('');
     } else {
         // set state to verified=true
         this.setState({verified: true});
         // change button title
         this.setState({btnTitle: 'Show verified'});
-        // apply filter  # TODO use verified entry in database
-        this.refs.telescope.applyFilter('parkes');
+        // apply filter
+        this.refs.verified.applyFilter('true');
     }
   }
 
@@ -1541,12 +1553,22 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
+        <input type="checkbox" onChange={this.changeColumn('rop_beam_semi_major_axis')} checked={!this.state.hiddenColumns.rop_beam_semi_major_axis} /> Beam semi-major axis<br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_fwhm')} checked={!this.state.hiddenColumns.rop_fwhm} /> FWHM <br />
+        <input type="checkbox" onChange={this.changeColumn('rop_beam_semi_minor_axis')} checked={!this.state.hiddenColumns.rop_beam_semi_minor_axis} /> Beam semi-minor axis<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_beam_rotation_angle')} checked={!this.state.hiddenColumns.rop_beam_rotation_angle} /> Beam rotation angle <br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
         </td>
         </tr>
         <tr>
@@ -1591,7 +1613,7 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_ne2001_dm_limit')} checked={!this.state.hiddenColumns.rop_ne2001_dm_limit} /> Ne2001_dm_limit <br />
+        <input type="checkbox" onChange={this.changeColumn('rop_mw_dm_limit')} checked={!this.state.hiddenColumns.rop_mw_dm_limit} /> Mw_dm_limit <br />
         </td>
         </tr>
         </tbody>
@@ -1633,7 +1655,7 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_time')} checked={!this.state.hiddenColumns.rmp_scattering_time} /> Scattering time <br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_scattering')} checked={!this.state.hiddenColumns.rmp_scattering} /> Scattering <br />
         </td>
         </tr>
         <tr>
@@ -1653,12 +1675,12 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_z_phot')} checked={!this.state.hiddenColumns.rmp_z_phot} /> Z phot <br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_rm')} checked={!this.state.hiddenColumns.rmp_rm} /> RM <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_z_spec')} checked={!this.state.hiddenColumns.rmp_z_spec} /> Z spec <br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_redshift')} checked={!this.state.hiddenColumns.rmp_redshift} /> Redshift <br />
         </td>
         </tr>
         </tbody>
@@ -1693,6 +1715,14 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            FRB
                            </TableHeaderColumn>
+        <TableHeaderColumn ref='verified'
+                           dataField='verified'
+                           hidden={this.state.hiddenColumns.verified}
+                           filter={{type: 'TextFilter', delay: 0, defaultValue: 'true' }}
+                           dataSort
+                           width='100px'>
+                           verified
+                           </TableHeaderColumn>
         <TableHeaderColumn ref='utc'
                            dataField='utc'
                            tdStyle={ { whiteSpace: 'normal' } }
@@ -1705,7 +1735,6 @@ export default class FRBTable extends React.Component {
                            dataField='telescope'
                            hidden={this.state.hiddenColumns.telescope}
                            dataSort
-                           filter={{type: 'TextFilter', delay: 1000}}
                            width='100px'>
                            Telescope
                            </TableHeaderColumn>
@@ -1729,6 +1758,27 @@ export default class FRBTable extends React.Component {
                            dataSort
                            width='100px'>
                            Beam
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_beam_semi_major_axis'
+                           dataField='rop_beam_semi_major_axis'
+                           hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
+                           dataSort
+                           width='100px'>
+                           Beam semi-major axis
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_beam_semi_minor_axis'
+                           dataField='rop_beam_semi_minor_axis'
+                           hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
+                           dataSort
+                           width='100px'>
+                           Beam semi-minor axis
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_beam_rotation_angle'
+                           dataField='rop_beam_rotation_angle'
+                           hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
+                           dataSort
+                           width='100px'>
+                           Beam rotation angle
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rop_raj'
                            dataField='rop_raj'
@@ -1766,13 +1816,6 @@ export default class FRBTable extends React.Component {
                            dataSort
                            width='100px'>
                            Pointing error
-                           </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_fwhm'
-                           dataField='rop_fwhm'
-                           hidden={this.state.hiddenColumns.rop_fwhm}
-                           dataSort
-                           width='100px'>
-                           FWHM
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rop_sampling_time'
                            dataField='rop_sampling_time'
@@ -1830,12 +1873,12 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            Tsys
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_ne2001_dm_limit'
-                           dataField='rop_ne2001_dm_limit'
-                           hidden={this.state.hiddenColumns.rop_ne2001_dm_limit}
+        <TableHeaderColumn ref='rop_mw_dm_limit'
+                           dataField='rop_mw_dm_limit'
+                           hidden={this.state.hiddenColumns.rop_mw_dm_limit}
                            dataSort
                            width='100px'>
-                           Ne2001_dm_limit
+                           Mw_dm_limit
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_dm'
                            dataField='rmp_dm'
@@ -1887,13 +1930,13 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            Scattering index
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_scattering_time'
-                           dataField='rmp_scattering_time'
+        <TableHeaderColumn ref='rmp_scattering'
+                           dataField='rmp_scattering'
                            dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_scattering_time}
+                           hidden={this.state.hiddenColumns.rmp_scattering}
                            dataSort
                            width='100px'>
-                           Scattering time
+                           Scattering
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_linear_poln_frac'
                            dataField='rmp_linear_poln_frac'
@@ -1919,21 +1962,22 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            Spectral index
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_z_phot'
-                           dataField='rmp_z_phot'
+        <TableHeaderColumn ref='rmp_rm'
+                           dataField='rmp_rm'
                            dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_z_phot}
+                           hidden={this.state.hiddenColumns.rmp_rm}
                            dataSort
+                           sortFunc={ NaturalSortFunc }
                            width='100px'>
-                           Z phot
+                           RM
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_z_spec'
-                           dataField='rmp_z_spec'
+        <TableHeaderColumn ref='rmp_redshift'
+                           dataField='rmp_redshift'
                            dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_z_spec}
+                           hidden={this.state.hiddenColumns.rmp_redshift}
                            dataSort
                            width='100px'>
-                           Z spec
+                           Redshift
                            </TableHeaderColumn>
         </BootstrapTable>
         </div>
