@@ -597,18 +597,28 @@ class BSTable extends React.Component {
       var dm_excess = dm - mw_dm_limit;
       var dm_excess_error_upper = dm - (0.5 * mw_dm_limit);
       var dm_excess_error_lower = dm - (1.5 * mw_dm_limit);
-      // calculate redshift
-      var redshift = dm_excess / 1200.0;
-      var redshift_error_upper = dm_excess_error_upper / 1200.0;
-      var redshift_error_lower = dm_excess_error_lower / 1200.0;
-      // update state
-      this.setState({ derived_dm_excess: dm_excess,
-                      derived_dm_excess_error_upper: dm_excess_error_upper,
-                      derived_dm_excess_error_lower: dm_excess_error_lower,
-                      derived_redshift: redshift,
-                      derived_redshift_error_upper: redshift_error_upper,
-                      derived_redshift_error_lower: redshift_error_lower
-                    });
+      if (isNaN(parseFloat(meas.rmp_redshift))) {
+        // calculate redshift
+        var redshift = dm_excess / 1200.0;
+        var redshift_error_upper = dm_excess_error_upper / 1200.0;
+        var redshift_error_lower = dm_excess_error_lower / 1200.0;
+        // update state
+        this.setState({ derived_dm_excess: dm_excess,
+                        derived_dm_excess_error_upper: dm_excess_error_upper,
+                        derived_dm_excess_error_lower: dm_excess_error_lower,
+                        derived_redshift: redshift,
+                        derived_redshift_error_upper: redshift_error_upper,
+                        derived_redshift_error_lower: redshift_error_lower
+                      });
+      }
+      else {
+        var redshift = meas.rmp_redshift;
+        this.setState({ derived_dm_excess: dm_excess,
+          derived_dm_excess_error_upper: dm_excess_error_upper,
+          derived_dm_excess_error_lower: dm_excess_error_lower,
+          derived_redshift: redshift
+        });
+      }
     }
     // input fields
     var tH0 = this.state.input_fields_tH0;
