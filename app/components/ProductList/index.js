@@ -641,20 +641,34 @@ class BSTable extends React.Component {
   calculateDerived(meas) {
     // initial calculation of derived parameters
     // fluence
-    if (meas.rmp_width != meas.rmp_flux) {
-      if (!isNaN(parseFloat(meas.rmp_width)) && !isNaN(parseFloat(meas.rmp_flux))) {
-        var fluence = meas.rmp_width * meas.rmp_flux;
-        this.setState({ derived_fluence: fluence })
-        if (!isNaN(parseFloat(meas.rmp_flux_error_upper)) && !isNaN(parseFloat(meas.rmp_flux_error_lower)) && !isNaN(parseFloat(meas.rmp_width_error_upper)) && !isNaN(parseFloat(meas.rmp_width_error_lower))) {
-          var flux_error_upper = parseFloat(meas.flux_error_upper);
-          var flux_error_lower = parseFloat(meas.flux_error_lower);
-          var width_error_upper = parseFloat(meas.width_error_upper);
-          var width_error_lower = parseFloat(meas.width_error_lower);
-          var fluence_error_upper = ((meas.rmp_flux + flux_error_upper) * (meas.rmp_width + width_error_upper)) - fluence;
-          var fluence_error_lower = ((meas.rmp_flux + flux_error_lower) * (meas.rmp_width + width_error_lower)) - fluence;
-          this.setState({ derived_fluence_error_upper: fluence_error_upper,
-                          derived_fluence_error_lower: fluence_error_lower
-                        });
+    if (!isNaN(parseFloat(meas.rmp_fluence))) {
+      // use fluence value from database
+      var fluence = meas.rmp_fluence;
+      this.setState({ derived_fluence: fluence })
+      if ((isNaN(parseFloat(meas.rmp_fluence_error_upper))) && (isNaN(parseFloat(meas.rmp_fluence_error_lower)))) {
+        // set fluence_error_upper and fluence_error_lower to the value in database if available
+        this.setState({ derived_fluence_error_upper: meas.fluence_error_upper,
+                        derived_fluence_error_lower: meas.fluence_error_lower
+                      });
+      }
+    }
+    else {
+      // calculate fluence if not in database
+      if (meas.rmp_width != meas.rmp_flux) {
+        if (!isNaN(parseFloat(meas.rmp_width)) && !isNaN(parseFloat(meas.rmp_flux))) {
+          var fluence = meas.rmp_width * meas.rmp_flux;
+          this.setState({ derived_fluence: fluence })
+          if (!isNaN(parseFloat(meas.rmp_flux_error_upper)) && !isNaN(parseFloat(meas.rmp_flux_error_lower)) && !isNaN(parseFloat(meas.rmp_width_error_upper)) && !isNaN(parseFloat(meas.rmp_width_error_lower))) {
+            var flux_error_upper = parseFloat(meas.flux_error_upper);
+            var flux_error_lower = parseFloat(meas.flux_error_lower);
+            var width_error_upper = parseFloat(meas.width_error_upper);
+            var width_error_lower = parseFloat(meas.width_error_lower);
+            var fluence_error_upper = ((meas.rmp_flux + flux_error_upper) * (meas.rmp_width + width_error_upper)) - fluence;
+            var fluence_error_lower = ((meas.rmp_flux + flux_error_lower) * (meas.rmp_width + width_error_lower)) - fluence;
+            this.setState({ derived_fluence_error_upper: fluence_error_upper,
+                            derived_fluence_error_lower: fluence_error_lower
+                          });
+          }
         }
       }
     }
