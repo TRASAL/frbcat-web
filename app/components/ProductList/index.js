@@ -773,7 +773,7 @@ class BSTable extends React.Component {
     if (Object.keys(this.state.product).length != 0) {
       return (
         <div>
-        <Modal show={this.state.showModal} onHide={this.closeColumnDialg}>
+        <Modal show={this.state.showModal} onHide={this.closeColumnDialg} dialogClassName="my-modal">
         <Modal.Header closeButton onClick={this.closeColumnDialog}>
         <Modal.Title>Observation overview</Modal.Title>
         </Modal.Header>

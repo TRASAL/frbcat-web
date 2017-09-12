@@ -321,5 +321,9 @@ tbody.selectcol {
     color: #FFFFFF;
 }
 /* end custom bootstrap buttons */
-
+.my-modal {
+    width: 45% !important;
+    max-width: 1080px;
+    min-width: 400px;
+} 
 
