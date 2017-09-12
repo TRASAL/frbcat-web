@@ -79,16 +79,15 @@ export let findrmpimages = (values) => {
         .then(data => data = JSON.parse(data))
 }
 
-/*
-export let findImages = (values) => {
-  let qs = "";
-  if (values) {
-    qs = Object.keys(values).map(key => {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(values[key]);
-    }).join('&');
-    qs = "?" + qs;
-  }
-  return request({url: baseURL + "/images/" + values.rmp_id})
-  .then(data => data = JSON.parse(data))
+export let findrmppubs = (values) => {
+    let qs = "";
+    if (values) {
+        qs = Object.keys(values).map(key => {
+            return encodeURIComponent(key) + '=' + encodeURIComponent(values[key]);
+        }).join('&');
+        qs = "?" + qs;
+    }
+    return request({url: baseURL + "/rmppubs/" + values.rmp_id})
+        .then(data => data = JSON.parse(data))
 }
-*/
+

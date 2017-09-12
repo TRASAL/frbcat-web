@@ -419,6 +419,42 @@ class FrbNotesComponent extends React.Component {
   }
 }
 
+class RmpPubsComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { rmp_pubs: [],
+    };
+  }
+  componentDidMount() {
+    this.findRMPpublications();
+  }
+  findRMPpublications() {
+    productService.findrmppubs({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
+    .then(data => {
+      this.setState({
+        rmp_pubs: data.products,
+      });
+    });
+  }
+  render () {
+          if ( this.state.rmp_pubs[0] == null ) {
+            return (
+            <div></div>
+            );
+          } else {
+          return (
+     <div>
+          {
+            this.state.rmp_pubs.map(function(item, i){
+            return <a href={item.link} key={i}>{item.reference}</a>
+            })
+         }
+      </div>
+      );
+    }
+  }
+}
+
 class RmpImagesComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -748,17 +784,6 @@ class BSTable extends React.Component {
     });
   }
 
-/*
-  findImages() {
-    productService.findImages({search: "", rmp_id: this.props.rmp_id, min: 0, max: 30, page: 1})
-    .then(data => {
-      this.setState({
-        image: data.products,
-      });
-    });
-  }
-*/  
-
   render() {
     const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
@@ -851,7 +876,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>Reference</b></td>
-        <td colSpan='2'><a href='http://adsabs.harvard.edu/abs/2014ApJ...792...19B'>Burke-Spolaor et al</a></td>
+        <td colSpan='2'><RmpPubsComponent rmp_id={meas.rmp_id} /></td>
         </tr>
         <tr>
         <td width='50%'><b>Raw Data</b></td>

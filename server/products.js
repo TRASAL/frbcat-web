@@ -217,29 +217,22 @@ let findrmpimages = (req, res, next) => {
     })
     .catch(next);
 };
-/*
-let findImages = (req, res, next) => {
+
+let findrmppubs = (req, res, next) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 12,
   page = req.query.page ? parseInt(req.query.page) : 1,
   search = req.query.search,
   min = req.query.min,
   max = req.query.max,
-  whereParts = [],
   values = [];
-  let rmp_id = req.params.rmp_id;
-  let sql = ["SELECT ri.caption as ri_caption, ",
-  "ri.image as ri_image ",
-  "FROM radio_measured_params rmp JOIN radio_images_have_radio_measured_params ri_rmp ON (rmp.id = ri_rmp.rmp_id) ",
-  "JOIN radio_images ri ON (ri.id = ri_rmp.radio_image_id) ",
-  "WHERE (rmp.id = '" + rmp_id + "')"].join('\n');
-  console.log(sql);
-    db.query(sql, values.concat([]))
-    .then(images => {
-      return res.json({"images": images});
+  let rmpid = req.params.rmp_id;
+  let sql = "SELECT * from publications JOIN radio_measured_params_have_publications rmp_pubs ON (publications.id=rmp_pubs.pub_id) WHERE (rmp_pubs.rmp_id = '" + rmpid + "')";
+      db.query(sql, values.concat([]))
+    .then(products => {
+      return res.json({"products": products});
     })
     .catch(next);
 };
-*/
 
 exports.findAll = findAll;
 exports.findByFRB = findByFRB;
@@ -247,4 +240,5 @@ exports.findropnotes = findropnotes;
 exports.findrmpnotes = findrmpnotes;
 exports.findfrbnotes = findfrbnotes;
 exports.findrmpimages = findrmpimages;
-//exports.findImages = findImages;
+exports.findrmppubs = findrmppubs;
+
