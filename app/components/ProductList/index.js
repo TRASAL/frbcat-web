@@ -45,6 +45,9 @@ var V_Gpc = 0.0;
 var a = 1.0;  // 1/(1+z), the scale factor of the Universe
 var az = 0.5; // 1/(1+z(object))
 
+var char;
+var index = 0;
+
 // calculate the actual results
 function compute()
 {
@@ -163,12 +166,32 @@ function enumFormatter(cell, row, enumObject) {
   return enumObject[cell];
 }
 
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}
+
+function subsupstr_formatter(variable, substrng, description, superscript) {
+  if ((!isBlank(substrng)) && (!isBlank(description))) {
+    return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span><span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
+  }
+  else if (!isBlank(description)) {
+    return <div>{variable}<span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
+  }
+  else if (!isBlank(substrng)) {
+    return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span></div>;
+  }
+  else {
+    return variable;
+  }
+}
+
+
 function supsub_formatter(variable, upper_error, lower_error) {
   // return variable with upper/lower error if available, else return variable
   if (!isNaN(parseFloat(upper_error)) && !isNaN(parseFloat(lower_error))) {
     //return variable with upper and lower error
     return <div>{variable}<span className='supsub'><sup>{upper_error}</sup><sub>{lower_error}</sub></span></div>;
-  } 
+  }
   else {
     // return variable without error
     return variable;
@@ -188,6 +211,29 @@ function plusmn_formatter(variable, error) {
   }
 }
 
+function nextChar(index) {
+  // convert int to lower case character 0->a, 1->b, etc
+  return String.fromCharCode(97 + index);
+}
+
+function superscript_list(itemlist) {
+  // return superscript list for the items in itemlist
+  // first item gets letter a ,second b, etc
+  return <div>
+    <p></p>
+    {
+      itemlist.map(function(item, i){
+       char = nextChar(i);
+       if (!isBlank(item)) {
+         return <p key={i}>[{char}] {item}</p>
+       }
+       else {
+         return
+       }
+    })
+  }
+  </div>;
+}
 
 function NaturalSortFunc(a, b, order, sortField) {
   /*
@@ -474,6 +520,9 @@ class BSTable extends React.Component {
                    input_fields_tWM: 0.286,
                    input_fields_tH0: 69.6,
                    input_fields_tWV: 0.714,
+                   // superscript letter
+                   superscript_letter: 'a',
+                   next_superscript_letter: 'a',
                    // initialize derived variables
                    derived_fluence: '',
                    derived_fluence_error_upper: '',
@@ -709,7 +758,7 @@ class BSTable extends React.Component {
     });
   }
 */  
-  
+
   render() {
     const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
@@ -816,27 +865,27 @@ class BSTable extends React.Component {
         <tbody>
         <tr><th colSpan='3'>Measured Parameters</th></tr>
         <tr>
-        <td width='50%'><b>RAJ<sup>a</sup></b></td>
+        <td width='50%'><b>RAJ</b></td>
         <td width='30%'>{meas.rop_raj}</td>
         <td width='20%'>[J2000]</td>
         </tr>
         <tr>
-        <td width='50%'><b>DECJ<sup>a</sup></b></td>
+        <td width='50%'><b>DECJ</b></td>
         <td width='30%'>{meas.rop_decj}</td>
         <td width='20%'>[J2000]</td>
         </tr>
         <tr>
-        <td width='50%'><b>gl<sup>a</sup></b></td>
+        <td width='50%'><b>gl</b></td>
         <td width='30%'>{meas.rop_gl}</td>
         <td width='20%'>[deg]</td>
         </tr>
         <tr>
-        <td width='50%'><b>gb<sup>a</sup></b></td>
+        <td width='50%'><b>gb</b></td>
           <td width='30%'>{meas.rop_gb}</td>
         <td width='20%'>[deg]</td>
         </tr>
         <tr>
-        <td width='50%'><b>Positional uncertainty<sup>b</sup></b></td>
+        <td width='50%'><b>Positional uncertainty</b></td>
         <td width='30%'>{meas.rop_pointing_error}</td>
         <td width='20%'>[arcmin]</td>
         </tr>
@@ -850,17 +899,17 @@ class BSTable extends React.Component {
         <td colSpan='2'>{meas.rmp_snr}</td>
         </tr>
         <tr>
-        <td width='50%'><b>W<sub>obs</sub></b></td>
+        <td width='50%'><b>{subsupstr_formatter('W', 'obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(meas.rmp_width, meas.rmp_width_error_upper, meas.rmp_width_error_lower)}</td>
         <td width='20%'>[ms]</td>
         </tr>
         <tr>
-        <td width='50%'><b>S<sub>peak,obs</sub></b></td>
+        <td width='50%'><b>{subsupstr_formatter('S', 'peak,obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(meas.rmp_flux, meas.rmp_flux_error_upper, meas.rmp_flux_error_lower)}</td>
         <td width='20%'>[Jy]</td>
         </tr>
         <tr>
-        <td width='50%'><b>F<sub>obs</sub></b></td>
+        <td width='50%'><b>{subsupstr_formatter('F', 'obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(parseFloat(this.state.derived_fluence).toFixed(2), this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
         <td width='20%'>[Jy ms]</td>
         </tr>
@@ -873,8 +922,13 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Scattering</b></td>
+        <td width='50%'><b>{subsupstr_formatter('Scattering', '', meas.rmp_scattering_model, 'a')}</b></td>
         <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Scattering timescale</b></td>
+        <td width='30%'>{meas.rmp_scattering_timescale}</td>
+        <td width='20%'>[ms]</td>
         </tr>
         <tr>
         <td width='50%'><b>Linear Poln Fraction</b></td>
@@ -885,7 +939,7 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
         </tr>
         <tr>
-        <td width='40%'><b>z<sup>d</sup></b></td>
+        <td width='40%'><b>z</b></td>
         <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
         </tr>
         </tbody>
@@ -898,27 +952,27 @@ class BSTable extends React.Component {
         <tbody>
         <tr><th colSpan='3'>Derived Parameters</th></tr>
         <tr>
-        <td width='40%'><b>DM<sub>galaxy</sub><sup>c</sup></b></td>
+        <td width='40%'><b>{subsupstr_formatter('DM', 'galaxy', meas.rop_galactic_electron_model, 'b')}</b></td>
         <td width='30%'>{parseFloat(meas.rop_mw_dm_limit).toFixed(2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
-        <td width='40%'><b>DM<sub>excess</sub></b></td>
+        <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
         <td width='30%'>{parseFloat(this.state.derived_dm_excess).toFixed(2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
-        <td width='40%'><b>D<sub>comoving</sub><sup>d</sup></b></td>
+        <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
         <td width='30%'>{parseFloat(this.state.derived_dist_comoving).toFixed(2)}</td>
         <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
-        <td width='40%'><b>D<sub>luminosity</sub><sup>d</sup></b></td>
+        <td width='40%'><b>{subsupstr_formatter('D', 'luminosity', '', '')}</b></td>
         <td width='30%'>{parseFloat(this.state.derived_dist_luminosity).toFixed(2)}</td>
         <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
-        <td width='40%'><b>Energy<sup>d</sup></b></td>
+        <td width='40%'><b>Energy</b></td>
         <td width='30%'>{parseFloat(this.state.derived_energy).toFixed(2)}</td>
         <td width='30%'>[10<sup>32</sup> J]</td>
         </tr>
@@ -950,6 +1004,7 @@ class BSTable extends React.Component {
         </tbody>
         </table>
         <RmpImagesComponent rmp_id={meas.rmp_id} />
+        {superscript_list([meas.rmp_scattering_model, meas.rop_galactic_electron_model])}
         </Modal.Body>
         <Modal.Footer>
         <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
