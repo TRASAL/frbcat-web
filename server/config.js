@@ -1,5 +1,5 @@
 module.exports = {
 
-    databaseURL: process.env.DATABASE_URL || "postgres://ronald@localhost/aa-alert"
+    databaseURL: process.env.DATABASE_URL || "postgres://postgres@localhost/frbcat"
 
 };

@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, ButtonGroup, ExportCSVButton} from 'react-bootstrap-table';
 import * as productService from '../../services/product-service';
-import String from 'natural-compare-lite';
 import Gallery from 'react-grid-gallery';
 import {
   BrowserRouter as Router,
@@ -597,7 +596,7 @@ class BSTable extends React.Component {
       var dm_excess = dm - mw_dm_limit;
       var dm_excess_error_upper = dm - (0.5 * mw_dm_limit);
       var dm_excess_error_lower = dm - (1.5 * mw_dm_limit);
-      if (isNaN(parseFloat(meas.rmp_redshift))) {
+      if (isNaN(parseFloat(meas.rmp_redshift_inferred))) {
         // calculate redshift
         var redshift = dm_excess / 1200.0;
         var redshift_error_upper = dm_excess_error_upper / 1200.0;
@@ -612,7 +611,7 @@ class BSTable extends React.Component {
                       });
       }
       else {
-        var redshift = meas.rmp_redshift;
+        var redshift = meas.rmp_redshift_inferred;
         this.setState({ derived_dm_excess: dm_excess,
           derived_dm_excess_error_upper: dm_excess_error_upper,
           derived_dm_excess_error_lower: dm_excess_error_lower,
@@ -1112,6 +1111,12 @@ class BSTable extends React.Component {
       dataSort>
       Mw_dm_limit
       </TableHeaderColumn>
+      <TableHeaderColumn ref='rop_galactic_electron_model'
+      dataField='rop_galactic_electron_model'
+      hidden={this.state.hiddenColumns.rop_galactic_electron_model}
+      dataSort>
+      Galactic electron model
+      </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dm'
       dataField='rmp_dm'
       dataFormat={ priceFormatter }
@@ -1163,6 +1168,20 @@ class BSTable extends React.Component {
       dataSort>
       Scattering
       </TableHeaderColumn>
+      <TableHeaderColumn ref='rmp_scattering_model'
+      dataField='rmp_scattering_model'
+      dataFormat={ nanFormatter }
+      hidden={this.state.hiddenColumns.rmp_scattering_model}
+      dataSort>
+      Scattering model
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rmp_scattering_timescale'
+      dataField='rmp_scattering_timescale'
+      dataFormat={ nanFormatter }
+      hidden={this.state.hiddenColumns.rmp_scattering_timescale}
+      dataSort>
+      Scattering timescale
+      </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_linear_poln_frac'
       dataField='rmp_linear_poln_frac'
       dataFormat={ nanFormatter }
@@ -1191,12 +1210,33 @@ class BSTable extends React.Component {
       dataSort>
       RM
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_redshift'
-      dataField='rmp_redshift'
+      <TableHeaderColumn ref='rmp_redshift_inferred'
+      dataField='rmp_redshift_inferred'
       dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_redshift}
+      hidden={this.state.hiddenColumns.rmp_redshift_inferred}
       dataSort>
-      Redshift
+      Redshift inferred
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rmp_redshift_host'
+      dataField='rmp_redshift_host'
+      dataFormat={ nanFormatter }
+      hidden={this.state.hiddenColumns.rmp_redshift_host}
+      dataSort>
+      Redshift host
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rmp_fluence'
+      dataField='rmp_fluence'
+      dataFormat={ nanFormatter }
+      hidden={this.state.hiddenColumns.rmp_fluence}
+      dataSort>
+      Fluence
+      </TableHeaderColumn>
+      <TableHeaderColumn ref='rmp_dispersion_smearing'
+      dataField='rmp_dispersion_smearing'
+      dataFormat={ nanFormatter }
+      hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
+      dataSort>
+      Redshift inferred
       </TableHeaderColumn>
       </BootstrapTable>
       </div>);
@@ -1253,17 +1293,23 @@ export default class FRBTable extends React.Component {
         rop_gain: true,
         rop_tsys: true,
         rop_mw_dm_limit: true,
+        rop_galactic_electron_model: true,
         rop_bandwidth: true,
         rop_centre_frequency: true,
         rmp_flux: true,
         rmp_dm_index: true,
         rmp_scattering_index: true,
         rmp_scattering: true,
+        rmp_scattering_model: true,
+        rmp_scattering_timescale: true,
         rmp_linear_poln_frac: true,
         rmp_circular_poln_frac: true,
         rmp_spectral_index: true,
         rmp_rm: true,
-        rmp_redshift: true,
+        rmp_redshift_inferred: true,
+        rmp_redshift_host: true,
+        rmp_fluence: true,
+        rmp_dispersion_smearing: true,
       },
       product : {}
     };
@@ -1359,6 +1405,8 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_tsys: !this.state.hiddenColumns.rop_tsys }) });
       } else if (cname === 'rop_mw_dm_limit') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_mw_dm_limit: !this.state.hiddenColumns.rop_mw_dm_limit }) });
+      } else if (cname === 'rop_galactic_electron_model') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_galactic_electron_model: !this.state.hiddenColumns.rop_galactic_electron_model }) });
       } else if (cname === 'rmp_flux') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
       } else if (cname === 'rmp_dm_index') {
@@ -1366,7 +1414,11 @@ export default class FRBTable extends React.Component {
       } else if (cname === 'rmp_scattering_index') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_index: !this.state.hiddenColumns.rmp_scattering_index }) });
       } else if (cname === 'rmp_scattering') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_time: !this.state.hiddenColumns.rmp_scattering_time }) });
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering: !this.state.hiddenColumns.rmp_scattering }) });
+      } else if (cname === 'rmp_scattering') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_model: !this.state.hiddenColumns.rmp_scattering_model }) });
+      } else if (cname === 'rmp_scattering_model') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_timescale: !this.state.hiddenColumns.rmp_scattering_timescale }) });
       } else if (cname === 'rmp_linear_poln_frac') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_linear_poln_frac: !this.state.hiddenColumns.rmp_linear_poln_frac }) });
       } else if (cname === 'rmp_circular_poln_frac') {
@@ -1375,8 +1427,14 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_spectral_index: !this.state.hiddenColumns.rmp_spectral_index }) });
       } else if (cname === 'rmp_rm') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_rm: !this.state.hiddenColumns.rmp_rm }) });
-      } else if (cname === 'rmp_redshift') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift: !this.state.hiddenColumns.rmp_redshift }) });
+      } else if (cname === 'rmp_redshift_inferred') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift_inferred: !this.state.hiddenColumns.rmp_redshift_inferred }) });
+      } else if (cname === 'rmp_redshift_host') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift_host: !this.state.hiddenColumns.rmp_redshift_host }) });
+      } else if (cname === 'rmp_fluence') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_fluence: !this.state.hiddenColumns.rmp_fluence }) });
+      } else if (cname === 'rmp_dispersion_smearing') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dispersion_smearing: !this.state.hiddenColumns.rmp_dispersion_smearing }) });
       }
     };
   }
@@ -1424,6 +1482,7 @@ export default class FRBTable extends React.Component {
     this.refs.rop_gain.cleanFiltered();
     this.refs.rop_tsys.cleanFiltered();
     this.refs.rop_mw_dm_limit.cleanFiltered();
+    this.refs.rop_galactic_electron_model.cleanFiltered();
     this.refs.rmp_dm.cleanFiltered();
     this.refs.rmp_width.cleanFiltered();
     this.refs.rmp_snr.cleanFiltered();
@@ -1431,11 +1490,16 @@ export default class FRBTable extends React.Component {
     this.refs.rmp_dm_index.cleanFiltered();
     this.refs.rmp_scattering_index.cleanFiltered();
     this.refs.rmp_scattering.cleanFiltered();
+    this.refs.rmp_scattering_model.cleanFiltered();
+    this.refs.rmp_scattering_timescale.cleanFiltered();
     this.refs.rmp_linear_poln_frac.cleanFiltered();
     this.refs.rmp_circular_poln_frac.cleanFiltered();
     this.refs.rmp_spectral_index.cleanFiltered();
     this.refs.rmp_rm.cleanFiltered();
-    this.refs.rmp_redshift.cleanFiltered();
+    this.refs.rmp_redshift_inferred.cleanFiltered();
+    this.refs.rmp_redshift_host.cleanFiltered();
+    this.refs.rmp_fluence.cleanFiltered();
+    this.refs.rmp_dispersion_smearing.cleanFiltered();
   }
   handleClearButtonClick(onClick) {
     this.props.search('');
@@ -1626,6 +1690,11 @@ export default class FRBTable extends React.Component {
         <input type="checkbox" onChange={this.changeColumn('rop_mw_dm_limit')} checked={!this.state.hiddenColumns.rop_mw_dm_limit} /> Mw_dm_limit <br />
         </td>
         </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rop_galactic_electron_model')} checked={!this.state.hiddenColumns.rop_galactic_electron_model} /> Galactic electron model <br />
+        </td>
+        </tr>
         </tbody>
         </table>
         </td>
@@ -1670,6 +1739,16 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_model')} checked={!this.state.hiddenColumns.rmp_scattering_model} /> Scattering model<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_timescale')} checked={!this.state.hiddenColumns.rmp_scattering_timescale} /> Scattering timescale<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
         <input type="checkbox" onChange={this.changeColumn('rmp_linear_poln_frac')} checked={!this.state.hiddenColumns.rmp_linear_poln_frac} /> Linear poln frac <br />
         </td>
         </tr>
@@ -1690,7 +1769,22 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_redshift')} checked={!this.state.hiddenColumns.rmp_redshift} /> Redshift <br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_inferred')} checked={!this.state.hiddenColumns.rmp_redshift_inferred} /> Redshift inferred<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_host')} checked={!this.state.hiddenColumns.rmp_redshift_host} /> Redshift host<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_fluence')} checked={!this.state.hiddenColumns.rmp_fluence} /> Fluence<br />
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="checkbox" onChange={this.changeColumn('rmp_dispersion_smearing')} checked={!this.state.hiddenColumns.rmp_dispersion_smearing} /> Dispersion smearing<br />
         </td>
         </tr>
         </tbody>
@@ -1890,6 +1984,13 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            Mw_dm_limit
                            </TableHeaderColumn>
+        <TableHeaderColumn ref='rop_galactic_electron_model'
+                           dataField='rop_galactic_electron_model'
+                           hidden={this.state.hiddenColumns.rop_galactic_electron_model}
+                           dataSort
+                           width='100px'>
+                           Galactic electron model
+                           </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_dm'
                            dataField='rmp_dm'
                            dataFormat={ priceFormatter }
@@ -1948,6 +2049,22 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            Scattering
                            </TableHeaderColumn>
+        <TableHeaderColumn ref='rmp_scattering_model'
+                           dataField='rmp_scattering_model'
+                           dataFormat={ nanFormatter }
+                           hidden={this.state.hiddenColumns.rmp_scattering_model}
+                           dataSort
+                           width='100px'>
+                           Scattering model
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rmp_scattering_timescale'
+                           dataField='rmp_scattering_timescale'
+                           dataFormat={ nanFormatter }
+                           hidden={this.state.hiddenColumns.rmp_scattering_timescale}
+                           dataSort
+                           width='100px'>
+                           Scattering timescale
+                           </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_linear_poln_frac'
                            dataField='rmp_linear_poln_frac'
                            dataFormat={ nanFormatter }
@@ -1981,13 +2098,37 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            RM
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_redshift'
-                           dataField='rmp_redshift'
+        <TableHeaderColumn ref='rmp_redshift_inferred'
+                           dataField='rmp_redshift_inferred'
                            dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_redshift}
+                           hidden={this.state.hiddenColumns.rmp_redshift_inferred}
                            dataSort
                            width='100px'>
-                           Redshift
+                           Redshift inferred
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rmp_redshift_host'
+                           dataField='rmp_redshift_host'
+                           dataFormat={ nanFormatter }
+                           hidden={this.state.hiddenColumns.rmp_redshift_host}
+                           dataSort
+                           width='100px'>
+                           Redshift host
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rmp_fluence'
+                           dataField='rmp_fluence'
+                           dataFormat={ nanFormatter }
+                           hidden={this.state.hiddenColumns.rmp_fluence}
+                           dataSort
+                           width='100px'>
+                           Fluence
+                           </TableHeaderColumn>
+        <TableHeaderColumn ref='rmp_dispersion_smearing'
+                           dataField='rmp_dispersion_smearing'
+                           dataFormat={ nanFormatter }
+                           hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
+                           dataSort
+                           width='100px'>
+                           Dispersion smearing
                            </TableHeaderColumn>
         </BootstrapTable>
         </div>
