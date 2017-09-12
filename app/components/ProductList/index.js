@@ -3,11 +3,6 @@ import { Button, Modal } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, ButtonGroup, ExportCSVButton} from 'react-bootstrap-table';
 import * as productService from '../../services/product-service';
 import Gallery from 'react-grid-gallery';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
 
 let libraries = {};
 let order= 'desc';
@@ -619,14 +614,6 @@ class BSTable extends React.Component {
             onClick={this.openColumnDialog.bind(this, row)}>
   <span className="glyphicon glyphicon-info-sign"></span>
 </button>
-    );
-  }
-  colFormatter(cell, row) {
-    return (
-      <Router>
-        <Link to='/some/route'>
-        </Link>
-      </Router>
     );
   }
   onClickProductSelected(cell, row, rowIndex){
