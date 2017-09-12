@@ -671,17 +671,9 @@ class BSTable extends React.Component {
   }
   
   openColumnDialog(meas, e) {
-    if (e.button == 2) {
-      alert("Right click");
-      window.open("http://www.google.com", '_blank');
-    }
-    else {
       this.calculateDerived(meas);
-      //this.updateDerived();
       this.setState({ showModal: true,
                       meas });
-    }
-    //window.open('auth/google', '_blank');
   }
   
   componentDidMount() {
