@@ -621,18 +621,6 @@ class BSTable extends React.Component {
 </button>
     );
   }
-  /*
-      <InsertButton
-      btnText=''
-      btnContextual='btn-info'
-      className='btn btn-info btn-circle'
-      btnGlyphicon='glyphicon-info-sign'
-      style = {{ 'borderRadius': '50%', background: '#0E65B2', 'fontSize': '16px','height':'20px','width':'20px' }}
-      onContextMenu={this.openColumnDialog.bind(this, row)}
-      onClick={this.openColumnDialog.bind(this, row)}/>
-    );
-  }
-*/
   colFormatter(cell, row) {
     return (
       <Router>
@@ -641,9 +629,6 @@ class BSTable extends React.Component {
       </Router>
     );
   }
-//<Button bsStyle="primary" bsSize="large" className={`${s.btnCircle}`}>
-//<i className="fa fa-twitter" />
-//</Button> 
   onClickProductSelected(cell, row, rowIndex){
   }
   closeColumnDialog() {
@@ -763,8 +748,6 @@ class BSTable extends React.Component {
   
   componentDidMount() {
     this.findFRB();
-//    this.findROPnotes();
-//    this.findImages();
   }
 
   findFRB() {
@@ -877,10 +860,6 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Reference</b></td>
         <td colSpan='2'><RmpPubsComponent rmp_id={meas.rmp_id} /></td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Raw Data</b></td>
-        <td colSpan='2'><a href='http://supercomputing.swin.edu.au/data-sharing-cluster/parkes-frbs-archival-data/'>Link to Data Portal</a></td>
         </tr>
         </tbody>
         </table>
