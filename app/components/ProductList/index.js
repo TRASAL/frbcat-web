@@ -856,7 +856,8 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>System Temperature</b></td>
-        <td colSpan='2'>{meas.rop_tsys}</td>
+        <td width='30%'>{meas.rop_tsys}</td>
+        <td width='20%'>[K]</td>
         </tr>
         <tr>
         <td width='50%'><b>Reference</b></td>
@@ -923,12 +924,18 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_dm_index, meas.rmp_dm_index_error)}</td>
         </tr>
         <tr>
+        <td width='50%'><b>Dispersion smearing</b></td>
+        <td width='30%'>{meas.rmp_dispersion_smearing}</td>
+        <td width='20%'>[ms]</td>
+        </tr>
+        <tr>
         <td width='50%'><b>Scattering Index</b></td>
         <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
         </tr>
         <tr>
         <td width='50%'><b>{subsupstr_formatter('Scattering', '', meas.rmp_scattering_model, 'a')}</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
+        <td width='30%'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
+        <td width='20%'>[ms]</td>
         </tr>
         <tr>
         <td width='50%'><b>Scattering timescale</b></td>
@@ -989,10 +996,10 @@ class BSTable extends React.Component {
         <table className='standard'>
         <tbody>
         <tr><th colSpan='2'>Cosmological Parameters</th></tr>
-        <tr><td>Omega<sub>M</sub></td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>H<sub>o</sub></td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
+        <tr><td>{subsupstr_formatter('Omega','M', '', '')}</td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
+        <tr><td>{subsupstr_formatter('H', 'o', '', '')}</td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
         onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>Omega<sub>vac</sub></td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
+        <tr><td>{subsupstr_formatter('Omega', 'vac', '', '')}</td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
         onChange={this.updateField.bind(this)} size='4'></input></td></tr>
         </tbody>
         </table>
