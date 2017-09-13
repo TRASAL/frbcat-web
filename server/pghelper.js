@@ -9,10 +9,11 @@ exports.query = function (sql, values, singleItem, dontLog) {
     if (!dontLog) {
         console.log(sql, values);
     }
-
     return new Promise((resolve, reject) => {
-
-        pg.connect(databaseURL, function (err, conn, done) {
+        const pool = new pg.Pool({
+          connectionString: databaseURL,
+        })
+        pool.connect(function (err, conn, done) {
             if (err) return reject(err);
             try {
                 conn.query(sql, values, function (err, result) {
@@ -29,7 +30,8 @@ exports.query = function (sql, values, singleItem, dontLog) {
                 reject(e);
             }
         });
-
+      // pool shutdown
+      pool.end()
     });
 
 };
