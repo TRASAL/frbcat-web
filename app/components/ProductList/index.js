@@ -846,12 +846,12 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Beam semi-major axis</b></td>
         <td width='30%'>{meas.rop_beam_semi_major_axis}</td>
-        <td width='20%'>[MM]</td>
+        <td width='20%'>[arcmin]</td>
         </tr>
         <tr>
         <td width='50%'><b>Beam semi-minor axis</b></td>
         <td width='30%'>{meas.rop_beam_semi_minor_axis}</td>
-        <td width='20%'>[MM]</td>
+        <td width='20%'>[arcmin]</td>
         </tr>
         <tr>
         <td width='50%'><b>Beam rotation angle</b></td>
