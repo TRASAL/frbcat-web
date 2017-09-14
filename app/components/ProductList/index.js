@@ -175,6 +175,18 @@ function linkFormatter(link) {
   }
 }
 
+function floatFormatter(number, decimals) {
+  // safeguard use of parseFloat to not return NaN
+  // return floating point number with decimals as provided in input
+  const flt = parseFloat(number).toFixed(decimals)
+  if (!isNaN(flt)) {
+    return flt;
+  }
+  else {
+    return <p></p>;
+  }
+}
+
 function subsupstr_formatter(variable, substrng, description, superscript) {
   if ((!isBlank(substrng)) && (!isBlank(description))) {
     return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span><span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
@@ -940,7 +952,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='50%'><b>{subsupstr_formatter('F', 'obs', '', '')}</b></td>
-        <td width='30%'>{supsub_formatter(parseFloat(this.state.derived_fluence).toFixed(2), this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
+        <td width='30%'>{supsub_formatter(floatFormatter(this.state.derived_fluence, 2), this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
         <td width='20%'>[Jy ms]</td>
         </tr>
         <tr>
@@ -976,11 +988,11 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
-        <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
+        <td colSpan='2'>{floatFormatter(this.state.derived_redshift, 2)}</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
-        <td colSpan='2'>{parseFloat(meas.rmp_redshift_host).toFixed(2)}</td>
+        <td colSpan='2'>{floatFormatter(meas.rmp_redshift_host, 2)}</td>
         </tr>
         </tbody>
         </table>
@@ -993,27 +1005,27 @@ class BSTable extends React.Component {
         <tr><th colSpan='3'>Derived Parameters</th></tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('DM', 'galaxy', meas.rop_galactic_electron_model, 'b')}</b></td>
-        <td width='30%'>{parseFloat(meas.rop_mw_dm_limit).toFixed(2)}</td>
+        <td width='30%'>{floatFormatter(meas.rop_mw_dm_limit, 2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
-        <td width='30%'>{parseFloat(this.state.derived_dm_excess).toFixed(2)}</td>
+        <td width='30%'>{floatFormatter(this.state.derived_dm_excess, 2)}</td>
         <td width='30%'>[cm<sup>-3</sup> pc]</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
-        <td width='30%'>{parseFloat(this.state.derived_dist_comoving).toFixed(2)}</td>
+        <td width='30%'>{floatFormatter(this.state.derived_dist_comoving, 2)}</td>
         <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('D', 'luminosity', '', '')}</b></td>
-        <td width='30%'>{parseFloat(this.state.derived_dist_luminosity).toFixed(2)}</td>
+        <td width='30%'>{floatFormatter(this.state.derived_dist_luminosity, 2)}</td>
         <td width='30%'>[Gpc]</td>
         </tr>
         <tr>
         <td width='40%'><b>Energy</b></td>
-        <td width='30%'>{parseFloat(this.state.derived_energy).toFixed(2)}</td>
+        <td width='30%'>{floatFormatter(this.state.derived_energy, 2)}</td>
         <td width='30%'>[10<sup>32</sup> J]</td>
         </tr>
         </tbody>
