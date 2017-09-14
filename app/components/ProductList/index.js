@@ -1182,7 +1182,7 @@ class BSTable extends React.Component {
       dataField='rop_mw_dm_limit'
       hidden={this.state.hiddenColumns.rop_mw_dm_limit}
       dataSort>
-      Mw_dm_limit
+      DM<sub>galaxy</sub>
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_galactic_electron_model'
       dataField='rop_galactic_electron_model'
@@ -1760,7 +1760,7 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_mw_dm_limit')} checked={!this.state.hiddenColumns.rop_mw_dm_limit} /> Mw_dm_limit <br />
+        <input type="checkbox" onChange={this.changeColumn('rop_mw_dm_limit')} checked={!this.state.hiddenColumns.rop_mw_dm_limit} /> DM<sub>galaxy</sub> <br />
         </td>
         </tr>
         <tr>
@@ -2055,7 +2055,7 @@ export default class FRBTable extends React.Component {
                            hidden={this.state.hiddenColumns.rop_mw_dm_limit}
                            dataSort
                            width='100px'>
-                           Mw_dm_limit
+                           DM<sub>galaxy</sub>
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rop_galactic_electron_model'
                            dataField='rop_galactic_electron_model'
