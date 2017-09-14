@@ -187,6 +187,16 @@ function floatFormatter(number, decimals) {
   }
 }
 
+function unitsFormatter(value, unitstr) {
+  // return [unitstr] if value is defined, else return <p></p>
+  if (!isNaN(parseFloat(value))) {
+    return <div>{unitstr}</div>;
+  }
+  else {
+    return ;
+  }
+}
+  
 function subsupstr_formatter(variable, substrng, description, superscript) {
   if ((!isBlank(substrng)) && (!isBlank(description))) {
     return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span><span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
@@ -826,32 +836,32 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Beam semi-major axis</b></td>
         <td width='30%'>{meas.rop_beam_semi_major_axis}</td>
-        <td width='20%'>[arcmin]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_beam_semi_major_axis, '[arcmin]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Beam semi-minor axis</b></td>
         <td width='30%'>{meas.rop_beam_semi_minor_axis}</td>
-        <td width='20%'>[arcmin]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_beam_semi_minor_axis, '[arcmin]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Beam rotation angle</b></td>
         <td width='30%'>{meas.rop_beam_rotation_angle}</td>
-        <td width='20%'>[Deg]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_beam_rotation_angle, '[deg]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Sampling Time</b></td>
         <td width='30%'>{meas.rop_sampling_time}</td>
-        <td width='20%'>[ms]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_sampling_time, '[ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Bandwidth</b></td>
         <td width='30%'>{meas.rop_bandwidth}</td>
-        <td width='20%'>[MHz]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_bandwidth, '[MHz]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Centre Frequency</b></td>
         <td width='30%'>{meas.rop_centre_frequency}</td>
-        <td width='20%'>[MHz]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_centre_frequency, '[MHz]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Number of Polarisations</b></td>
@@ -860,7 +870,7 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Channel Bandwidth</b></td>
         <td width='30%'>{meas.rop_channel_bandwidth}</td>
-        <td width='20%'>[MHz]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Bits per sample</b></td>
@@ -869,12 +879,12 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Gain</b></td>
         <td width='30%'>{meas.rop_gain}</td>
-        <td width='20%'>[K/Jy]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_gain, '[K/Jy]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>System Temperature</b></td>
         <td width='30%'>{meas.rop_tsys}</td>
-        <td width='20%'>[K]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_tsys, '[K]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Reference</b></td>
@@ -894,27 +904,27 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>RAJ</b></td>
         <td width='30%'>{meas.rop_raj}</td>
-        <td width='20%'>[J2000]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_raj, '[J2000]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>DECJ</b></td>
         <td width='30%'>{meas.rop_decj}</td>
-        <td width='20%'>[J2000]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_decj, '[J2000]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>gl</b></td>
         <td width='30%'>{meas.rop_gl}</td>
-        <td width='20%'>[deg]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_gl, '[deg]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>gb</b></td>
           <td width='30%'>{meas.rop_gb}</td>
-        <td width='20%'>[deg]</td>
+        <td width='20%'>{unitsFormatter(meas.rop_gb, '[deg]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>DM</b></td>
         <td width='30%'>{plusmn_formatter(meas.rmp_dm, meas.rmp_dm_error)}</td>
-        <td width='20%'>[cm<sup>-3</sup> pc]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_dm, <div>[cm<sup>-3</sup> pc]</div>)}</td>
         </tr>
         <tr>
         <td width='50%'><b>S/N</b></td>
@@ -923,17 +933,17 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>{subsupstr_formatter('W', 'obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(meas.rmp_width, meas.rmp_width_error_upper, meas.rmp_width_error_lower)}</td>
-        <td width='20%'>[ms]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_width, '[ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>{subsupstr_formatter('S', 'peak,obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(meas.rmp_flux, meas.rmp_flux_error_upper, meas.rmp_flux_error_lower)}</td>
-        <td width='20%'>[Jy]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_flux, '[Jy]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>{subsupstr_formatter('F', 'obs', '', '')}</b></td>
         <td width='30%'>{supsub_formatter(floatFormatter(this.state.derived_fluence, 2), this.state.derived_fluence_error_upper, this.state.derived_fluence_error_lower)}</td>
-        <td width='20%'>[Jy ms]</td>
+        <td width='20%'>{unitsFormatter(this.state.derived_fluence, '[Jy ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>DM Index</b></td>
@@ -942,7 +952,7 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Dispersion smearing</b></td>
         <td width='30%'>{meas.rmp_dispersion_smearing}</td>
-        <td width='20%'>[ms]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_dispersion_smearing, '[ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Scattering Index</b></td>
@@ -951,12 +961,12 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>{subsupstr_formatter('Scattering', '', meas.rmp_scattering_model, 'a')}</b></td>
         <td width='30%'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
-        <td width='20%'>[ms]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_scattering, '[ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Scattering timescale</b></td>
         <td width='30%'>{meas.rmp_scattering_timescale}</td>
-        <td width='20%'>[ms]</td>
+        <td width='20%'>{unitsFormatter(meas.rmp_scattering_timescale, '[ms]')}</td>
         </tr>
         <tr>
         <td width='50%'><b>Linear Poln Fraction</b></td>
@@ -986,27 +996,27 @@ class BSTable extends React.Component {
         <tr>
         <td width='40%'><b>{subsupstr_formatter('DM', 'galaxy', meas.rop_galactic_electron_model, 'b')}</b></td>
         <td width='30%'>{floatFormatter(meas.rop_mw_dm_limit, 2)}</td>
-        <td width='30%'>[cm<sup>-3</sup> pc]</td>
+        <td width='30%'>{unitsFormatter(meas.rop_mw_dm_limit, <div>[cm<sup>-3</sup> pc]</div>)}</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_dm_excess, 2)}</td>
-        <td width='30%'>[cm<sup>-3</sup> pc]</td>
+        <td width='30%'>{unitsFormatter(this.state.derived_dm_excess, <div>[cm<sup>-3</sup> pc]</div>)}</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_dist_comoving, 2)}</td>
-        <td width='30%'>[Gpc]</td>
+        <td width='30%'>{unitsFormatter(this.state.derived_dist_comoving, '[Gpc]')}</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('D', 'luminosity', '', '')}</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_dist_luminosity, 2)}</td>
-        <td width='30%'>[Gpc]</td>
+        <td width='30%'>{unitsFormatter(this.state.derived_dist_luminosity, '[Gpc]')}</td>
         </tr>
         <tr>
         <td width='40%'><b>Energy</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_energy, 2)}</td>
-        <td width='30%'>[10<sup>32</sup> J]</td>
+        <td width='30%'>{unitsFormatter(this.state.derived_energy, <div>[10<sup>32</sup> J]</div>)}</td>
         </tr>
         </tbody>
         </table>
