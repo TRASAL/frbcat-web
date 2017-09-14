@@ -905,11 +905,6 @@ class BSTable extends React.Component {
         <td width='20%'>[deg]</td>
         </tr>
         <tr>
-        <td width='50%'><b>Positional uncertainty</b></td>
-        <td width='30%'>{meas.rop_pointing_error}</td>
-        <td width='20%'>[arcmin]</td>
-        </tr>
-        <tr>
         <td width='50%'><b>DM</b></td>
         <td width='30%'>{plusmn_formatter(meas.rmp_dm, meas.rmp_dm_error)}</td>
         <td width='20%'>[cm<sup>-3</sup> pc]</td>
@@ -1123,12 +1118,6 @@ class BSTable extends React.Component {
       hidden={this.state.hiddenColumns.rop_gb}
       dataSort>
       GB
-      </TableHeaderColumn>
-      <TableHeaderColumn ref='rop_pointing_error'
-      dataField='rop_pointing_error'
-      hidden={this.state.hiddenColumns.rop_pointing_error}
-      dataSort>
-      Pointing error
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_sampling_time'
       dataField='rop_sampling_time'
@@ -1358,7 +1347,6 @@ export default class FRBTable extends React.Component {
         rop_beam_semi_major_axis: true,
         rop_beam_semi_minor_axis: true,
         rop_beam_rotation_angle: true,
-        rop_pointing_error: true,
         rop_sampling_time: true,
         rop_npol: true,
         rop_channel_bandwidth: true,
@@ -1458,8 +1446,6 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_snr: !this.state.hiddenColumns.rmp_snr }) });
       } else if (cname === 'rmp_flux') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
-      } else if (cname === 'rop_pointing_error') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_pointing_error: !this.state.hiddenColumns.rop_pointing_error }) });
       } else if (cname === 'rop_sampling_time') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_sampling_time: !this.state.hiddenColumns.rop_sampling_time }) });
       } else if (cname === 'rop_bandwidth') {
@@ -1545,7 +1531,6 @@ export default class FRBTable extends React.Component {
     this.refs.rop_beam_semi_major_axis.cleanFiltered();
     this.refs.rop_beam_semi_minor_axis.cleanFiltered();
     this.refs.rop_beam_rotation_angle.cleanFiltered();
-    this.refs.rop_pointing_error.cleanFiltered();
     this.refs.rop_sampling_time.cleanFiltered();
     this.refs.rop_bandwidth.cleanFiltered();
     this.refs.rop_centre_frequency.cleanFiltered();
@@ -1711,11 +1696,6 @@ export default class FRBTable extends React.Component {
         <tr>
         <td>
         <input type="checkbox" onChange={this.changeColumn('rop_beam_rotation_angle')} checked={!this.state.hiddenColumns.rop_beam_rotation_angle} /> Beam rotation angle <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_pointing_error')} checked={!this.state.hiddenColumns.rop_pointing_error} /> Pointing error <br />
         </td>
         </tr>
         <tr>
@@ -1986,13 +1966,6 @@ export default class FRBTable extends React.Component {
                            dataSort
                            width='100px'>
                            GB
-                           </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_pointing_error'
-                           dataField='rop_pointing_error'
-                           hidden={this.state.hiddenColumns.rop_pointing_error}
-                           dataSort
-                           width='100px'>
-                           Pointing error
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rop_sampling_time'
                            dataField='rop_sampling_time'
