@@ -832,6 +832,21 @@ class BSTable extends React.Component {
         <td colSpan='2'>{meas.rop_beam}</td>
         </tr>
         <tr>
+        <td width='50%'><b>Beam semi-major axis</b></td>
+        <td width='30%'>{meas.rop_beam_semi_major_axis}</td>
+        <td width='20%'>[MM]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Beam semi-minor axis</b></td>
+        <td width='30%'>{meas.rop_beam_semi_minor_axis}</td>
+        <td width='20%'>[MM]</td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Beam rotation angle</b></td>
+        <td width='30%'>{meas.rop_beam_rotation_angle}</td>
+        <td width='20%'>[Deg]</td>
+        </tr>
+        <tr>
         <td width='50%'><b>Sampling Time</b></td>
         <td width='30%'>{meas.rop_sampling_time}</td>
         <td width='20%'>[ms]</td>
