@@ -162,7 +162,17 @@ function enumFormatter(cell, row, enumObject) {
 }
 
 function isBlank(str) {
-    return (!str || /^\s*$/.test(str));
+  return (!str || /^\s*$/.test(str));
+}
+
+function linkFormatter(link) {
+  // return a <a href=> link if link is not null, else return <p></p>
+  if (!isBlank(link)) {
+    return <a href={link}>Data link</a>;
+  }
+  else {
+    return <p></p>;
+  }
 }
 
 function subsupstr_formatter(variable, substrng, description, superscript) {
@@ -862,6 +872,10 @@ class BSTable extends React.Component {
         <tr>
         <td width='50%'><b>Reference</b></td>
         <td colSpan='2'><RmpPubsComponent rmp_id={meas.rmp_id} /></td>
+        </tr>
+        <tr>
+        <td width='50%'><b>Raw Data</b></td>
+        <td colSpan='2'>{linkFormatter(meas.o_data_link)}</td>
         </tr>
         </tbody>
         </table>

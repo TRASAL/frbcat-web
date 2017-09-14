@@ -77,6 +77,7 @@ let findByFRB = (req, res, next) => {
   let sql = ["SELECT f.name as frb_name, ",
   "f.id as frb_id, ",
   "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS') as utc, ",
+  "o.data_link as o_data_link, ",
   "rop.raj as rop_raj, rop.decj as rop_decj, ",
   "rop.gl as rop_gl, rop.gb as rop_gb, ",
   "rop.receiver as rop_receiver, rop.backend as rop_backend, ",
