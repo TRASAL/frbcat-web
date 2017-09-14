@@ -595,26 +595,6 @@ class BSTable extends React.Component {
                    derived_energy: '',
                    derived_energy_error_upper: {},
                    derived_energy_error_lower: {},
-                   derived: {
-                     fluence: {},
-                     fluence_error_upper: {},
-                     fluence_error_lower: {},
-                     dm_excess: {},
-                     dm_excess_error_upper: {},
-                     dm_excess_error_lower: {},
-                     redshift: {},
-                     redshift_error_upper: {},
-                     redshift_error_lower: {},
-                     dist_comoving: {},
-                     dist_comoving_error_upper: {},
-                     dist_comoving_error_lower: {},
-                     dist_luminosity: {},
-                     dist_luminosity_error_upper: {},
-                     dist_luminosity_error_lower: {},
-                     energy: {},
-                     energy_error_upper: {},
-                     energy_error_lower: {},
-                   },
     };
     this.openColumnDialog = this.openColumnDialog.bind(this);
     this.closeColumnDialog = this.closeColumnDialog.bind(this);
