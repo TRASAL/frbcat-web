@@ -975,8 +975,12 @@ class BSTable extends React.Component {
         <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
         </tr>
         <tr>
-        <td width='40%'><b>z</b></td>
+        <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
         <td colSpan='2'>{parseFloat(this.state.derived_redshift).toFixed(2)}</td>
+        </tr>
+        <tr>
+        <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
+        <td colSpan='2'>{parseFloat(meas.rmp_redshift_host).toFixed(2)}</td>
         </tr>
         </tbody>
         </table>
@@ -1292,14 +1296,14 @@ class BSTable extends React.Component {
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_redshift_inferred}
       dataSort>
-      Redshift inferred
+      Redshift<sub>inferred</sub>
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_redshift_host'
       dataField='rmp_redshift_host'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_redshift_host}
       dataSort>
-      Redshift host
+      Redshift<sub>host</sub>
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_fluence'
       dataField='rmp_fluence'
@@ -1313,7 +1317,7 @@ class BSTable extends React.Component {
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
       dataSort>
-      Redshift inferred
+      Dispersion smearing
       </TableHeaderColumn>
       </BootstrapTable>
       </div>);
@@ -1837,12 +1841,12 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_inferred')} checked={!this.state.hiddenColumns.rmp_redshift_inferred} /> Redshift inferred<br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_inferred')} checked={!this.state.hiddenColumns.rmp_redshift_inferred} /> Redshift<sub>inferred</sub> <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_host')} checked={!this.state.hiddenColumns.rmp_redshift_host} /> Redshift host<br />
+        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_host')} checked={!this.state.hiddenColumns.rmp_redshift_host} /> Redshift<sub>host</sub> <br />
         </td>
         </tr>
         <tr>
@@ -2165,7 +2169,7 @@ export default class FRBTable extends React.Component {
                            hidden={this.state.hiddenColumns.rmp_redshift_inferred}
                            dataSort
                            width='100px'>
-                           Redshift inferred
+                           Redshift<sub>inferred</sub>
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_redshift_host'
                            dataField='rmp_redshift_host'
@@ -2173,7 +2177,7 @@ export default class FRBTable extends React.Component {
                            hidden={this.state.hiddenColumns.rmp_redshift_host}
                            dataSort
                            width='100px'>
-                           Redshift host
+                           Redshift<sub>host</sub>
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_fluence'
                            dataField='rmp_fluence'
