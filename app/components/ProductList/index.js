@@ -976,14 +976,6 @@ class BSTable extends React.Component {
         <td width='50%'><b>Circular Poln Fraction</b></td>
         <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
         </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
-        <td colSpan='2'>{floatFormatter(this.state.derived_redshift, 2)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
-        <td colSpan='2'>{floatFormatter(meas.rmp_redshift_host, 2)}</td>
-        </tr>
         </tbody>
         </table>
         <RmpNotesComponent rmp_id={meas.rmp_id} />
@@ -1002,6 +994,14 @@ class BSTable extends React.Component {
         <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_dm_excess, 2)}</td>
         <td width='30%'>{unitsFormatter(this.state.derived_dm_excess, <div>[cm<sup>-3</sup> pc]</div>)}</td>
+        </tr>
+        <tr>
+        <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
+        <td colSpan='2'>{floatFormatter(this.state.derived_redshift, 2)}</td>
+        </tr>
+        <tr>
+        <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
+        <td colSpan='2'>{floatFormatter(meas.rmp_redshift_host, 2)}</td>
         </tr>
         <tr>
         <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
