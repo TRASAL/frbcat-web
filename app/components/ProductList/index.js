@@ -1294,26 +1294,12 @@ class BSTable extends React.Component {
       dataSort>
       RM
       </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_redshift_inferred'
-      dataField='rmp_redshift_inferred'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_redshift_inferred}
-      dataSort>
-      Redshift<sub>inferred</sub>
-      </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_redshift_host'
       dataField='rmp_redshift_host'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_redshift_host}
       dataSort>
       Redshift<sub>host</sub>
-      </TableHeaderColumn>
-      <TableHeaderColumn ref='rmp_fluence'
-      dataField='rmp_fluence'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_fluence}
-      dataSort>
-      Fluence
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dispersion_smearing'
       dataField='rmp_dispersion_smearing'
@@ -1389,9 +1375,7 @@ export default class FRBTable extends React.Component {
         rmp_circular_poln_frac: true,
         rmp_spectral_index: true,
         rmp_rm: true,
-        rmp_redshift_inferred: true,
         rmp_redshift_host: true,
-        rmp_fluence: true,
         rmp_dispersion_smearing: true,
       },
       product : {}
@@ -1508,12 +1492,8 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_spectral_index: !this.state.hiddenColumns.rmp_spectral_index }) });
       } else if (cname === 'rmp_rm') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_rm: !this.state.hiddenColumns.rmp_rm }) });
-      } else if (cname === 'rmp_redshift_inferred') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift_inferred: !this.state.hiddenColumns.rmp_redshift_inferred }) });
       } else if (cname === 'rmp_redshift_host') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift_host: !this.state.hiddenColumns.rmp_redshift_host }) });
-      } else if (cname === 'rmp_fluence') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_fluence: !this.state.hiddenColumns.rmp_fluence }) });
       } else if (cname === 'rmp_dispersion_smearing') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dispersion_smearing: !this.state.hiddenColumns.rmp_dispersion_smearing }) });
       }
@@ -1576,9 +1556,7 @@ export default class FRBTable extends React.Component {
     this.refs.rmp_circular_poln_frac.cleanFiltered();
     this.refs.rmp_spectral_index.cleanFiltered();
     this.refs.rmp_rm.cleanFiltered();
-    this.refs.rmp_redshift_inferred.cleanFiltered();
     this.refs.rmp_redshift_host.cleanFiltered();
-    this.refs.rmp_fluence.cleanFiltered();
     this.refs.rmp_dispersion_smearing.cleanFiltered();
   }
   handleClearButtonClick(onClick) {
@@ -1844,17 +1822,7 @@ export default class FRBTable extends React.Component {
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_inferred')} checked={!this.state.hiddenColumns.rmp_redshift_inferred} /> Redshift<sub>inferred</sub> <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
         <input type="checkbox" onChange={this.changeColumn('rmp_redshift_host')} checked={!this.state.hiddenColumns.rmp_redshift_host} /> Redshift<sub>host</sub> <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_fluence')} checked={!this.state.hiddenColumns.rmp_fluence} /> Fluence<br />
         </td>
         </tr>
         <tr>
@@ -2166,14 +2134,6 @@ export default class FRBTable extends React.Component {
                            width='100px'>
                            RM
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_redshift_inferred'
-                           dataField='rmp_redshift_inferred'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_redshift_inferred}
-                           dataSort
-                           width='100px'>
-                           Redshift<sub>inferred</sub>
-                           </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_redshift_host'
                            dataField='rmp_redshift_host'
                            dataFormat={ nanFormatter }
@@ -2181,14 +2141,6 @@ export default class FRBTable extends React.Component {
                            dataSort
                            width='100px'>
                            Redshift<sub>host</sub>
-                           </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_fluence'
-                           dataField='rmp_fluence'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_fluence}
-                           dataSort
-                           width='100px'>
-                           Fluence
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_dispersion_smearing'
                            dataField='rmp_dispersion_smearing'
