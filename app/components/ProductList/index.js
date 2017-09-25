@@ -212,7 +212,6 @@ function subsupstr_formatter(variable, substrng, description, superscript) {
   }
 }
 
-
 function supsub_formatter(variable, upper_error, lower_error) {
   // return variable with upper/lower error if available, else return variable
   if (!isNaN(parseFloat(upper_error)) && !isNaN(parseFloat(lower_error))) {
@@ -1016,7 +1015,7 @@ class BSTable extends React.Component {
         </tr>
         <tr>
         <td width='40%'><b>Channel Bandwidth</b></td>
-        <td width='30%'>{meas.rop_channel_bandwidth}</td>
+        <td width='30%'>{floatFormatter(meas.rop_channel_bandwidth, 2)}</td>
         <td width='30%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
         </tr>
         </tbody>
