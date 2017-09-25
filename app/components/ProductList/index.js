@@ -1470,9 +1470,9 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_index: !this.state.hiddenColumns.rmp_scattering_index }) });
       } else if (cname === 'rmp_scattering') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering: !this.state.hiddenColumns.rmp_scattering }) });
-      } else if (cname === 'rmp_scattering') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_model: !this.state.hiddenColumns.rmp_scattering_model }) });
       } else if (cname === 'rmp_scattering_model') {
+        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_model: !this.state.hiddenColumns.rmp_scattering_model }) });
+      } else if (cname === 'rmp_scattering_timescale') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_timescale: !this.state.hiddenColumns.rmp_scattering_timescale }) });
       } else if (cname === 'rmp_linear_poln_frac') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_linear_poln_frac: !this.state.hiddenColumns.rmp_linear_poln_frac }) });
