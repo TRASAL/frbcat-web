@@ -869,11 +869,6 @@ class BSTable extends React.Component {
         <td colSpan='2'>{meas.rop_npol}</td>
         </tr>
         <tr>
-        <td width='50%'><b>Channel Bandwidth</b></td>
-        <td width='30%'>{meas.rop_channel_bandwidth}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
-        </tr>
-        <tr>
         <td width='50%'><b>Bits per sample</b></td>
         <td colSpan='2'>{meas.rop_bits_per_sample}</td>
         </tr>
@@ -1018,6 +1013,11 @@ class BSTable extends React.Component {
         <td width='40%'><b>Energy</b></td>
         <td width='30%'>{floatFormatter(this.state.derived_energy, 2)}</td>
         <td width='30%'>{unitsFormatter(this.state.derived_energy, <div>[10<sup>32</sup> J]</div>)}</td>
+        </tr>
+        <tr>
+        <td width='40%'><b>Channel Bandwidth</b></td>
+        <td width='30%'>{meas.rop_channel_bandwidth}</td>
+        <td width='30%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
         </tr>
         </tbody>
         </table>
@@ -1164,12 +1164,6 @@ class BSTable extends React.Component {
       hidden={this.state.hiddenColumns.rop_npol}
       dataSort>
       Npol
-      </TableHeaderColumn>
-      <TableHeaderColumn ref='rop_channel_bandwidth'
-      dataField='rop_channel_bandwidth'
-      hidden={this.state.hiddenColumns.rop_channel_bandwidth}
-      dataSort>
-      Channel bandwidth
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_bits_per_sample'
       dataField='rop_bits_per_sample'
@@ -1357,7 +1351,6 @@ export default class FRBTable extends React.Component {
         rop_beam_rotation_angle: true,
         rop_sampling_time: true,
         rop_npol: true,
-        rop_channel_bandwidth: true,
         rop_bits_per_sample: true,
         rop_gain: true,
         rop_tsys: true,
@@ -1460,8 +1453,6 @@ export default class FRBTable extends React.Component {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_centre_frequency: !this.state.hiddenColumns.rop_centre_frequency }) });
       } else if (cname === 'rop_npol') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_npol: !this.state.hiddenColumns.rop_npol }) });
-      } else if (cname === 'rop_channel_bandwidth') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_channel_bandwidth: !this.state.hiddenColumns.rop_channel_bandwidth }) });
       } else if (cname === 'rop_bits_per_sample') {
         this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_bits_per_sample: !this.state.hiddenColumns.rop_bits_per_sample }) });
       } else if (cname === 'rop_gain') {
@@ -1537,7 +1528,6 @@ export default class FRBTable extends React.Component {
     this.refs.rop_bandwidth.cleanFiltered();
     this.refs.rop_centre_frequency.cleanFiltered();
     this.refs.rop_npol.cleanFiltered();
-    this.refs.rop_channel_bandwidth.cleanFiltered();
     this.refs.rop_bits_per_sample.cleanFiltered();
     this.refs.rop_gain.cleanFiltered();
     this.refs.rop_tsys.cleanFiltered();
@@ -1716,11 +1706,6 @@ export default class FRBTable extends React.Component {
         <tr>
         <td>
         <input type="checkbox" onChange={this.changeColumn('rop_npol')} checked={!this.state.hiddenColumns.rop_npol} /> Npol <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_channel_bandwidth')} checked={!this.state.hiddenColumns.rop_channel_bandwidth} /> Channel bandwidth <br />
         </td>
         </tr>
         <tr>
@@ -1984,13 +1969,6 @@ export default class FRBTable extends React.Component {
                            dataSort
                            width='100px'>
                            Npol
-                           </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_channel_bandwidth'
-                           dataField='rop_channel_bandwidth'
-                           hidden={this.state.hiddenColumns.rop_channel_bandwidth}
-                           dataSort
-                           width='100px'>
-                           Channel bandwidth
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rop_bits_per_sample'
                            dataField='rop_bits_per_sample'
