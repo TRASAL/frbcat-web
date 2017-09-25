@@ -19,7 +19,7 @@ let findAll = (req, res, next) => {
     let countSql = "SELECT COUNT(*) from spot_view WHERE rmp_rank=1" + where;
     //let sql = "SELECT * from spot_view WHERE rmp_rank=1";
     let sql = ["SELECT f.name as frb_name, ",
-               "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS') as utc, ",
+               "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS.MS') as utc, ",
                "o.verified as verified, ",
                "rop.raj as rop_raj, rop.decj as rop_decj, ",
                "rop.gl as rop_gl, rop.gb as rop_gb, ",
@@ -30,7 +30,7 @@ let findAll = (req, res, next) => {
                "rop.beam as rop_beam, ",
                "rop.sampling_time as rop_sampling_time, ",
                "rop.bandwidth as rop_bandwidth, rop.centre_frequency as rop_centre_frequency, ",
-               "rop.npol as rop_npol, rop.channel_bandwidth as rop_channel_bandwidth, ",
+               "rop.npol as rop_npol, ",
                "rop.bits_per_sample as rop_bits_per_sample, ",
                "rop.gain as rop_gain, rop.tsys as rop_tsys, ",
                "rop.mw_dm_limit as rop_mw_dm_limit, ",
@@ -74,7 +74,7 @@ let findByFRB = (req, res, next) => {
   let frb_name = req.params.frb_name;
   let sql = ["SELECT f.name as frb_name, ",
   "f.id as frb_id, ",
-  "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS') as utc, ",
+  "o.telescope,to_char(o.utc, 'YYYY/MM/DD HH24:MI:SS.MS') as utc, ",
   "o.data_link as o_data_link, ",
   "rop.raj as rop_raj, rop.decj as rop_decj, ",
   "rop.gl as rop_gl, rop.gb as rop_gb, ",
@@ -85,7 +85,8 @@ let findByFRB = (req, res, next) => {
   "rop.beam as rop_beam, ",
   "rop.sampling_time as rop_sampling_time, ",
   "rop.bandwidth as rop_bandwidth, rop.centre_frequency as rop_centre_frequency, ",
-  "rop.npol as rop_npol, rop.channel_bandwidth as rop_channel_bandwidth, ",
+  "rop.npol as rop_npol, ",
+  "(rop.bandwidth/rop.nchan) as rop_channel_bandwidth, ",
   "rop.bits_per_sample as rop_bits_per_sample, ",
   "rop.gain as rop_gain, rop.tsys as rop_tsys, ",
   "rop.mw_dm_limit as rop_mw_dm_limit, ",
