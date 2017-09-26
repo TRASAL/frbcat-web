@@ -1,7 +1,7 @@
 {
-  "name": "FRBCat",
-  "version": "0.0.0",
-  "description": "FRB Catalog",
+  "name": "FRBCat-web",
+  "version": "1.0.0",
+  "description": "FRB Catalog Web frontend",
   "main": "server.js",
   "scripts": {
     "webpack": "webpack",
@@ -15,7 +15,7 @@
     "type": "Apache-2.0",
     "url": "https://opensource.org/licenses/apache2.0.php"
   },
-  "author": "Ronald van Haren",
+  "author": "Ronald van Haren, Netherlands eScience Center",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

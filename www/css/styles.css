@@ -102,7 +102,7 @@ position: relative;
 span.subsup sup {
 position: absolute;
 left: 0.3em;
-top: -0.4em;
+top: 0.4em;
 font-size: .75em;
 }
 

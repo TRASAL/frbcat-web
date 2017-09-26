@@ -199,10 +199,10 @@ function unitsFormatter(value, unitstr) {
   
 function subsupstr_formatter(variable, substrng, description, superscript) {
   if ((!isBlank(substrng)) && (!isBlank(description))) {
-    return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span><span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
+    return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span><span className='subsup'><sup><b>{superscript}</b></sup></span></div>;
   }
   else if (!isBlank(description)) {
-    return <div>{variable}<span className='supsub'><sup><b>{superscript}</b></sup></span></div>;
+    return <div>{variable}<span className='subsup'><sup><b>{superscript}</b></sup></span></div>;
   }
   else if (!isBlank(substrng)) {
     return <div>{variable}<span className='supsub'><sub><b>{substrng}</b></sub></span></div>;

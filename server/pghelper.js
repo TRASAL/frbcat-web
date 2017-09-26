@@ -4,9 +4,9 @@ let pg = require('pg'),
     config = require('./config'),
     databaseURL = config.databaseURL;
 
-exports.query = function (sql, values, singleItem, dontLog) {
+exports.query = function (sql, values, singleItem, Log) {
 
-    if (!dontLog) {
+    if (Log) {
         console.log(sql, values);
     }
     return new Promise((resolve, reject) => {

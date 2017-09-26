@@ -140,7 +140,6 @@ let findByFRB = (req, res, next) => {
   "JOIN authors armp ON (rmp.author_id = armp.id) ",
   "LEFT OUTER JOIN radio_observations_params_notes rop_notes ON (rop.id = rop_notes.rop_id) ",
   "WHERE (f.name = '" + frb_name + "') ORDER BY f.name,o.utc"].join('\n');
-  console.log(sql);
     db.query(sql, values.concat([]))
     .then(products => {
       return res.json({"products": products});

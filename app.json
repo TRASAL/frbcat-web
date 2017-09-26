@@ -1,5 +1,5 @@
 {
-  "name": "AA-ALERT",
-  "description": "AA-ALERT FRBCat",
+  "name": "frbcat-web",
+  "description": "FRBCat web frontend",
   "repository": "https://github.com/AA-ALERT/frbcat-web",
 }
