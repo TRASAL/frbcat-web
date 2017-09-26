@@ -7,9 +7,9 @@ frbcat-web has two configuration files.
   * server/config.js
 
     This file contains the postgres connection string. Modify it to connect to your postgres installation and table. The connectionstring has the following format: 'postgres://someuser:somepassword@somehost:someport/somedatabase'
-    
-  *  server.js
-
+ 
+  * server.js
+  
     This file contains the express web server configuration. Here you can define the port the server is running on.
 
 For further details on how to tune the express server for performance in a production environment see the [expressjs homepage](https://expressjs.com/en/advanced/best-practice-performance.html). This link contains information on how to set the NODE_ENV to production for different systems and how to make sure the server gets automatically restarted if it crashes.
