@@ -3,18 +3,15 @@
   "version": "1.0.0",
   "description": "FRB Catalog Web frontend",
   "main": "server.js",
+  "license": "Apache-2.0",
   "scripts": {
     "webpack": "webpack",
     "start": "node server.js",
     "release": "npm-github-release"
   },
-  "license": {
-    "type": "Apache-2.0",
-    "url": "https://opensource.org/licenses/apache2.0.php"
-  },
   "repository": {
-    "type": "Apache-2.0",
-    "url": "https://opensource.org/licenses/apache2.0.php"
+    "type": "git",
+    "url": "https://github.com/AA-ALERT/frbcat-web"
   },
   "author": "Ronald van Haren, Netherlands eScience Center",
   "dependencies": {
