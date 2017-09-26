@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "webpack": "webpack",
-    "start": "node server.js"
+    "start": "node server.js",
+    "release": "npm-github-release"
   },
   "license": {
     "type": "Apache-2.0",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "bootstrap": "^3.3.7",
+    "npm-github-release": "^0.7.5",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.3",
     "react-bootstrap-table": "^4.0.3",
