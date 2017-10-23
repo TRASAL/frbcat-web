@@ -186,7 +186,7 @@ tbody.selectcol {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
-  height: 60px;
+  min-height: 60px;
   background: white;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
