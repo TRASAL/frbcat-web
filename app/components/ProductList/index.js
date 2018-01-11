@@ -1337,7 +1337,7 @@ export default class FRBTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = { showModal: false,
-      btnTitle: 'Show verified',
+      btnTitle: 'Verified',
       verified: true,
       hiddenColumns: {
         verified: true,
@@ -1556,7 +1556,7 @@ export default class FRBTable extends React.Component {
         // set state to verified=false
         this.setState({verified: false});
         // change button title
-        this.setState({btnTitle: 'Show all'});
+        this.setState({btnTitle: 'All'});
         // remove filter
         //this.refs.verified.cleanFiltered(); // broken
         this.refs.verified.applyFilter('');
@@ -1564,7 +1564,7 @@ export default class FRBTable extends React.Component {
         // set state to verified=true
         this.setState({verified: true});
         // change button title
-        this.setState({btnTitle: 'Show verified'});
+        this.setState({btnTitle: 'Verified'});
         // apply filter
         this.refs.verified.applyFilter('true');
     }
