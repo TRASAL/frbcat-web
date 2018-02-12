@@ -327,7 +327,6 @@ function uint8ToBase64(buffer) {
      return window.btoa( binary );
 }
 
-
 class RopNotesComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -509,7 +508,6 @@ class RmpImagesComponent extends React.Component {
       for (var i = 0; i < Object.keys(simage).length; i++) {
         var imgsrc = `data:image/jpeg;base64,${simage[i].image}`
         this.finddim(simage[i]);
-
         }
   }
   finddim(simage) {
@@ -1337,8 +1335,13 @@ export default class FRBTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = { showModal: false,
-      btnTitle: 'Verified',
+      btnTitle: 'Verified events',
+      btnTooltip: 'Only verified events are shown',
       verified: true,
+      CSVFilename: 'frbcat',
+      CSVExtension: 'csv',
+      page: 1,
+      sizePerPage: 25,
       hiddenColumns: {
         verified: true,
         obs_type: true,
@@ -1370,133 +1373,152 @@ export default class FRBTable extends React.Component {
         rmp_redshift_host: true,
         rmp_dispersion_smearing: true,
       },
-      product : {}
+      hiddenColumnsTemp: {
+        verified: true,
+        obs_type: true,
+        rop_receiver: true,
+        rop_backend: true,
+        rop_beam: true,
+        rop_beam_semi_major_axis: true,
+        rop_beam_semi_minor_axis: true,
+        rop_beam_rotation_angle: true,
+        rop_sampling_time: true,
+        rop_npol: true,
+        rop_bits_per_sample: true,
+        rop_gain: true,
+        rop_tsys: true,
+        rop_mw_dm_limit: true,
+        rop_galactic_electron_model: true,
+        rop_bandwidth: true,
+        rop_centre_frequency: true,
+        rmp_flux: true,
+        rmp_dm_index: true,
+        rmp_scattering_index: true,
+        rmp_scattering: true,
+        rmp_scattering_model: true,
+        rmp_scattering_timescale: true,
+        rmp_linear_poln_frac: true,
+        rmp_circular_poln_frac: true,
+        rmp_spectral_index: true,
+        rmp_rm: true,
+        rmp_redshift_host: true,
+        rmp_dispersion_smearing: true,
+      },
+      product : {},
+      arraylist: []
     };
     this.openColumnDialog = this.openColumnDialog.bind(this);
+    this.applyColumnDialog = this.applyColumnDialog.bind(this);
     this.showall = this.showall.bind(this);
     this.closeColumnDialog = this.closeColumnDialog.bind(this);
     this.expandComponent = this.expandComponent.bind(this);
     this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
-    // set sorting options
-    this.options = {
-      defaultSortName: 'frb_name',  // default sort column name
-      defaultSortOrder: 'desc',  // default sort order
-      sizePerPage: 25,
-      sizePerPageList: [ {
-        text: '10', value: 10
-      }, {
-        text: '25', value: 25
-      }, {
-        text: '50', value: 50
-      } ],
-      prePage: 'Prev', // Previous page button text
-      nextPage: 'Next', // Next page button text
-      firstPage: 'First', // First page button text
-      lastPage: 'Last', // Last page button text
-      expandRowBgColor: '#B6C1C7',
-      expandBy: 'row',
-      clearSearch: true,
-      clearSearchBtn: this.createCustomClearButton,
-      btnGroup: this.createCustomButtonGroup,
-    };
+    this.getCSVFilename = this.getCSVFilename.bind(this);
+    this.indexN = this.indexN.bind(this);
+    this.expandColumnComponent  = this.expandColumnComponent.bind(this);
+    this.changeStateAttributeValue = this.changeStateAttributeValue.bind(this);
+    this.onPageChange = this.onPageChange.bind(this);
+    this.sizePerPageListChange = this.sizePerPageListChange.bind(this);
   }
+
+  indexN(cell, row, enumObject, index) {
+      var idx = ((this.state['page']-1) * this.state['sizePerPage']) + index + 1
+      return (<div>{idx}</div>) 
+  }
+
+  expandColumnComponent({ isExpandableRow, isExpanded }) {
+    let content = '';
+
+    if (isExpandableRow) {
+      content = (isExpanded ? '(-)' : '(+)' );
+    } else {
+      content = ' ';
+    }
+    return (
+      <div> { content } </div>
+    );
+}
+
+  getCSVFilename() {
+    const datestamp = (new Date()).toISOString().slice(0,10).replace(/-/g,"")
+    return this.state.CSVFilename + "_" + datestamp + "." + this.state.CSVExtension;
+  }
+
   closeColumnDialog() {
-    this.setState({ showModal: false });
+    // undo changes and close modal
+    var arrayLength = this.state['arraylist'].length;
+    for (var i = 0; i < arrayLength; i++) {
+      // undo changes
+      var cname = this.state['arraylist'][i]
+      this.changeStateAttributeValue('hiddenColumnsTemp', cname, this.state['hiddenColumns'][cname]);
+    }
+    // remove everything from arraylist
+    this.setState({ arraylist: [] });
+    // close modal
+    this.setState({ showModal: false });    
   }
+
+  applyColumnDialog() {
+    // apply changes and close modal
+    var arrayLength = this.state['arraylist'].length;
+    for (var i = 0; i < arrayLength; i++) {
+      // apply changes
+      var cname = this.state['arraylist'][i]
+      this.changeStateAttributeValue('hiddenColumns', cname, this.state['hiddenColumnsTemp'][cname]);
+    }
+    // remove everything from arraylist
+    this.setState({ arraylist: [] });
+    // close modal
+    this.setState({ showModal: false });    
+  }
+
   openColumnDialog() {
     this.setState({ showModal: true });
   }
-  changeColumn(cname) {
+
+  changeStateAttributeValue(stateName, attributeKey, attributeValue) {
+    // changes a single attributes on a given state
+    var newState = this.state; 
+    var stateBeingChanged = this.state[stateName];
+    stateBeingChanged[attributeKey] = attributeValue;
+    newState[stateName] = stateBeingChanged;
+    this.setState(newState);
+  }
+
+  changeState(stateName, value) {
+    // changes a single state on a component given the state name and it’s new value
+    var newState = {};
+    newState[stateName] = value;
+    this.setState(newState);  
+  }
+
+  changeColumnList(cname){
+    // keep a list of visible columns to change
     return () => {
-      if (cname === 'frb_name') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { frb_name: !this.state.hiddenColumns.frb_name }) });
-      } else if (cname === 'telescope') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { telescope: !this.state.hiddenColumns.telescope }) });
-      } else if (cname === 'utc') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { utc: !this.state.hiddenColumns.utc }) });
-      } else if (cname === 'obs_type') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { obs_type: !this.state.hiddenColumns.obs_type }) });
-      } else if (cname === 'rop_receiver') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_receiver: !this.state.hiddenColumns.rop_receiver }) });
-      } else if (cname === 'rop_backend') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_backend: !this.state.hiddenColumns.rop_backend }) });
-      } else if (cname === 'rop_beam') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam: !this.state.hiddenColumns.rop_beam }) });
-      } else if (cname === 'rop_beam_semi_major_axis') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_semi_major_axis: !this.state.hiddenColumns.rop_beam_semi_major_axis }) });
-      } else if (cname === 'rop_beam_semi_minor_axis') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_semi_minor_axis: !this.state.hiddenColumns.rop_beam_semi_minor_axis }) });
-      } else if (cname === 'rop_beam_rotation_angle') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_beam_rotation_angle: !this.state.hiddenColumns.rop_beam_rotation_angle }) });
-      } else if (cname === 'rop_raj') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_raj: !this.state.hiddenColumns.rop_raj }) });
-      } else if (cname === 'rop_decj') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_decj: !this.state.hiddenColumns.rop_decj }) });
-      } else if (cname === 'rop_gl') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gl: !this.state.hiddenColumns.rop_gl }) });
-      } else if (cname === 'rop_gb') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gb: !this.state.hiddenColumns.rop_gb }) });
-      } else if (cname === 'rmp_dm') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dm: !this.state.hiddenColumns.rmp_dm }) });
-      } else if (cname === 'rmp_width') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_width: !this.state.hiddenColumns.rmp_width }) });
-      } else if (cname === 'rmp_snr') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_snr: !this.state.hiddenColumns.rmp_snr }) });
-      } else if (cname === 'rmp_flux') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
-      } else if (cname === 'rop_sampling_time') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_sampling_time: !this.state.hiddenColumns.rop_sampling_time }) });
-      } else if (cname === 'rop_bandwidth') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_bandwidth: !this.state.hiddenColumns.rop_bandwidth }) });
-      } else if (cname === 'rop_centre_frequency') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_centre_frequency: !this.state.hiddenColumns.rop_centre_frequency }) });
-      } else if (cname === 'rop_npol') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_npol: !this.state.hiddenColumns.rop_npol }) });
-      } else if (cname === 'rop_bits_per_sample') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_bits_per_sample: !this.state.hiddenColumns.rop_bits_per_sample }) });
-      } else if (cname === 'rop_gain') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_gain: !this.state.hiddenColumns.rop_gain }) });
-      } else if (cname === 'rop_tsys') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_tsys: !this.state.hiddenColumns.rop_tsys }) });
-      } else if (cname === 'rop_mw_dm_limit') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_mw_dm_limit: !this.state.hiddenColumns.rop_mw_dm_limit }) });
-      } else if (cname === 'rop_galactic_electron_model') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rop_galactic_electron_model: !this.state.hiddenColumns.rop_galactic_electron_model }) });
-      } else if (cname === 'rmp_flux') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_flux: !this.state.hiddenColumns.rmp_flux }) });
-      } else if (cname === 'rmp_dm_index') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dm_index: !this.state.hiddenColumns.rmp_dm_index }) });
-      } else if (cname === 'rmp_scattering_index') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_index: !this.state.hiddenColumns.rmp_scattering_index }) });
-      } else if (cname === 'rmp_scattering') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering: !this.state.hiddenColumns.rmp_scattering }) });
-      } else if (cname === 'rmp_scattering_model') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_model: !this.state.hiddenColumns.rmp_scattering_model }) });
-      } else if (cname === 'rmp_scattering_timescale') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_scattering_timescale: !this.state.hiddenColumns.rmp_scattering_timescale }) });
-      } else if (cname === 'rmp_linear_poln_frac') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_linear_poln_frac: !this.state.hiddenColumns.rmp_linear_poln_frac }) });
-      } else if (cname === 'rmp_circular_poln_frac') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_circular_poln_frac: !this.state.hiddenColumns.rmp_circular_poln_frac }) });
-      } else if (cname === 'rmp_spectral_index') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_spectral_index: !this.state.hiddenColumns.rmp_spectral_index }) });
-      } else if (cname === 'rmp_rm') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_rm: !this.state.hiddenColumns.rmp_rm }) });
-      } else if (cname === 'rmp_redshift_host') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_redshift_host: !this.state.hiddenColumns.rmp_redshift_host }) });
-      } else if (cname === 'rmp_dispersion_smearing') {
-        this.setState({ hiddenColumns: Object.assign(this.state.hiddenColumns, { rmp_dispersion_smearing: !this.state.hiddenColumns.rmp_dispersion_smearing }) });
+      var changeColList = this.state.arraylist;
+      // find index in array
+      var index = changeColList.indexOf(cname);
+      if (index > -1) {
+        // item in array, remove from array
+        changeColList.splice(index, 1);
+      } else {
+      // add item to array
+      changeColList.push(cname);
       }
+      this.setState({ arraylist: changeColList });
+      this.changeStateAttributeValue('hiddenColumnsTemp', cname, !this.state['hiddenColumnsTemp'][cname]);
     };
   }
 
   // pagination settings
   sizePerPageListChange(sizePerPage) {
-    alert(`sizePerPage: ${sizePerPage}`);
+    // set number of elements per page
+    this.setState({sizePerPage: sizePerPage});
   }
 
   onPageChange(page, sizePerPage) {
-    alert(`page: ${page}, sizePerPage: ${sizePerPage}`);
+    // set page number
+    this.setState({page: page});
   }
 
   isExpandableRow(row) {
@@ -1556,15 +1578,18 @@ export default class FRBTable extends React.Component {
         // set state to verified=false
         this.setState({verified: false});
         // change button title
-        this.setState({btnTitle: 'All'});
+        this.setState({btnTitle: 'All events'});
+        // change button tooltip
+        this.setState({btnTooltip: 'All events are shown'})
         // remove filter
-        //this.refs.verified.cleanFiltered(); // broken
         this.refs.verified.applyFilter('');
     } else {
         // set state to verified=true
         this.setState({verified: true});
         // change button title
-        this.setState({btnTitle: 'Verified'});
+        this.setState({btnTitle: 'Verified events'});
+        // change button tooltip
+        this.setState({btnTooltip: 'Only verified events are shown'})
         // apply filter
         this.refs.verified.applyFilter('true');
     }
@@ -1585,10 +1610,12 @@ export default class FRBTable extends React.Component {
       <ButtonGroup className='my-custom-class' sizeClass='btn-group-md'>
       <button type='button'
       className={ `btn btn-viscol` }
+      title='Select visible columns'
       onClick={this.openColumnDialog}>
       Visible columns
       </button>
       <button type='button'
+      title={this.state.btnTooltip}
       className={ `btn btn-info` }
       onClick={this.showall}>
       {this.state.btnTitle}
@@ -1601,6 +1628,31 @@ export default class FRBTable extends React.Component {
       mode: 'checkbox',
       clickToSelect: true,  // click to select, default is false
       clickToExpand: true,  // click to expand row, default is false
+    };
+    // set sorting options
+    const options = {
+      defaultSortName: 'frb_name',  // default sort column name
+      defaultSortOrder: 'desc',  // default sort order
+      onPageChange: this.onPageChange,
+      onSizePerPageList: this.sizePerPageListChange,
+      page: this.state.page,
+      sizePerPage: this.state.sizePerPage,
+      sizePerPageList: [ {
+        text: '10', value: 10
+      }, {
+        text: '25', value: 25
+      }, {
+        text: '50', value: 50
+      } ],
+      prePage: 'Prev', // Previous page button text
+      nextPage: 'Next', // Next page button text
+      firstPage: 'First', // First page button text
+      lastPage: 'Last', // Last page button text
+      expandRowBgColor: '#B6C1C7',
+      expandBy: 'row',
+      clearSearch: true,
+      clearSearchBtn: this.createCustomClearButton,
+      btnGroup: this.createCustomButtonGroup,
     };
     return (
       <div className="reacttable">
@@ -1617,17 +1669,17 @@ export default class FRBTable extends React.Component {
         <tr><th colSpan='1'>FRB parameters</th></tr>
         <tr>
         <td colSpan='1'>
-        <input type="checkbox" onChange={this.changeColumn('frb_name')} checked={!this.state.hiddenColumns.frb_name} /> FRB <br />
+        <input type="checkbox" onChange={this.changeColumnList('frb_name')} checked={!this.state.hiddenColumnsTemp.frb_name} /> FRB <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('telescope')} checked={!this.state.hiddenColumns.telescope} /> Telescope <br />
+        <input type="checkbox" onChange={this.changeColumnList('telescope')} checked={!this.state.hiddenColumnsTemp.telescope} /> Telescope <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('utc')} checked={!this.state.hiddenColumns.utc} /> UTC <br />
+        <input type="checkbox" onChange={this.changeColumnList('utc')} checked={!this.state.hiddenColumnsTemp.utc} /> UTC <br />
         </td>
         </tr>
         </tbody>
@@ -1639,97 +1691,97 @@ export default class FRBTable extends React.Component {
         <tr><th colSpan='1'>Observation parameters</th></tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_raj')} checked={!this.state.hiddenColumns.rop_raj} /> RAJ <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_raj')} checked={!this.state.hiddenColumnsTemp.rop_raj} /> RAJ <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_decj')} checked={!this.state.hiddenColumns.rop_decj} /> DECJ <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_decj')} checked={!this.state.hiddenColumnsTemp.rop_decj} /> DECJ <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_gl')} checked={!this.state.hiddenColumns.rop_gl} /> GL <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_gl')} checked={!this.state.hiddenColumnsTemp.rop_gl} /> GL <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_gb')} checked={!this.state.hiddenColumns.rop_gb} /> GB <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_gb')} checked={!this.state.hiddenColumnsTemp.rop_gb} /> GB <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_receiver')} checked={!this.state.hiddenColumns.rop_receiver} /> Receiver <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_receiver')} checked={!this.state.hiddenColumnsTemp.rop_receiver} /> Receiver <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_backend')} checked={!this.state.hiddenColumns.rop_backend} /> Backend <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_backend')} checked={!this.state.hiddenColumnsTemp.rop_backend} /> Backend <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_beam')} checked={!this.state.hiddenColumns.rop_beam} /> Beam <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_beam')} checked={!this.state.hiddenColumnsTemp.rop_beam} /> Beam <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_beam_semi_major_axis')} checked={!this.state.hiddenColumns.rop_beam_semi_major_axis} /> Beam semi-major axis<br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_beam_semi_major_axis')} checked={!this.state.hiddenColumnsTemp.rop_beam_semi_major_axis} /> Beam semi-major axis<br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_beam_semi_minor_axis')} checked={!this.state.hiddenColumns.rop_beam_semi_minor_axis} /> Beam semi-minor axis<br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_beam_semi_minor_axis')} checked={!this.state.hiddenColumnsTemp.rop_beam_semi_minor_axis} /> Beam semi-minor axis<br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_beam_rotation_angle')} checked={!this.state.hiddenColumns.rop_beam_rotation_angle} /> Beam rotation angle <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_beam_rotation_angle')} checked={!this.state.hiddenColumnsTemp.rop_beam_rotation_angle} /> Beam rotation angle <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_sampling_time')} checked={!this.state.hiddenColumns.rop_sampling_time} /> Sampling time <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_sampling_time')} checked={!this.state.hiddenColumnsTemp.rop_sampling_time} /> Sampling time <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_bandwidth')} checked={!this.state.hiddenColumns.rop_bandwidth} /> Bandwidth <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_bandwidth')} checked={!this.state.hiddenColumnsTemp.rop_bandwidth} /> Bandwidth <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_centre_frequency')} checked={!this.state.hiddenColumns.rop_centre_frequency} /> Centre frequency <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_centre_frequency')} checked={!this.state.hiddenColumnsTemp.rop_centre_frequency} /> Centre frequency <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_npol')} checked={!this.state.hiddenColumns.rop_npol} /> Npol <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_npol')} checked={!this.state.hiddenColumnsTemp.rop_npol} /> Npol <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_bits_per_sample')} checked={!this.state.hiddenColumns.rop_bits_per_sample} /> Bits per sample <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_bits_per_sample')} checked={!this.state.hiddenColumnsTemp.rop_bits_per_sample} /> Bits per sample <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_gain')} checked={!this.state.hiddenColumns.rop_gain} /> Gain <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_gain')} checked={!this.state.hiddenColumnsTemp.rop_gain} /> Gain <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_tsys')} checked={!this.state.hiddenColumns.rop_tsys} /> Tsys <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_tsys')} checked={!this.state.hiddenColumnsTemp.rop_tsys} /> Tsys <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_mw_dm_limit')} checked={!this.state.hiddenColumns.rop_mw_dm_limit} /> DM<sub>galaxy</sub> <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_mw_dm_limit')} checked={!this.state.hiddenColumnsTemp.rop_mw_dm_limit} /> DM<sub>galaxy</sub> <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rop_galactic_electron_model')} checked={!this.state.hiddenColumns.rop_galactic_electron_model} /> Galactic electron model <br />
+        <input type="checkbox" onChange={this.changeColumnList('rop_galactic_electron_model')} checked={!this.state.hiddenColumnsTemp.rop_galactic_electron_model} /> Galactic electron model <br />
         </td>
         </tr>
         </tbody>
@@ -1741,77 +1793,77 @@ export default class FRBTable extends React.Component {
         <tr><th colSpan='1'>Measured parameters</th></tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_dm')} checked={!this.state.hiddenColumns.rmp_dm} /> DM <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_dm')} checked={!this.state.hiddenColumnsTemp.rmp_dm} /> DM <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_width')} checked={!this.state.hiddenColumns.rmp_width} /> Width <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_width')} checked={!this.state.hiddenColumnsTemp.rmp_width} /> Width <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_snr')} checked={!this.state.hiddenColumns.rmp_snr} /> SNR <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_snr')} checked={!this.state.hiddenColumnsTemp.rmp_snr} /> SNR <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_dm_index')} checked={!this.state.hiddenColumns.rmp_dm_index} /> DM index <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_dm_index')} checked={!this.state.hiddenColumnsTemp.rmp_dm_index} /> DM index <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_flux')} checked={!this.state.hiddenColumns.rmp_flux} /> Flux <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_flux')} checked={!this.state.hiddenColumnsTemp.rmp_flux} /> Flux <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_index')} checked={!this.state.hiddenColumns.rmp_scattering_index} /> Scattering index <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_index')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_index} /> Scattering index <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_scattering')} checked={!this.state.hiddenColumns.rmp_scattering} /> Scattering <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering')} checked={!this.state.hiddenColumnsTemp.rmp_scattering} /> Scattering <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_model')} checked={!this.state.hiddenColumns.rmp_scattering_model} /> Scattering model<br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_model')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_model} /> Scattering model<br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_scattering_timescale')} checked={!this.state.hiddenColumns.rmp_scattering_timescale} /> Scattering timescale<br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_timescale')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_timescale} /> Scattering timescale<br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_linear_poln_frac')} checked={!this.state.hiddenColumns.rmp_linear_poln_frac} /> Linear poln frac <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_linear_poln_frac')} checked={!this.state.hiddenColumnsTemp.rmp_linear_poln_frac} /> Linear poln frac <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_circular_poln_frac')} checked={!this.state.hiddenColumns.rmp_circular_poln_frac} /> Circular poln frac <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_circular_poln_frac')} checked={!this.state.hiddenColumnsTemp.rmp_circular_poln_frac} /> Circular poln frac <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_spectral_index')} checked={!this.state.hiddenColumns.rmp_spectral_index} /> Spectral index <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_spectral_index')} checked={!this.state.hiddenColumnsTemp.rmp_spectral_index} /> Spectral index <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_rm')} checked={!this.state.hiddenColumns.rmp_rm} /> RM <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_rm')} checked={!this.state.hiddenColumnsTemp.rmp_rm} /> RM <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_redshift_host')} checked={!this.state.hiddenColumns.rmp_redshift_host} /> Redshift<sub>host</sub> <br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_redshift_host')} checked={!this.state.hiddenColumnsTemp.rmp_redshift_host} /> Redshift<sub>host</sub> <br />
         </td>
         </tr>
         <tr>
         <td>
-        <input type="checkbox" onChange={this.changeColumn('rmp_dispersion_smearing')} checked={!this.state.hiddenColumns.rmp_dispersion_smearing} /> Dispersion smearing<br />
+        <input type="checkbox" onChange={this.changeColumnList('rmp_dispersion_smearing')} checked={!this.state.hiddenColumnsTemp.rmp_dispersion_smearing} /> Dispersion smearing<br />
         </td>
         </tr>
         </tbody>
@@ -1823,21 +1875,27 @@ export default class FRBTable extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
+          <Button type="button" onClick={this.applyColumnDialog}>Apply</Button>
         </Modal.Footer>
         </Modal>
         <BootstrapTable ref='table'
                         data={ this.props.products } 
                         exportCSV={ true }
-                        pagination={ true}
+	                      csvFileName= { this.getCSVFilename }
+	                      pagination={ true}
                         hover={ true }
-                        options={ this.options}
-                        exportCSV={ true }
+                        options={ options}
                         expandableRow={ this.isExpandableRow }
                         expandComponent={ this.expandComponent }
                         search={ true }
                         expandColumnOptions={
                           {expandColumnVisible: true,
                           expandColumnBeforeSelectColumn: false } }>
+        <TableHeaderColumn dataField="any"
+                           expandable={ false }
+                           width='50px'
+                           dataFormat={this.indexN}>#
+                           </TableHeaderColumn>                          
         <TableHeaderColumn ref='frb_name'
                            dataField='frb_name'
                            isKey={ true }
@@ -2019,7 +2077,7 @@ export default class FRBTable extends React.Component {
                            hidden={this.state.hiddenColumns.rmp_width}
                            dataSort
                            sortFunc={ NaturalSortFunc }
-                           width='100px'>
+                           width='75px'>
                            Width
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_snr'
@@ -2027,7 +2085,7 @@ export default class FRBTable extends React.Component {
                            dataFormat={ nanFormatter }
                            hidden={this.state.hiddenColumns.rmp_snr}
                            dataSort
-                           width='100px'>
+                           width='75px'>
                            SNR
                            </TableHeaderColumn>
         <TableHeaderColumn ref='rmp_flux'
