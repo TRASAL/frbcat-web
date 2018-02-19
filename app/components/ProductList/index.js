@@ -1060,6 +1060,7 @@ class BSTable extends React.Component {
       dataField='frb_name'
       isKey={ true }
       hidden={this.state.hiddenColumns.frb_name}
+      headerText = "FRB name"
       dataSort>
       FRB
       </TableHeaderColumn>
@@ -1097,18 +1098,21 @@ class BSTable extends React.Component {
       <TableHeaderColumn ref='rop_beam_semi_major_axis'
       dataField='rop_beam_semi_major_axis'
       hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
+      headerText = "Beam semi-major axis [arcmin]"
       dataSort>
       Beam semi-major axis
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam_semi_minor_axis'
       dataField='rop_beam_semi_minor_axis'
       hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
+      headerText = "Beam semi-minor axis [arcmin]"
       dataSort>
       Beam semi-minor axis
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam_rotation_angle'
       dataField='rop_beam_rotation_angle'
       hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
+      headerText = "Beam rotation angle [deg]"
       dataSort>
       Beam rotation angle
       </TableHeaderColumn>
@@ -1116,6 +1120,7 @@ class BSTable extends React.Component {
       dataField='rop_raj'
       hidden={this.state.hiddenColumns.rop_raj}
       dataSort
+      headerText = "Right ascension [J2000]"
       sortFunc={ NaturalSortFunc }>
       RAJ
       </TableHeaderColumn>
@@ -1123,42 +1128,49 @@ class BSTable extends React.Component {
       dataField='rop_decj'
       hidden={this.state.hiddenColumns.rop_decj}
       dataSort
+      headerText = "Declination [J2000]"
       sortFunc={ NaturalSortFunc }>
       DECJ
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_gl'
       dataField='rop_gl'
       hidden={this.state.hiddenColumns.rop_gl}
+      headerText = "Galactic longitude [deg]"
       dataSort>
       GL
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_gb'
       dataField='rop_gb'
       hidden={this.state.hiddenColumns.rop_gb}
+      headerText = "Galactic latitude [deg]"
       dataSort>
       GB
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_sampling_time'
       dataField='rop_sampling_time'
       hidden={this.state.hiddenColumns.rop_sampling_time}
+      headerText = "Sampling time [ms]"
       dataSort>
       Sampling time
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_bandwidth'
       dataField='rop_bandwidth'
       hidden={this.state.hiddenColumns.rop_bandwidth}
+      headerText = "Bandwidth [MHz]"
       dataSort>
       Bandwidth
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_centre_frequency'
       dataField='rop_centre_frequency'
       hidden={this.state.hiddenColumns.rop_centre_frequency}
+      headerText = "Centre frequency [MHz]"
       dataSort>
       Centre frequency
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_npol'
       dataField='rop_npol'
       hidden={this.state.hiddenColumns.rop_npol}
+      headerText = "Number of polarisations"
       dataSort>
       Npol
       </TableHeaderColumn>
@@ -1171,18 +1183,21 @@ class BSTable extends React.Component {
       <TableHeaderColumn ref='rop_gain'
       dataField='rop_gain'
       hidden={this.state.hiddenColumns.rop_gain}
+      headerText = "Gain [K/Jy]"
       dataSort>
       Gain
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_tsys'
       dataField='rop_tsys'
       hidden={this.state.hiddenColumns.rop_tsys}
+      headerText = "System temperature [K]"
       dataSort>
       Tsys
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_mw_dm_limit'
       dataField='rop_mw_dm_limit'
       hidden={this.state.hiddenColumns.rop_mw_dm_limit}
+      headerText = "DM galaxy [cm&#x207b;&sup3; pc]"
       dataSort>
       DM<sub>galaxy</sub>
       </TableHeaderColumn>
@@ -1196,6 +1211,7 @@ class BSTable extends React.Component {
       dataField='rmp_dm'
       dataFormat={ priceFormatter }
       hidden={this.state.hiddenColumns.rmp_dm}
+      headerText = "DM [cm&#x207b;&sup3; pc]"
       dataSort
       sortFunc={ NaturalSortFunc }>
       DM
@@ -1204,6 +1220,7 @@ class BSTable extends React.Component {
       dataField='rmp_width'
       dataFormat={ priceFormatter }
       hidden={this.state.hiddenColumns.rmp_width}
+      headerText = "Width [ms]"
       dataSort
       sortFunc={ NaturalSortFunc }>
       Width
@@ -1212,6 +1229,7 @@ class BSTable extends React.Component {
       dataField='rmp_snr'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_snr}
+      headerText = "Signal to noise ratio"
       dataSort>
       SNR
       </TableHeaderColumn>
@@ -1219,6 +1237,7 @@ class BSTable extends React.Component {
       dataField='rmp_flux'
       dataFormat={ priceFormatter }
       hidden={this.state.hiddenColumns.rmp_flux}
+      headerText = "Flux density [Jy]"
       dataSort>
       Flux
       </TableHeaderColumn>
@@ -1240,6 +1259,7 @@ class BSTable extends React.Component {
       dataField='rmp_scattering'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_scattering}
+      headerText = "Scattering [ms]"
       dataSort>
       Scattering
       </TableHeaderColumn>
@@ -1254,6 +1274,7 @@ class BSTable extends React.Component {
       dataField='rmp_scattering_timescale'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_scattering_timescale}
+      headerText = "Scattering timescale [ms]"
       dataSort>
       Scattering timescale
       </TableHeaderColumn>
@@ -1261,6 +1282,7 @@ class BSTable extends React.Component {
       dataField='rmp_linear_poln_frac'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_linear_poln_frac}
+      headerText = "Linear polarisation fraction"
       dataSort>
       Linear poln frac
       </TableHeaderColumn>
@@ -1268,6 +1290,7 @@ class BSTable extends React.Component {
       dataField='rmp_circular_poln_frac'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_circular_poln_frac}
+      headerText = "Circular polarisation fraction"
       dataSort>
       Circular poln frac
       </TableHeaderColumn>
@@ -1296,6 +1319,7 @@ class BSTable extends React.Component {
       dataField='rmp_dispersion_smearing'
       dataFormat={ nanFormatter }
       hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
+      headerText = "Dispersion smearing [ms]"
       dataSort>
       Dispersion smearing
       </TableHeaderColumn>
@@ -1878,310 +1902,334 @@ export default class FRBTable extends React.Component {
           <Button type="button" onClick={this.applyColumnDialog}>Apply</Button>
         </Modal.Footer>
         </Modal>
-        <BootstrapTable ref='table'
-                        data={ this.props.products } 
-                        exportCSV={ true }
-	                      csvFileName= { this.getCSVFilename }
-	                      pagination={ true}
-                        hover={ true }
-                        options={ options}
-                        expandableRow={ this.isExpandableRow }
-                        expandComponent={ this.expandComponent }
-                        search={ true }
-                        expandColumnOptions={
+        <BootstrapTable ref = 'table'
+                        data = { this.props.products } 
+                        exportCSV = { true }
+	                      csvFileName = { this.getCSVFilename }
+	                      pagination = { true}
+                        hover = { true }
+                        options = { options}
+                        expandableRow = { this.isExpandableRow }
+                        expandComponent = { this.expandComponent }
+                        search = { true }
+                        expandColumnOptions = {
                           {expandColumnVisible: true,
                           expandColumnBeforeSelectColumn: false } }>
-        <TableHeaderColumn dataField="any"
-                           expandable={ false }
-                           width='50px'
-                           dataFormat={this.indexN}>#
+        <TableHeaderColumn dataField = "any"
+                           expandable = { false }
+                           width = '50px'
+                           dataFormat = {this.indexN}>#
                            </TableHeaderColumn>                          
-        <TableHeaderColumn ref='frb_name'
-                           dataField='frb_name'
-                           isKey={ true }
-                           hidden={this.state.hiddenColumns.frb_name}
+        <TableHeaderColumn ref = 'frb_name'
+                           dataField = 'frb_name'
+                           isKey = { true }
+                           hidden = {this.state.hiddenColumns.frb_name}
                            dataSort
-                           width='100px'>
+                           headerText = "FRB name"
+                           width = '100px'>
                            FRB
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='verified'
-                           dataField='verified'
-                           hidden={this.state.hiddenColumns.verified}
-                           filter={{type: 'TextFilter', delay: 0, defaultValue: 'true' }}
+        <TableHeaderColumn ref = 'verified'
+                           dataField = 'verified'
+                           hidden = {this.state.hiddenColumns.verified}
+                           filter = {{type: 'TextFilter', delay: 0, defaultValue: 'true' }}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            verified
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='utc'
-                           dataField='utc'
-                           tdStyle={ { whiteSpace: 'normal' } }
-                           hidden={this.state.hiddenColumns.utc}
+        <TableHeaderColumn ref = 'utc'
+                           dataField = 'utc'
+                           tdStyle = { { whiteSpace: 'normal' } }
+                           hidden = {this.state.hiddenColumns.utc}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            UTC
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='telescope'
-                           dataField='telescope'
-                           hidden={this.state.hiddenColumns.telescope}
+        <TableHeaderColumn ref = 'telescope'
+                           dataField = 'telescope'
+                           hidden = {this.state.hiddenColumns.telescope}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Telescope
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_receiver'
-                           dataField='rop_receiver'
-                           hidden={this.state.hiddenColumns.rop_receiver}
+        <TableHeaderColumn ref = 'rop_receiver'
+                           dataField = 'rop_receiver'
+                           hidden = {this.state.hiddenColumns.rop_receiver}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Receiver
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_backend'
-                           dataField='rop_backend'
-                           hidden={this.state.hiddenColumns.rop_backend}
+        <TableHeaderColumn ref = 'rop_backend'
+                           dataField = 'rop_backend'
+                           hidden = {this.state.hiddenColumns.rop_backend}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Backend
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_beam'
-                           dataField='rop_beam'
-                           hidden={this.state.hiddenColumns.rop_beam}
+        <TableHeaderColumn ref = 'rop_beam'
+                           dataField = 'rop_beam'
+                           hidden = {this.state.hiddenColumns.rop_beam}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Beam
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_beam_semi_major_axis'
-                           dataField='rop_beam_semi_major_axis'
-                           hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
+        <TableHeaderColumn ref = 'rop_beam_semi_major_axis'
+                           dataField = 'rop_beam_semi_major_axis'
+                           hidden = {this.state.hiddenColumns.rop_beam_semi_major_axis}
                            dataSort
-                           width='100px'>
+                           headerText = "Beam semi-major axis [arcmin]"
+                           width = '100px'>
                            Beam semi-major axis
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_beam_semi_minor_axis'
-                           dataField='rop_beam_semi_minor_axis'
-                           hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
+        <TableHeaderColumn ref = 'rop_beam_semi_minor_axis'
+                           dataField = 'rop_beam_semi_minor_axis'
+                           hidden = {this.state.hiddenColumns.rop_beam_semi_minor_axis}
                            dataSort
-                           width='100px'>
+                           headerText = "Beam semi-minor axis [arcmin]"
+                           width = '100px'>
                            Beam semi-minor axis
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_beam_rotation_angle'
-                           dataField='rop_beam_rotation_angle'
-                           hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
+        <TableHeaderColumn ref = 'rop_beam_rotation_angle'
+                           dataField = 'rop_beam_rotation_angle'
+                           hidden = {this.state.hiddenColumns.rop_beam_rotation_angle}
                            dataSort
-                           width='100px'>
+                           headerText = "Beam rotation angle [deg]"
+                           width = '100px'>
                            Beam rotation angle
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_raj'
-                           dataField='rop_raj'
-                           hidden={this.state.hiddenColumns.rop_raj}
+        <TableHeaderColumn ref = 'rop_raj'
+                           dataField = 'rop_raj'
+                           hidden = {this.state.hiddenColumns.rop_raj}
                            dataSort
-                           sortFunc={ NaturalSortFunc }
-                           width='100px'>
+                           sortFunc = { NaturalSortFunc }
+                           headerText = "Right ascension [J2000]"
+                           width = '100px'>
                            RAJ
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_decj'
-                           dataField='rop_decj'
-                           hidden={this.state.hiddenColumns.rop_decj}
+        <TableHeaderColumn ref = 'rop_decj'
+                           dataField = 'rop_decj'
+                           hidden = {this.state.hiddenColumns.rop_decj}
                            dataSort
-                           sortFunc={ NaturalSortFunc }
-                           width='100px'>
+                           sortFunc = { NaturalSortFunc }
+                           headerText = "Declination [J2000]"
+                           width = '100px'>
                            DECJ
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_gl'
-                           dataField='rop_gl'
-                           hidden={this.state.hiddenColumns.rop_gl}
+        <TableHeaderColumn ref = 'rop_gl'
+                           dataField = 'rop_gl'
+                           hidden = {this.state.hiddenColumns.rop_gl}
                            dataSort
-                           width='100px'>
-                           GL
+                           headerText = "Galactic longitude [deg]"
+                           width = '100px'>
+                           gl
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_gb'
-                           dataField='rop_gb'
-                           hidden={this.state.hiddenColumns.rop_gb}
+        <TableHeaderColumn ref = 'rop_gb'
+                           dataField = 'rop_gb'
+                           hidden = {this.state.hiddenColumns.rop_gb}
                            dataSort
-                           width='100px'>
-                           GB
+                           headerText = "Galactic latitude [deg]"
+                           width = '100px'>
+                           gb
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_sampling_time'
-                           dataField='rop_sampling_time'
-                           hidden={this.state.hiddenColumns.rop_sampling_time}
+        <TableHeaderColumn ref = 'rop_sampling_time'
+                           dataField = 'rop_sampling_time'
+                           hidden = {this.state.hiddenColumns.rop_sampling_time}
                            dataSort
-                           width='100px'>
+                           headerText = "Sampling time [ms]"
+                           width = '100px'>
                            Sampling time
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_bandwidth'
-                           dataField='rop_bandwidth'
-                           hidden={this.state.hiddenColumns.rop_bandwidth}
+        <TableHeaderColumn ref = 'rop_bandwidth'
+                           dataField = 'rop_bandwidth'
+                           hidden = {this.state.hiddenColumns.rop_bandwidth}
                            dataSort
-                           width='100px'>
+                           headerText = "Bandwidth [MHz]"
+                           width = '100px'>
                            Bandwidth
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_centre_frequency'
-                           dataField='rop_centre_frequency'
-                           hidden={this.state.hiddenColumns.rop_centre_frequency}
+        <TableHeaderColumn ref = 'rop_centre_frequency'
+                           dataField = 'rop_centre_frequency'
+                           hidden = {this.state.hiddenColumns.rop_centre_frequency}
                            dataSort
-                           width='100px'>
+                           headerText = "Centre frequency [MHz]"
+                           width = '100px'>
                            Centre frequency
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_npol'
-                           dataField='rop_npol'
-                           hidden={this.state.hiddenColumns.rop_npol}
+        <TableHeaderColumn ref = 'rop_npol'
+                           dataField = 'rop_npol'
+                           hidden = {this.state.hiddenColumns.rop_npol}
                            dataSort
-                           width='100px'>
+                           headerText = "Number of polarisations"
+                           width = '100px'>
                            Npol
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_bits_per_sample'
-                           dataField='rop_bits_per_sample'
-                           hidden={this.state.hiddenColumns.rop_bits_per_sample}
+        <TableHeaderColumn ref = 'rop_bits_per_sample'
+                           dataField = 'rop_bits_per_sample'
+                           hidden = {this.state.hiddenColumns.rop_bits_per_sample}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Bits per sample
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_gain'
-                           dataField='rop_gain'
-                           hidden={this.state.hiddenColumns.rop_gain}
+        <TableHeaderColumn ref = 'rop_gain'
+                           dataField = 'rop_gain'
+                           hidden = {this.state.hiddenColumns.rop_gain}
                            dataSort
-                           width='100px'>
+                           headerText = "Gain [K/Jy]"
+                           width = '100px'>
                            Gain
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_tsys'
-                           dataField='rop_tsys'
-                           hidden={this.state.hiddenColumns.rop_tsys}
+        <TableHeaderColumn ref = 'rop_tsys'
+                           dataField = 'rop_tsys'
+                           hidden = {this.state.hiddenColumns.rop_tsys}
                            dataSort
-                           width='100px'>
+                           headerText = "System temperature [K]"
+                           width = '100px'>
                            Tsys
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_mw_dm_limit'
-                           dataField='rop_mw_dm_limit'
-                           hidden={this.state.hiddenColumns.rop_mw_dm_limit}
+        <TableHeaderColumn ref = 'rop_mw_dm_limit'
+                           dataField = 'rop_mw_dm_limit'
+                           hidden = {this.state.hiddenColumns.rop_mw_dm_limit}
                            dataSort
-                           width='100px'>
+                           headerText = "DM galaxy [cm&#x207b;&sup3; pc]"
+                           width = '100px'>
                            DM<sub>galaxy</sub>
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rop_galactic_electron_model'
-                           dataField='rop_galactic_electron_model'
-                           hidden={this.state.hiddenColumns.rop_galactic_electron_model}
+        <TableHeaderColumn ref = 'rop_galactic_electron_model'
+                           dataField = 'rop_galactic_electron_model'
+                           hidden = {this.state.hiddenColumns.rop_galactic_electron_model}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Galactic electron model
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_dm'
-                           dataField='rmp_dm'
-                           dataFormat={ priceFormatter }
-                           hidden={this.state.hiddenColumns.rmp_dm}
+        <TableHeaderColumn ref = 'rmp_dm'
+                           dataField = 'rmp_dm'
+                           dataFormat = { priceFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_dm}
                            dataSort
-                           sortFunc={ NaturalSortFunc }
-                           width='100px'>
+                           sortFunc = { NaturalSortFunc }
+                           headerText = "DM [cm&#x207b;&sup3; pc]"
+                           width = '100px'>
                            DM
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_width'
-                           dataField='rmp_width'
-                           dataFormat={ priceFormatter }
-                           hidden={this.state.hiddenColumns.rmp_width}
+        <TableHeaderColumn ref = 'rmp_width'
+                           dataField = 'rmp_width'
+                           dataFormat = { priceFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_width}
                            dataSort
-                           sortFunc={ NaturalSortFunc }
-                           width='75px'>
+                           sortFunc = { NaturalSortFunc }
+                           headerText = "Width [ms]"
+                           width = '75px'>
                            Width
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_snr'
-                           dataField='rmp_snr'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_snr}
+        <TableHeaderColumn ref = 'rmp_snr'
+                           dataField = 'rmp_snr'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_snr}
                            dataSort
-                           width='75px'>
-                           SNR
+                           headerText = "Signal to noise ratio"
+                           width = '75px'>
+                           S/N
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_flux'
-                           dataField='rmp_flux'
-                           dataFormat={ priceFormatter }
-                           hidden={this.state.hiddenColumns.rmp_flux}
+        <TableHeaderColumn ref = 'rmp_flux'
+                           dataField = 'rmp_flux'
+                           dataFormat = { priceFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_flux}
                            dataSort
-                           width='100px'>
+                           headerText = "Flux density [Jy]"
+                           width = '100px'>
                            Flux
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_dm_index'
-                           dataField='rmp_dm_index'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_dm_index}
+        <TableHeaderColumn ref = 'rmp_dm_index'
+                           dataField = 'rmp_dm_index'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_dm_index}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            DM index
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_scattering_index'
-                           dataField='rmp_scattering_index'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_scattering_index}
+        <TableHeaderColumn ref = 'rmp_scattering_index'
+                           dataField = 'rmp_scattering_index'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_scattering_index}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Scattering index
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_scattering'
-                           dataField='rmp_scattering'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_scattering}
+        <TableHeaderColumn ref = 'rmp_scattering'
+                           dataField = 'rmp_scattering'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_scattering}
                            dataSort
+                           headerText = "Scattering [ms]"
                            width='100px'>
                            Scattering
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_scattering_model'
-                           dataField='rmp_scattering_model'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_scattering_model}
+        <TableHeaderColumn ref = 'rmp_scattering_model'
+                           dataField = 'rmp_scattering_model'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_scattering_model}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Scattering model
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_scattering_timescale'
-                           dataField='rmp_scattering_timescale'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_scattering_timescale}
+        <TableHeaderColumn ref = 'rmp_scattering_timescale'
+                           dataField = 'rmp_scattering_timescale'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_scattering_timescale}
                            dataSort
-                           width='100px'>
+                           headerText = "Scattering timescale [ms]"
+                           width = '100px'>
                            Scattering timescale
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_linear_poln_frac'
-                           dataField='rmp_linear_poln_frac'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_linear_poln_frac}
+        <TableHeaderColumn ref = 'rmp_linear_poln_frac'
+                           dataField = 'rmp_linear_poln_frac'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_linear_poln_frac}
                            dataSort
-                           width='100px'>
+                           headerText = "Linear polarisation fraction"
+                           width = '100px'>
                            Linear poln frac
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_circular_poln_frac'
-                           dataField='rmp_circular_poln_frac'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_circular_poln_frac}
+        <TableHeaderColumn ref = 'rmp_circular_poln_frac'
+                           dataField = 'rmp_circular_poln_frac'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_circular_poln_frac}
                            dataSort
+                           headerText = "Circular polarisation fraction"
                            width='100px'>
                            Circular poln frac
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_spectral_index'
-                           dataField='rmp_spectral_index'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_spectral_index}
+        <TableHeaderColumn ref = 'rmp_spectral_index'
+                           dataField = 'rmp_spectral_index'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_spectral_index}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Spectral index
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_rm'
-                           dataField='rmp_rm'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_rm}
+        <TableHeaderColumn ref = 'rmp_rm'
+                           dataField = 'rmp_rm'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_rm}
                            dataSort
-                           sortFunc={ NaturalSortFunc }
-                           width='100px'>
+                           sortFunc = { NaturalSortFunc }
+                           width = '100px'>
                            RM
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_redshift_host'
-                           dataField='rmp_redshift_host'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_redshift_host}
+        <TableHeaderColumn ref = 'rmp_redshift_host'
+                           dataField = 'rmp_redshift_host'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_redshift_host}
                            dataSort
-                           width='100px'>
+                           width = '100px'>
                            Redshift<sub>host</sub>
                            </TableHeaderColumn>
-        <TableHeaderColumn ref='rmp_dispersion_smearing'
-                           dataField='rmp_dispersion_smearing'
-                           dataFormat={ nanFormatter }
-                           hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
+        <TableHeaderColumn ref = 'rmp_dispersion_smearing'
+                           dataField = 'rmp_dispersion_smearing'
+                           dataFormat = { nanFormatter }
+                           hidden = {this.state.hiddenColumns.rmp_dispersion_smearing}
                            dataSort
+                           headerText = "Dispersion smearing [ms]"
                            width='100px'>
                            Dispersion smearing
                            </TableHeaderColumn>
