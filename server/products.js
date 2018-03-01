@@ -55,7 +55,7 @@ let findAll = (req, res, next) => {
                "JOIN radio_observations_params rop ON (o.id = rop.obs_id) ",
                "JOIN radio_measured_params rmp ON (rop.id = rmp.rop_id) ",
                "JOIN authors armp ON (rmp.author_id = armp.id) ",
-               "WHERE (rmp.rank = 1) ORDER BY f.name,o.utc"].join('\n');
+               "WHERE (rmp.rank = 1 AND f.private = FALSE) ORDER BY f.name,o.utc"].join('\n');
             db.query(sql, values.concat([]))
                 .then(products => {
                     return res.json({"products": products});
