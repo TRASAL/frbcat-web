@@ -1438,30 +1438,10 @@ export default class FRBTable extends React.Component {
     this.expandComponent = this.expandComponent.bind(this);
     this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
     this.getCSVFilename = this.getCSVFilename.bind(this);
-    this.indexN = this.indexN.bind(this);
-    this.expandColumnComponent  = this.expandColumnComponent.bind(this);
     this.changeStateAttributeValue = this.changeStateAttributeValue.bind(this);
     this.onPageChange = this.onPageChange.bind(this);
     this.sizePerPageListChange = this.sizePerPageListChange.bind(this);
   }
-
-  indexN(cell, row, enumObject, index) {
-      var idx = ((this.state['page']-1) * this.state['sizePerPage']) + index + 1
-      return (<div>{idx}</div>) 
-  }
-
-  expandColumnComponent({ isExpandableRow, isExpanded }) {
-    let content = '';
-
-    if (isExpandableRow) {
-      content = (isExpanded ? '(-)' : '(+)' );
-    } else {
-      content = ' ';
-    }
-    return (
-      <div> { content } </div>
-    );
-}
 
   getCSVFilename() {
     const datestamp = (new Date()).toISOString().slice(0,10).replace(/-/g,"")
@@ -1915,11 +1895,6 @@ export default class FRBTable extends React.Component {
                         expandColumnOptions = {
                           {expandColumnVisible: true,
                           expandColumnBeforeSelectColumn: false } }>
-        <TableHeaderColumn dataField = "any"
-                           expandable = { false }
-                           width = '50px'
-                           dataFormat = {this.indexN}>#
-                           </TableHeaderColumn>                          
         <TableHeaderColumn ref = 'frb_name'
                            dataField = 'frb_name'
                            isKey = { true }
