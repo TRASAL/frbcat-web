@@ -1,0 +1,20 @@
+{
+    "description": "Web frontend to the Fast Radio Burst Catalogue",
+    "license": "Apache-2.0",
+    "title": "frbcatdb-web",
+    "upload_type": "software",
+    "creators": [
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "van Haren, Ronald"
+        }
+    ],
+    "access_right": "open",
+    "keywords": [
+        "Fast Radio Bursts",
+        "FRB",
+        "Apertif",
+        "radio astronomy",
+        "VOEvent"
+    ]
+}
