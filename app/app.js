@@ -56,10 +56,14 @@ class App extends React.Component {
     }
 
     render() {
+        // get csvURL from config file
+        var config = require('../server/config'),
+        csvURL = config.csvURL;
+        // return webpage
         return (
             <div>
                 <Header text="FRB Catalogue"/>
-                <FRBCatTXT/>
+                <FRBCatTXT csv={csvURL}/>
                 <ProductList products={this.state.products} total={this.state.total} onSearchKeyChange={this.searchKeyChangeHandler.bind(this)}/>
                 <Footer text="footer"/>
             </div>
