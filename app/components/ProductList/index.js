@@ -7,6 +7,10 @@ import Gallery from 'react-grid-gallery';
 let libraries = {};
 let order= 'desc';
 
+//  =========================================
+//  Cosmo calculations
+//  based on code from original frbcat (cosmocalc.js)
+//  =========================================
 // begin values from cosmocalc.js
 var i=0;  // index
 var n=1000; // number of points in integrals
@@ -155,8 +159,11 @@ function computeEnergy (fluence, dl, bandwidth, z)
   var energy = (e1 * e2 * e3) / e4;
   return energy;
 }
-// end values from cosmocalc.js
 
+
+//  =========================================
+//  Formatting functions
+//  =========================================
 function enumFormatter(cell, row, enumObject) {
   return enumObject[cell];
 }
@@ -224,8 +231,6 @@ function supsub_formatter(variable, upper_error, lower_error) {
   }
 }
 
-function isRNaN(a) { return a !== a; };
-
 function plusmn_formatter(variable, error) {
   // return variable with +-error if available, else return variable
   if (!isNaN(parseFloat(error))) {
@@ -235,6 +240,39 @@ function plusmn_formatter(variable, error) {
     // return variable
     return variable;
   }
+}
+
+function htmlFormatter(cell) {
+  if ((cell === '-1')) {
+    return;
+  } else {
+    return he.decode(`${cell}`);
+  }
+}
+
+function priceFormatter(cell, row) {
+  if ((cell === '-1')) {
+    return;
+  } else {
+    return `${cell}`;
+  }
+}
+
+function nanFormatter(cell, row) {
+  if ((cell === -1)) {
+    return;
+  } else {
+    return cell;
+  }
+}
+
+function uint8ToBase64(buffer) {
+     var binary = '';
+     var len = buffer.byteLength;
+     for (var i = 0; i < len; i++) {
+         binary += String.fromCharCode(buffer[i]);
+     }
+     return window.btoa( binary );
 }
 
 function nextChar(index) {
@@ -260,6 +298,11 @@ function superscript_list(itemlist) {
   }
   </div>;
 }
+
+
+//  =========================================
+//  Sorting function
+//  =========================================
 
 function NaturalSortFunc(a, b, order, sortField) {
   /*
@@ -318,16 +361,13 @@ function NaturalSortFunc(a, b, order, sortField) {
   }
 }
 
-function uint8ToBase64(buffer) {
-     var binary = '';
-     var len = buffer.byteLength;
-     for (var i = 0; i < len; i++) {
-         binary += String.fromCharCode(buffer[i]);
-     }
-     return window.btoa( binary );
-}
+
+//  =========================================
+//  Notes for radio observation params
+//  =========================================
 
 class RopNotesComponent extends React.Component {
+  // Render a list of notes for the radio observations params
   constructor(props) {
     super(props);
     this.state = { rop_notes: [],
@@ -366,7 +406,13 @@ class RopNotesComponent extends React.Component {
   }
 }
 
+
+//  =========================================
+//  Notes for radio measured params
+//  =========================================
+
 class RmpNotesComponent extends React.Component {
+  // Render list of notes for radio measured params
   constructor(props) {
     super(props);
     this.state = { rmp_notes: [],
@@ -405,7 +451,13 @@ class RmpNotesComponent extends React.Component {
   }
 }
 
+
+//  =========================================
+//  Notes for FRBs
+//  =========================================
+
 class FrbNotesComponent extends React.Component {
+  // Render a list of notes for FRBs
   constructor(props) {
     super(props);
     this.state = { frb_notes: [],
@@ -444,7 +496,13 @@ class FrbNotesComponent extends React.Component {
   }
 }
 
+
+//  =========================================
+//  Publications for radio measured params
+//  =========================================
+
 class RmpPubsComponent extends React.Component {
+  // Render a list of publications for radio measured params
   constructor(props) {
     super(props);
     this.state = { rmp_pubs: [],
@@ -480,7 +538,13 @@ class RmpPubsComponent extends React.Component {
   }
 }
 
+
+//  =========================================
+//  Images for radio measured params
+//  =========================================
+
 class RmpImagesComponent extends React.Component {
+  // Render image gallery for radio measured params images
   constructor(props) {
     super(props);
     this.state = { rmp_images: [],
@@ -567,6 +631,13 @@ class RmpImagesComponent extends React.Component {
     }
   }
 }
+
+
+//  =========================================
+//  React bootstrap expand table
+//  Including detailed overview modal
+//  =========================================
+
 class BSTable extends React.Component {
   constructor(props) {
     super(props);
@@ -781,6 +852,7 @@ class BSTable extends React.Component {
   render() {
     const { showModal, meas, input_fields_tWM, input_fields_tH0, input_fields_tWV } = this.state;
     if (Object.keys(this.state.product).length != 0) {
+    // Define detailed overview page
       return (
         <div>
         <Modal show={this.state.showModal} onHide={this.closeColumnDialg} dialogClassName="my-modal">
@@ -789,258 +861,291 @@ class BSTable extends React.Component {
         </Modal.Header>
         <Modal.Body>
         <table width='100%'>
-        <tbody className='selectcol'>
-        <tr><td width='50%'>
-        <table className='standard' cellPadding='5px' width='300px'>
-        <tbody>
-        <tr><th colSpan='3'>FRB Parameters</th></tr>
-        <tr>
-        <td width='50%'><b>Name</b></td>
-        <td colSpan='2'>{meas.frb_name}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>UTC</b></td>
-        <td colSpan='2'>{meas.utc}</td>
-        </tr>
-        </tbody>
-        </table>
-        <FrbNotesComponent frb_id={meas.frb_id} />
-        </td>
-        </tr>
-        </tbody>
+          <tbody className='selectcol'>
+            <tr>
+              <td width='50%'>
+                <table className='standard' cellPadding='5px' width='300px'>
+                  <tbody>
+                    <tr><th colSpan='3'>FRB Parameters</th></tr>
+                    <tr>
+                      <td width='50%'><b>Name</b></td>
+                      <td colSpan='2'>{meas.frb_name}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>UTC</b></td>
+                      <td colSpan='2'>{meas.utc}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <FrbNotesComponent frb_id={meas.frb_id} />
+              </td>
+            </tr>
+          </tbody>
         </table>
         <table width='100%'>
-        <tbody>
-        <tr><td width='50%'>
-        <table className='standard' cellPadding='5px' width='100%'>
-        <tbody>
-        <tr><th colSpan='3'>Observation Parameters</th></tr>
-        <tr>
-        <td width='50%'><b>Telescope</b></td>
-        <td colSpan='2'>{meas.telescope}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Receiver</b></td>
-        <td colSpan='2'>{meas.rop_receiver}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Backend</b></td>
-        <td colSpan='2'>{meas.rop_backend}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Beam</b></td>
-        <td colSpan='2'>{meas.rop_beam}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Beam semi-major axis</b></td>
-        <td width='30%'>{meas.rop_beam_semi_major_axis}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_beam_semi_major_axis, '[arcmin]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Beam semi-minor axis</b></td>
-        <td width='30%'>{meas.rop_beam_semi_minor_axis}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_beam_semi_minor_axis, '[arcmin]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Beam rotation angle</b></td>
-        <td width='30%'>{meas.rop_beam_rotation_angle}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_beam_rotation_angle, '[deg]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Sampling Time</b></td>
-        <td width='30%'>{meas.rop_sampling_time}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_sampling_time, '[ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Bandwidth</b></td>
-        <td width='30%'>{meas.rop_bandwidth}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_bandwidth, '[MHz]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Centre Frequency</b></td>
-        <td width='30%'>{meas.rop_centre_frequency}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_centre_frequency, '[MHz]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Number of Polarisations</b></td>
-        <td colSpan='2'>{meas.rop_npol}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Bits per sample</b></td>
-        <td colSpan='2'>{meas.rop_bits_per_sample}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Gain</b></td>
-        <td width='30%'>{meas.rop_gain}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_gain, '[K/Jy]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>System Temperature</b></td>
-        <td width='30%'>{meas.rop_tsys}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_tsys, '[K]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Reference</b></td>
-        <td colSpan='2'><RmpPubsComponent rmp_id={meas.rmp_id} /></td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Raw Data</b></td>
-        <td colSpan='2'>{linkFormatter(meas.o_data_link)}</td>
-        </tr>
-        </tbody>
-        </table>
-        <RopNotesComponent rop_id={meas.rop_id} />
-        <div className='rmp'>
-        <table className='standard' cellPadding='5px' width='100%'>
-        <tbody>
-        <tr><th colSpan='3'>Measured Parameters</th></tr>
-        <tr>
-        <td width='50%'><b>RAJ</b></td>
-        <td width='30%'>{meas.rop_raj}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_raj, '[J2000]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>DECJ</b></td>
-        <td width='30%'>{meas.rop_decj}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_decj, '[J2000]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>gl</b></td>
-        <td width='30%'>{meas.rop_gl}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_gl, '[deg]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>gb</b></td>
-          <td width='30%'>{meas.rop_gb}</td>
-        <td width='20%'>{unitsFormatter(meas.rop_gb, '[deg]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>DM</b></td>
-        <td width='30%'>{plusmn_formatter(meas.rmp_dm, meas.rmp_dm_error)}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_dm, <div>[cm<sup>-3</sup> pc]</div>)}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>S/N</b></td>
-        <td colSpan='2'>{meas.rmp_snr}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>{subsupstr_formatter('W', 'obs', '', '')}</b></td>
-        <td width='30%'>{supsub_formatter(meas.rmp_width, meas.rmp_width_error_upper, meas.rmp_width_error_lower)}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_width, '[ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>{subsupstr_formatter('S', 'peak,obs', '', '')}</b></td>
-        <td width='30%'>{supsub_formatter(meas.rmp_flux, meas.rmp_flux_error_upper, meas.rmp_flux_error_lower)}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_flux, '[Jy]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>{subsupstr_formatter('F', 'obs', '', '')}</b></td>
-        <td width='30%'>{supsub_formatter(floatFormatter(this.state.derived_fluence, 2), floatFormatter(this.state.derived_fluence_error_upper, 2), floatFormatter(this.state.derived_fluence_error_lower, 2))}</td>
-        <td width='20%'>{unitsFormatter(this.state.derived_fluence, '[Jy ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>DM Index</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_dm_index, meas.rmp_dm_index_error)}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Dispersion smearing</b></td>
-        <td width='30%'>{meas.rmp_dispersion_smearing}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_dispersion_smearing, '[ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Scattering Index</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>{subsupstr_formatter('Scattering', '', meas.rmp_scattering_model, 'a')}</b></td>
-        <td width='30%'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_scattering, '[ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Scattering timescale</b></td>
-        <td width='30%'>{meas.rmp_scattering_timescale}</td>
-        <td width='20%'>{unitsFormatter(meas.rmp_scattering_timescale, '[ms]')}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Linear Poln Fraction</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_linear_poln_frac, meas.rmp_linear_poln_frac_error)}</td>
-        </tr>
-        <tr>
-        <td width='50%'><b>Circular Poln Fraction</b></td>
-        <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
-        </tr>
-        </tbody>
-        </table>
-        <RmpNotesComponent rmp_id={meas.rmp_id} />
-        <table width='100%'>
-        <tbody className='selectcol'>
-        <tr><td width='50%'>
-        <table className='standard' cellPadding='5px' width='50%'>
-        <tbody>
-        <tr><th colSpan='3'>Derived Parameters</th></tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('DM', 'galaxy', meas.rop_galactic_electron_model, 'b')}</b></td>
-        <td width='30%'>{floatFormatter(meas.rop_mw_dm_limit, 2)}</td>
-        <td width='30%'>{unitsFormatter(meas.rop_mw_dm_limit, <div>[cm<sup>-3</sup> pc]</div>)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
-        <td width='30%'>{floatFormatter(this.state.derived_dm_excess, 2)}</td>
-        <td width='30%'>{unitsFormatter(this.state.derived_dm_excess, <div>[cm<sup>-3</sup> pc]</div>)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
-        <td colSpan='2'>{floatFormatter(this.state.derived_redshift, 2)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
-        <td colSpan='2'>{floatFormatter(meas.rmp_redshift_host, 2)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
-        <td width='30%'>{floatFormatter(this.state.derived_dist_comoving, 2)}</td>
-        <td width='30%'>{unitsFormatter(this.state.derived_dist_comoving, '[Gpc]')}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>{subsupstr_formatter('D', 'luminosity', '', '')}</b></td>
-        <td width='30%'>{floatFormatter(this.state.derived_dist_luminosity, 2)}</td>
-        <td width='30%'>{unitsFormatter(this.state.derived_dist_luminosity, '[Gpc]')}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>Energy</b></td>
-        <td width='30%'>{floatFormatter(this.state.derived_energy, 2)}</td>
-        <td width='30%'>{unitsFormatter(this.state.derived_energy, <div>[10<sup>32</sup> J]</div>)}</td>
-        </tr>
-        <tr>
-        <td width='40%'><b>Channel Bandwidth</b></td>
-        <td width='30%'>{floatFormatter(meas.rop_channel_bandwidth, 2)}</td>
-        <td width='30%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
-        </tr>
-        </tbody>
-        </table>
-        </td>
-        <td width='50%'>
-        <form name='getval'>
-        <table className='standard'>
-        <tbody>
-        <tr><th colSpan='2'>Cosmological Parameters</th></tr>
-        <tr><td>{subsupstr_formatter('Omega','M', '', '')}</td><td><input type='number' name='input_fields_tWM' defaultValue={this.state.input_fields_tWM} onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>{subsupstr_formatter('H', 'o', '', '')}</td><td><input type='number' name='input_fields_tH0' defaultValue={this.state.input_fields_tH0}
-        onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        <tr><td>{subsupstr_formatter('Omega', 'vac', '', '')}</td><td><input type='number' name='input_fields_tWV' defaultValue={this.state.input_fields_tWV}
-        onChange={this.updateField.bind(this)} size='4'></input></td></tr>
-        </tbody>
-        </table>
-        <input type='button' onClick={this.updateDerived.bind(this)} value='Update Derived Params'/>
-        </form>
-        <font size='-2'>Calculation Method: <a href='http://adsabs.harvard.edu/abs/2006PASP..118.1711W'>Wright (2006, PASP, 118, 1711)</a></font>
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        </div>
-        </td>
-        </tr>
+          <tbody>
+            <tr>
+              <td width='50%'>
+                <table className='standard' cellPadding='5px' width='100%'>
+                  <tbody>
+                    <tr><th colSpan='3'>Observation Parameters</th></tr>
+                    <tr>
+                      <td width='50%'><b>Telescope</b></td>
+                      <td colSpan='2'>{meas.telescope}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Receiver</b></td>
+                      <td colSpan='2'>{meas.rop_receiver}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Backend</b></td>
+                      <td colSpan='2'>{meas.rop_backend}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Beam</b></td>
+                      <td colSpan='2'>{meas.rop_beam}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Beam semi-major axis</b></td>
+                      <td width='30%'>{meas.rop_beam_semi_major_axis}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_beam_semi_major_axis, '[arcmin]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Beam semi-minor axis</b></td>
+                      <td width='30%'>{meas.rop_beam_semi_minor_axis}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_beam_semi_minor_axis, '[arcmin]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Beam rotation angle</b></td>
+                      <td width='30%'>{meas.rop_beam_rotation_angle}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_beam_rotation_angle, '[deg]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Sampling Time</b></td>
+                      <td width='30%'>{meas.rop_sampling_time}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_sampling_time, '[ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Bandwidth</b></td>
+                      <td width='30%'>{meas.rop_bandwidth}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_bandwidth, '[MHz]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Centre Frequency</b></td>
+                      <td width='30%'>{meas.rop_centre_frequency}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_centre_frequency, '[MHz]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Number of Polarisations</b></td>
+                      <td colSpan='2'>{meas.rop_npol}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Bits per sample</b></td>
+                      <td colSpan='2'>{meas.rop_bits_per_sample}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Gain</b></td>
+                      <td width='30%'>{meas.rop_gain}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_gain, '[K/Jy]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>System Temperature</b></td>
+                      <td width='30%'>{meas.rop_tsys}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_tsys, '[K]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Reference</b></td>
+                      <td colSpan='2'><RmpPubsComponent rmp_id={meas.rmp_id} /></td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Raw Data</b></td>
+                      <td colSpan='2'>{linkFormatter(meas.o_data_link)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              <RopNotesComponent rop_id={meas.rop_id} />
+              <div className='rmp'>
+                <table className='standard' cellPadding='5px' width='100%'>
+                  <tbody>
+                    <tr><th colSpan='3'>Measured Parameters</th></tr>
+                    <tr>
+                      <td width='50%' title="Right ascension"><b>RAJ</b></td>
+                      <td width='30%'>{meas.rop_raj}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_raj, '[J2000]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%' title="Declination"><b>DECJ</b></td>
+                      <td width='30%'>{meas.rop_decj}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_decj, '[J2000]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%' title="Galactic longitude"><b>gl</b></td>
+                      <td width='30%'>{meas.rop_gl}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_gl, '[deg]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%' title="Galactic latitude"><b>gb</b></td>
+                      <td width='30%'>{meas.rop_gb}</td>
+                      <td width='20%'>{unitsFormatter(meas.rop_gb, '[deg]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>DM</b></td>
+                      <td width='30%'>{plusmn_formatter(meas.rmp_dm, meas.rmp_dm_error)}</td>
+                      <td width='20%'>{unitsFormatter(meas.rmp_dm, <div>[cm<sup>-3</sup> pc]</div>)}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%' title="Signal to noise ratio"><b>S/N</b></td>
+                      <td colSpan='2'>{meas.rmp_snr}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%' title="Width"><b>{subsupstr_formatter('W', 'obs', '', '')}</b></td>
+                      <td width='30%'>{supsub_formatter(meas.rmp_width, meas.rmp_width_error_upper,
+                                                        meas.rmp_width_error_lower)}</td>
+                      <td width='20%'>{unitsFormatter(meas.rmp_width, '[ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>{subsupstr_formatter('S', 'peak,obs', '', '')}</b></td>
+                      <td width='30%'>{supsub_formatter(meas.rmp_flux, meas.rmp_flux_error_upper, meas.rmp_flux_error_lower)}</td>
+                      <td width='20%' title="Flux density">{unitsFormatter(meas.rmp_flux, '[Jy]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>{subsupstr_formatter('F', 'obs', '', '')}</b></td>
+                      <td width='30%'>{supsub_formatter(floatFormatter(this.state.derived_fluence, 2),
+                                                        floatFormatter(this.state.derived_fluence_error_upper, 2),
+                                                        floatFormatter(this.state.derived_fluence_error_lower, 2))}</td>
+                      <td width='20%'>{unitsFormatter(this.state.derived_fluence, '[Jy ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>DM Index</b></td>
+                      <td colSpan='2'>{plusmn_formatter(meas.rmp_dm_index, meas.rmp_dm_index_error)}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Dispersion smearing</b></td>
+                      <td width='30%'>{meas.rmp_dispersion_smearing}</td>
+                      <td width='20%'>{unitsFormatter(meas.rmp_dispersion_smearing, '[ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Scattering Index</b></td>
+                      <td colSpan='2'>{plusmn_formatter(meas.rmp_scattering_index, meas.rmp_scattering_index_error)}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>{subsupstr_formatter('Scattering', '', meas.rmp_scattering_model, 'a')}</b></td>
+                      <td width='30%'>{plusmn_formatter(meas.rmp_scattering, meas.rmp_scattering_error)}</td>
+                      <td width='20%'>{unitsFormatter(meas.rmp_scattering, '[ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Scattering timescale</b></td>
+                      <td width='30%'>{meas.rmp_scattering_timescale}</td>
+                      <td width='20%'>{unitsFormatter(meas.rmp_scattering_timescale, '[ms]')}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Linear Poln Fraction</b></td>
+                      <td colSpan='2'>{plusmn_formatter(meas.rmp_linear_poln_frac, meas.rmp_linear_poln_frac_error)}</td>
+                    </tr>
+                    <tr>
+                      <td width='50%'><b>Circular Poln Fraction</b></td>
+                      <td colSpan='2'>{plusmn_formatter(meas.rmp_circular_poln_frac, meas.rmp_circulat_poln_frac_error)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <RmpNotesComponent rmp_id={meas.rmp_id} />
+                <table width='100%'>
+                  <tbody className='selectcol'>
+                    <tr>
+                      <td width='50%'>
+                        <table className='standard' cellPadding='5px' width='50%'>
+                          <tbody>
+                            <tr><th colSpan='3'>Derived Parameters</th></tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('DM', 'galaxy', meas.rop_galactic_electron_model, 'b')}</b></td>
+                              <td width='30%'>{floatFormatter(meas.rop_mw_dm_limit, 2)}</td>
+                              <td width='30%'>{unitsFormatter(meas.rop_mw_dm_limit, <div>[cm<sup>-3</sup> pc]</div>)}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('DM', 'excess', '', '')}</b></td>
+                              <td width='30%'>{floatFormatter(this.state.derived_dm_excess, 2)}</td>
+                              <td width='30%'>{unitsFormatter(this.state.derived_dm_excess, <div>[cm<sup>-3</sup> pc]</div>)}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('Redshift', 'inferred', '', '')}</b></td>
+                              <td colSpan='2'>{floatFormatter(this.state.derived_redshift, 2)}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('Redshift', 'host', '', '')}</b></td>
+                              <td colSpan='2'>{floatFormatter(meas.rmp_redshift_host, 2)}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('D', 'comoving', '', '')}</b></td>
+                              <td width='30%'>{floatFormatter(this.state.derived_dist_comoving, 2)}</td>
+                              <td width='30%'>{unitsFormatter(this.state.derived_dist_comoving, '[Gpc]')}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>{subsupstr_formatter('D', 'luminosity', '', '')}</b></td>
+                              <td width='30%'>{floatFormatter(this.state.derived_dist_luminosity, 2)}</td>
+                              <td width='30%'>{unitsFormatter(this.state.derived_dist_luminosity, '[Gpc]')}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>Energy</b></td>
+                              <td width='30%'>{floatFormatter(this.state.derived_energy, 2)}</td>
+                              <td width='30%'>{unitsFormatter(this.state.derived_energy, <div>[10<sup>32</sup> J]</div>)}</td>
+                            </tr>
+                            <tr>
+                              <td width='40%'><b>Channel Bandwidth</b></td>
+                              <td width='30%'>{floatFormatter(meas.rop_channel_bandwidth, 2)}</td>
+                              <td width='30%'>{unitsFormatter(meas.rop_channel_bandwidth, '[MHz]')}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td width='50%'>
+                        <form name='getval'>
+                          <table className='standard'>
+                            <tbody>
+                              <tr><th colSpan='2'>Cosmological Parameters</th></tr>
+                              <tr>
+                                <td>{subsupstr_formatter('Omega','M', '', '')}</td>
+                                <td>
+                                  <input type='number'
+                                         name='input_fields_tWM'
+                                         defaultValue={this.state.input_fields_tWM}
+                                         onChange={this.updateField.bind(this)}
+                                         size='4'>
+                                  </input>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{subsupstr_formatter('H', 'o', '', '')}</td>
+                                <td>
+                                  <input type='number' 
+                                           name='input_fields_tH0'
+                                           defaultValue={this.state.input_fields_tH0}
+                                           onChange={this.updateField.bind(this)} size='4'>
+                                  </input>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{subsupstr_formatter('Omega', 'vac', '', '')}</td>
+                                <td>
+                                  <input type='number'
+                                         name='input_fields_tWV'
+                                         defaultValue={this.state.input_fields_tWV}
+                                         onChange={this.updateField.bind(this)}
+                                         size='4'>
+                                  </input>
+                                </td>
+                              </tr>
+                            </tbody>
+                           </table>
+                        <input type='button' onClick={this.updateDerived.bind(this)} value='Update Derived Params'/>
+                        </form>
+                      <font size='-2'>Calculation Method: <a href="http://adsabs.harvard.edu/abs/2006PASP..118.1711W">Wright (2006, PASP, 118, 1711)</a></font>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
         </tbody>
         </table>
         <RmpImagesComponent rmp_id={meas.rmp_id} />
@@ -1050,278 +1155,276 @@ class BSTable extends React.Component {
         <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
         </Modal.Footer>
         </Modal>
-        <BootstrapTable data={ this.state.product } maxHeight='300px' scrollTop={ 'Bottom' }>
-      <TableHeaderColumn
-      dataField='button'
-      dataFormat={this.customInfoButton.bind(this)}
-      width='55'
-      />
+      <BootstrapTable data={ this.state.product } maxHeight='300px' scrollTop={ 'Bottom' }>
+      <TableHeaderColumn dataField='button'
+                         dataFormat={this.customInfoButton.bind(this)}
+                         width='55' />
       <TableHeaderColumn ref='frb_name'
-      dataField='frb_name'
-      isKey={ true }
-      hidden={this.state.hiddenColumns.frb_name}
-      headerText = "FRB name"
-      dataSort>
-      FRB
+                         dataField='frb_name'
+                        isKey={ true }
+                        hidden={this.state.hiddenColumns.frb_name}
+                        headerText = "FRB name"
+                        dataSort>
+                        FRB
       </TableHeaderColumn>
       <TableHeaderColumn ref='utc'
-      dataField='utc'
-      tdStyle={ { whiteSpace: 'normal' } }
-      hidden={this.state.hiddenColumns.utc}
-      dataSort>
-      UTC
+                        dataField='utc'
+                        tdStyle={ { whiteSpace: 'normal' } }
+                        hidden={this.state.hiddenColumns.utc}
+                        dataSort>
+                        UTC
       </TableHeaderColumn>
       <TableHeaderColumn ref='telescope'
-      dataField='telescope'
-      hidden={this.state.hiddenColumns.telescope}
-      dataSort>
-      Telescope
+                         dataField='telescope'
+                         hidden={this.state.hiddenColumns.telescope}
+                         dataSort>
+                         Telescope
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_receiver'
-      dataField='rop_receiver'
-      hidden={this.state.hiddenColumns.rop_receiver}
-      dataSort>
-      Receiver
+                         dataField='rop_receiver'
+                         hidden={this.state.hiddenColumns.rop_receiver}
+                         dataSort>
+                         Receiver
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_backend'
-      dataField='rop_backend'
-      hidden={this.state.hiddenColumns.rop_backend}
-      dataSort>
-      Backend
+                         dataField='rop_backend'
+                         hidden={this.state.hiddenColumns.rop_backend}
+                         dataSort>
+                         Backend
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam'
-      dataField='rop_beam'
-      hidden={this.state.hiddenColumns.rop_beam}
-      dataSort>
-      Beam
+                         dataField='rop_beam'
+                         hidden={this.state.hiddenColumns.rop_beam}
+                         dataSort>
+                         Beam
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam_semi_major_axis'
-      dataField='rop_beam_semi_major_axis'
-      hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
-      headerText = "Beam semi-major axis [arcmin]"
-      dataSort>
-      Beam semi-major axis
+                         dataField='rop_beam_semi_major_axis'
+                         hidden={this.state.hiddenColumns.rop_beam_semi_major_axis}
+                         headerText = "Beam semi-major axis [arcmin]"
+                         dataSort>
+                         Beam semi-major axis
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam_semi_minor_axis'
-      dataField='rop_beam_semi_minor_axis'
-      hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
-      headerText = "Beam semi-minor axis [arcmin]"
-      dataSort>
-      Beam semi-minor axis
+                         dataField='rop_beam_semi_minor_axis'
+                         hidden={this.state.hiddenColumns.rop_beam_semi_minor_axis}
+                         headerText = "Beam semi-minor axis [arcmin]"
+                         dataSort>
+                         Beam semi-minor axis
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_beam_rotation_angle'
-      dataField='rop_beam_rotation_angle'
-      hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
-      headerText = "Beam rotation angle [deg]"
-      dataSort>
-      Beam rotation angle
+                         dataField='rop_beam_rotation_angle'
+                         hidden={this.state.hiddenColumns.rop_beam_rotation_angle}
+                         headerText = "Beam rotation angle [deg]"
+                         dataSort>
+                         Beam rotation angle
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_raj'
-      dataField='rop_raj'
-      hidden={this.state.hiddenColumns.rop_raj}
-      dataSort
-      headerText = "Right ascension [J2000]"
-      sortFunc={ NaturalSortFunc }>
-      RAJ
+                         dataField='rop_raj'
+                         hidden={this.state.hiddenColumns.rop_raj}
+                         dataSort
+                         headerText = "Right ascension [J2000]"
+                         sortFunc={ NaturalSortFunc }>
+                         RAJ
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_decj'
-      dataField='rop_decj'
-      hidden={this.state.hiddenColumns.rop_decj}
-      dataSort
-      headerText = "Declination [J2000]"
-      sortFunc={ NaturalSortFunc }>
-      DECJ
+                         dataField='rop_decj'
+                         hidden={this.state.hiddenColumns.rop_decj}
+                         dataSort
+                         headerText = "Declination [J2000]"
+                         sortFunc={ NaturalSortFunc }>
+                         DECJ
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_gl'
-      dataField='rop_gl'
-      hidden={this.state.hiddenColumns.rop_gl}
-      headerText = "Galactic longitude [deg]"
-      dataSort>
-      GL
+                         dataField='rop_gl'
+                         hidden={this.state.hiddenColumns.rop_gl}
+                         headerText = "Galactic longitude [deg]"
+                         dataSort>
+                         gl
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_gb'
-      dataField='rop_gb'
-      hidden={this.state.hiddenColumns.rop_gb}
-      headerText = "Galactic latitude [deg]"
-      dataSort>
-      GB
+                         dataField='rop_gb'
+                         hidden={this.state.hiddenColumns.rop_gb}
+                         headerText = "Galactic latitude [deg]"
+                         dataSort>
+                         gb
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_sampling_time'
-      dataField='rop_sampling_time'
-      hidden={this.state.hiddenColumns.rop_sampling_time}
-      headerText = "Sampling time [ms]"
-      dataSort>
-      Sampling time
+                         dataField='rop_sampling_time'
+                         hidden={this.state.hiddenColumns.rop_sampling_time}
+                         headerText = "Sampling time [ms]"
+                         dataSort>
+                         Sampling time
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_bandwidth'
-      dataField='rop_bandwidth'
-      hidden={this.state.hiddenColumns.rop_bandwidth}
-      headerText = "Bandwidth [MHz]"
-      dataSort>
-      Bandwidth
+                         dataField='rop_bandwidth'
+                         hidden={this.state.hiddenColumns.rop_bandwidth}
+                         headerText = "Bandwidth [MHz]"
+                         dataSort>
+                         Bandwidth
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_centre_frequency'
-      dataField='rop_centre_frequency'
-      hidden={this.state.hiddenColumns.rop_centre_frequency}
-      headerText = "Centre frequency [MHz]"
-      dataSort>
-      Centre frequency
+                         dataField='rop_centre_frequency'
+                         hidden={this.state.hiddenColumns.rop_centre_frequency}
+                         headerText = "Centre frequency [MHz]"
+                         dataSort>
+                         Centre frequency
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_npol'
-      dataField='rop_npol'
-      hidden={this.state.hiddenColumns.rop_npol}
-      headerText = "Number of polarisations"
-      dataSort>
-      Npol
+                         dataField='rop_npol'
+                         hidden={this.state.hiddenColumns.rop_npol}
+                         headerText = "Number of polarisations"
+                         dataSort>
+                         Npol
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_bits_per_sample'
-      dataField='rop_bits_per_sample'
-      hidden={this.state.hiddenColumns.rop_bits_per_sample}
-      dataSort>
-      Bits per sample
+                         dataField='rop_bits_per_sample'
+                         hidden={this.state.hiddenColumns.rop_bits_per_sample}
+                         dataSort>
+                         Bits per sample
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_gain'
-      dataField='rop_gain'
-      hidden={this.state.hiddenColumns.rop_gain}
-      headerText = "Gain [K/Jy]"
-      dataSort>
-      Gain
+                         dataField='rop_gain'
+                         hidden={this.state.hiddenColumns.rop_gain}
+                         headerText = "Gain [K/Jy]"
+                         dataSort>
+                         Gain
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_tsys'
-      dataField='rop_tsys'
-      hidden={this.state.hiddenColumns.rop_tsys}
-      headerText = "System temperature [K]"
-      dataSort>
-      Tsys
+                         dataField='rop_tsys'
+                         hidden={this.state.hiddenColumns.rop_tsys}
+                         headerText = "System temperature [K]"
+                         dataSort>
+                         Tsys
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_mw_dm_limit'
-      dataField='rop_mw_dm_limit'
-      hidden={this.state.hiddenColumns.rop_mw_dm_limit}
-      headerText = "DM galaxy [cm&#x207b;&sup3; pc]"
-      dataSort>
-      DM<sub>galaxy</sub>
+                         dataField='rop_mw_dm_limit'
+                         hidden={this.state.hiddenColumns.rop_mw_dm_limit}
+                         headerText = "DM galaxy [cm&#x207b;&sup3; pc]"
+                         dataSort>
+                         DM<sub>galaxy</sub>
       </TableHeaderColumn>
       <TableHeaderColumn ref='rop_galactic_electron_model'
-      dataField='rop_galactic_electron_model'
-      hidden={this.state.hiddenColumns.rop_galactic_electron_model}
-      dataSort>
-      Galactic electron model
+                         dataField='rop_galactic_electron_model'
+                         hidden={this.state.hiddenColumns.rop_galactic_electron_model}
+                         dataSort>
+                         Galactic electron model
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dm'
-      dataField='rmp_dm'
-      dataFormat={ priceFormatter }
-      hidden={this.state.hiddenColumns.rmp_dm}
-      headerText = "DM [cm&#x207b;&sup3; pc]"
-      dataSort
-      sortFunc={ NaturalSortFunc }>
-      DM
+                         dataField='rmp_dm'
+                         dataFormat={ priceFormatter }
+                         hidden={this.state.hiddenColumns.rmp_dm}
+                         headerText = "DM [cm&#x207b;&sup3; pc]"
+                         dataSort
+                         sortFunc={ NaturalSortFunc }>
+                         DM
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_width'
-      dataField='rmp_width'
-      dataFormat={ priceFormatter }
-      hidden={this.state.hiddenColumns.rmp_width}
-      headerText = "Width [ms]"
-      dataSort
-      sortFunc={ NaturalSortFunc }>
-      Width
+                         dataField='rmp_width'
+                         dataFormat={ priceFormatter }
+                         hidden={this.state.hiddenColumns.rmp_width}
+                         headerText = "Width [ms]"
+                         dataSort
+                         sortFunc={ NaturalSortFunc }>
+                         Width
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_snr'
-      dataField='rmp_snr'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_snr}
-      headerText = "Signal to noise ratio"
-      dataSort>
-      SNR
+                         dataField='rmp_snr'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_snr}
+                         headerText = "Signal to noise ratio"
+                         dataSort>
+                         SNR
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_flux'
-      dataField='rmp_flux'
-      dataFormat={ priceFormatter }
-      hidden={this.state.hiddenColumns.rmp_flux}
-      headerText = "Flux density [Jy]"
-      dataSort>
-      Flux
+                         dataField='rmp_flux'
+                         dataFormat={ priceFormatter }
+                         hidden={this.state.hiddenColumns.rmp_flux}
+                         headerText = "Flux density [Jy]"
+                         dataSort>
+                         Flux
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dm_index'
-      dataField='rmp_dm_index'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_dm_index}
-      dataSort>
-      DM index
+                         dataField='rmp_dm_index'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_dm_index}
+                         dataSort>
+                         DM index
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_scattering_index'
-      dataField='rmp_scattering_index'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_scattering_index}
-      dataSort>
-      Scattering index
+                         dataField='rmp_scattering_index'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_scattering_index}
+                         dataSort>
+                         Scattering index
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_scattering'
-      dataField='rmp_scattering'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_scattering}
-      headerText = "Scattering [ms]"
-      dataSort>
-      Scattering
+                         dataField='rmp_scattering'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_scattering}
+                         headerText = "Scattering [ms]"
+                         dataSort>
+                         Scattering
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_scattering_model'
-      dataField='rmp_scattering_model'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_scattering_model}
-      dataSort>
-      Scattering model
+                         dataField='rmp_scattering_model'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_scattering_model}
+                         dataSort>
+                         Scattering model
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_scattering_timescale'
-      dataField='rmp_scattering_timescale'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_scattering_timescale}
-      headerText = "Scattering timescale [ms]"
-      dataSort>
-      Scattering timescale
+                         dataField='rmp_scattering_timescale'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_scattering_timescale}
+                         headerText = "Scattering timescale [ms]"
+                         dataSort>
+                         Scattering timescale
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_linear_poln_frac'
-      dataField='rmp_linear_poln_frac'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_linear_poln_frac}
-      headerText = "Linear polarisation fraction"
-      dataSort>
-      Linear poln frac
+                         dataField='rmp_linear_poln_frac'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_linear_poln_frac}
+                         headerText = "Linear polarisation fraction"
+                         dataSort>
+                         Linear poln frac
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_circular_poln_frac'
-      dataField='rmp_circular_poln_frac'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_circular_poln_frac}
-      headerText = "Circular polarisation fraction"
-      dataSort>
-      Circular poln frac
+                         dataField='rmp_circular_poln_frac'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_circular_poln_frac}
+                         headerText = "Circular polarisation fraction"
+                         dataSort>
+                         Circular poln frac
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_spectral_index'
-      dataField='rmp_spectral_index'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_spectral_index}
-      dataSort>
-      Spectral index
+                         dataField='rmp_spectral_index'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_spectral_index}
+                         dataSort>
+                         Spectral index
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_rm'
-      dataField='rmp_rm'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_rm}
-      dataSort>
-      RM
+                         dataField='rmp_rm'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_rm}
+                         dataSort>
+                         RM
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_redshift_host'
-      dataField='rmp_redshift_host'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_redshift_host}
-      dataSort>
-      Redshift<sub>host</sub>
+                         dataField='rmp_redshift_host'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_redshift_host}
+                         dataSort>
+                         Redshift<sub>host</sub>
       </TableHeaderColumn>
       <TableHeaderColumn ref='rmp_dispersion_smearing'
-      dataField='rmp_dispersion_smearing'
-      dataFormat={ nanFormatter }
-      hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
-      headerText = "Dispersion smearing [ms]"
-      dataSort>
-      Dispersion smearing
+                         dataField='rmp_dispersion_smearing'
+                         dataFormat={ nanFormatter }
+                         hidden={this.state.hiddenColumns.rmp_dispersion_smearing}
+                         headerText = "Dispersion smearing [ms]"
+                         dataSort>
+                         Dispersion smearing
       </TableHeaderColumn>
       </BootstrapTable>
       </div>);
@@ -1331,29 +1434,10 @@ class BSTable extends React.Component {
   }
 }
 
-function htmlFormatter(cell) {
-  if ((cell === '-1')) {
-    return;
-  } else {
-    return he.decode(`${cell}`);
-  }
-}
 
-function priceFormatter(cell, row) {
-  if ((cell === '-1')) {
-    return;
-  } else {
-    return `${cell}`;
-  }
-}
-
-function nanFormatter(cell, row) {
-  if ((cell === -1)) {
-    return;
-  } else {
-    return cell;
-  }
-}
+//  =========================================
+//  Main react bootstrap table
+//  =========================================
 
 export default class FRBTable extends React.Component {
   constructor(props) {
@@ -1444,6 +1528,7 @@ export default class FRBTable extends React.Component {
   }
 
   getCSVFilename() {
+    // define filename for export csv utility
     const datestamp = (new Date()).toISOString().slice(0,10).replace(/-/g,"")
     return this.state.CSVFilename + "_" + datestamp + "." + this.state.CSVExtension;
   }
@@ -1534,6 +1619,7 @@ export default class FRBTable extends React.Component {
       <BSTable frb_name={ row.frb_name } hiddencols={ this.state.hiddenColumns} />
     );
   }
+
   handlerClickCleanFiltered() {
     // remove all filters
     this.refs.frb_name.cleanFiltered();
@@ -1574,9 +1660,11 @@ export default class FRBTable extends React.Component {
     this.refs.rmp_redshift_host.cleanFiltered();
     this.refs.rmp_dispersion_smearing.cleanFiltered();
   }
+
   handleClearButtonClick(onClick) {
     this.props.search('');
   }
+
   showall(onClick) {
     if ( this.state.verified === true) {
         // set state to verified=false
@@ -1627,6 +1715,7 @@ export default class FRBTable extends React.Component {
       { props.exportCSVBtn }
       </ButtonGroup>    );
   }
+
   render() {
     const selectRow = {
       mode: 'checkbox',
@@ -1658,6 +1747,7 @@ export default class FRBTable extends React.Component {
       clearSearchBtn: this.createCustomClearButton,
       btnGroup: this.createCustomButtonGroup,
     };
+    // Define select column modal entries
     return (
       <div className="reacttable">
       <Modal show={this.state.showModal} onHide={this.closeColumnDialg}>
@@ -1665,217 +1755,335 @@ export default class FRBTable extends React.Component {
         <Modal.Title>Select visible columns</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <table width='100%'>
-        <tbody className='selectcol'>
-        <tr><td width='33%'>
-        <table className='standard' cellPadding='5px' width='300px'>
-        <tbody>
-        <tr><th colSpan='1'>FRB parameters</th></tr>
-        <tr>
-        <td colSpan='1'>
-        <input type="checkbox" onChange={this.changeColumnList('frb_name')} checked={!this.state.hiddenColumnsTemp.frb_name} /> FRB <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('telescope')} checked={!this.state.hiddenColumnsTemp.telescope} /> Telescope <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('utc')} checked={!this.state.hiddenColumnsTemp.utc} /> UTC <br />
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        </td>
-        <td width='33%'>
-        <table className='standard'>
-        <tbody>
-        <tr><th colSpan='1'>Observation parameters</th></tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_raj')} checked={!this.state.hiddenColumnsTemp.rop_raj} /> RAJ <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_decj')} checked={!this.state.hiddenColumnsTemp.rop_decj} /> DECJ <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_gl')} checked={!this.state.hiddenColumnsTemp.rop_gl} /> GL <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_gb')} checked={!this.state.hiddenColumnsTemp.rop_gb} /> GB <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_receiver')} checked={!this.state.hiddenColumnsTemp.rop_receiver} /> Receiver <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_backend')} checked={!this.state.hiddenColumnsTemp.rop_backend} /> Backend <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_beam')} checked={!this.state.hiddenColumnsTemp.rop_beam} /> Beam <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_beam_semi_major_axis')} checked={!this.state.hiddenColumnsTemp.rop_beam_semi_major_axis} /> Beam semi-major axis<br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_beam_semi_minor_axis')} checked={!this.state.hiddenColumnsTemp.rop_beam_semi_minor_axis} /> Beam semi-minor axis<br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_beam_rotation_angle')} checked={!this.state.hiddenColumnsTemp.rop_beam_rotation_angle} /> Beam rotation angle <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_sampling_time')} checked={!this.state.hiddenColumnsTemp.rop_sampling_time} /> Sampling time <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_bandwidth')} checked={!this.state.hiddenColumnsTemp.rop_bandwidth} /> Bandwidth <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_centre_frequency')} checked={!this.state.hiddenColumnsTemp.rop_centre_frequency} /> Centre frequency <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_npol')} checked={!this.state.hiddenColumnsTemp.rop_npol} /> Npol <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_bits_per_sample')} checked={!this.state.hiddenColumnsTemp.rop_bits_per_sample} /> Bits per sample <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_gain')} checked={!this.state.hiddenColumnsTemp.rop_gain} /> Gain <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_tsys')} checked={!this.state.hiddenColumnsTemp.rop_tsys} /> Tsys <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_mw_dm_limit')} checked={!this.state.hiddenColumnsTemp.rop_mw_dm_limit} /> DM<sub>galaxy</sub> <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rop_galactic_electron_model')} checked={!this.state.hiddenColumnsTemp.rop_galactic_electron_model} /> Galactic electron model <br />
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        </td>
-        <td width='33%'>
-        <table className='standard'>
-        <tbody>
-        <tr><th colSpan='1'>Measured parameters</th></tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_dm')} checked={!this.state.hiddenColumnsTemp.rmp_dm} /> DM <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_width')} checked={!this.state.hiddenColumnsTemp.rmp_width} /> Width <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_snr')} checked={!this.state.hiddenColumnsTemp.rmp_snr} /> SNR <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_dm_index')} checked={!this.state.hiddenColumnsTemp.rmp_dm_index} /> DM index <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_flux')} checked={!this.state.hiddenColumnsTemp.rmp_flux} /> Flux <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_index')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_index} /> Scattering index <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering')} checked={!this.state.hiddenColumnsTemp.rmp_scattering} /> Scattering <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_model')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_model} /> Scattering model<br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_scattering_timescale')} checked={!this.state.hiddenColumnsTemp.rmp_scattering_timescale} /> Scattering timescale<br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_linear_poln_frac')} checked={!this.state.hiddenColumnsTemp.rmp_linear_poln_frac} /> Linear poln frac <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_circular_poln_frac')} checked={!this.state.hiddenColumnsTemp.rmp_circular_poln_frac} /> Circular poln frac <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_spectral_index')} checked={!this.state.hiddenColumnsTemp.rmp_spectral_index} /> Spectral index <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_rm')} checked={!this.state.hiddenColumnsTemp.rmp_rm} /> RM <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_redshift_host')} checked={!this.state.hiddenColumnsTemp.rmp_redshift_host} /> Redshift<sub>host</sub> <br />
-        </td>
-        </tr>
-        <tr>
-        <td>
-        <input type="checkbox" onChange={this.changeColumnList('rmp_dispersion_smearing')} checked={!this.state.hiddenColumnsTemp.rmp_dispersion_smearing} /> Dispersion smearing<br />
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        </td>
-        </tr>
-        </tbody>
-        </table>
+          <table width='100%'>
+            <tbody className='selectcol'>
+              <tr>
+                <td width='33%'>
+                  <table className='standard' cellPadding='5px' width='300px'>
+                    <tbody>
+                      <tr><th colSpan='1'>FRB parameters</th></tr>
+                      <tr>
+                        <td colSpan='1'>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('frb_name')}
+                                 checked={!this.state.hiddenColumnsTemp.frb_name} />
+                          FRB <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('telescope')}
+                                 checked={!this.state.hiddenColumnsTemp.telescope} />
+                          Telescope <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('utc')}
+                                 checked={!this.state.hiddenColumnsTemp.utc} />
+                          UTC <br />
+                        </td>
+                      </tr>
+                    </tbody>
+                    </table>
+                </td>
+                <td width='33%'>
+                  <table className='standard'>
+                    <tbody>
+                      <tr><th colSpan='1'>Observation parameters</th></tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="Right ascension"
+                                 onChange={this.changeColumnList('rop_raj')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_raj} />
+                          RAJ <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="Declination"
+                                 onChange={this.changeColumnList('rop_decj')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_decj} />
+                          DECJ <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="Galactic longitude"
+                                 onChange={this.changeColumnList('rop_gl')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_gl} />
+                          GL <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="Galactic latitude"
+                                 onChange={this.changeColumnList('rop_gb')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_gb} />
+                          GB <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_receiver')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_receiver} />
+                          Receiver <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_backend')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_backend} />
+                          Backend <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_beam')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_beam} />
+                          Beam <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_beam_semi_major_axis')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_beam_semi_major_axis} />
+                          Beam semi-major axis<br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_beam_semi_minor_axis')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_beam_semi_minor_axis} />
+                          Beam semi-minor axis<br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_beam_rotation_angle')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_beam_rotation_angle} />
+                          Beam rotation angle <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_sampling_time')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_sampling_time} />
+                          Sampling time <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_bandwidth')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_bandwidth} />
+                          Bandwidth <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_centre_frequency')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_centre_frequency} />
+                          Centre frequency <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="Number of polarisations"
+                                 onChange={this.changeColumnList('rop_npol')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_npol} />
+                          Npol <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_bits_per_sample')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_bits_per_sample} />
+                          Bits per sample <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_gain')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_gain} />
+                          Gain <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 title="System temperature"
+                                 onChange={this.changeColumnList('rop_tsys')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_tsys} />
+                          Tsys <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_mw_dm_limit')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_mw_dm_limit} />
+                          DM<sub>galaxy</sub> <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="checkbox"
+                                 onChange={this.changeColumnList('rop_galactic_electron_model')}
+                                 checked={!this.state.hiddenColumnsTemp.rop_galactic_electron_model} />
+                          Galactic electron model <br />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td width='33%'>
+                  <table className='standard'>
+                    <tbody>
+                    <tr><th colSpan='1'>Measured parameters</th></tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_dm')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_dm} />
+                        DM <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_width')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_width} />
+                        Width <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_snr')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_snr} />
+                        SNR <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_dm_index')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_dm_index} />
+                        DM index <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_flux')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_flux} />
+                        Flux <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_scattering_index')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_scattering_index} />
+                        Scattering index <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_scattering')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_scattering} />
+                        Scattering <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_scattering_model')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_scattering_model} />
+                        Scattering model<br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_scattering_timescale')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_scattering_timescale} />
+                        Scattering timescale<br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_linear_poln_frac')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_linear_poln_frac} />
+                        Linear poln frac <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_circular_poln_frac')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_circular_poln_frac} />
+                        Circular poln frac <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_spectral_index')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_spectral_index} />
+                        Spectral index <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_rm')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_rm} />
+                        RM <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_redshift_host')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_redshift_host} />
+                        Redshift<sub>host</sub> <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="checkbox"
+                               onChange={this.changeColumnList('rmp_dispersion_smearing')}
+                               checked={!this.state.hiddenColumnsTemp.rmp_dispersion_smearing} />
+                        Dispersion smearing<br />
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </Modal.Body>
         <Modal.Footer>
           <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
