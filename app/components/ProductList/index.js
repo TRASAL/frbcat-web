@@ -2086,7 +2086,7 @@ export default class FRBTable extends React.Component {
           </table>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="button" onClick={this.closeColumnDialog}>Close</Button>
+          <Button type="button" onClick={this.closeColumnDialog}>Cancel</Button>
           <Button type="button" onClick={this.applyColumnDialog}>Apply</Button>
         </Modal.Footer>
         </Modal>
