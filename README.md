@@ -9,6 +9,9 @@ frbcat-web has two configuration files.
   * server/config.js
 
     This file contains the postgres connection string. Modify it to connect to your postgres installation and table. The connectionstring has the following format: 'postgres://someuser:somepassword@somehost:someport/somedatabase'
+
+
+    This file also contains the URL to the static csv file that should be on the webpage. 
  
   * server.js
   

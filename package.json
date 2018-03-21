@@ -1,11 +1,12 @@
 {
   "name": "FRBCat-web",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "FRB Catalog Web frontend",
   "main": "server.js",
   "license": "Apache-2.0",
   "scripts": {
-    "webpack": "webpack",
+    "webpack-dev": "webpack",
+    "webpack": "webpack -p",
     "start": "node server.js",
     "release": "npm-github-release"
   },
@@ -15,25 +16,29 @@
   },
   "author": "Ronald van Haren, Netherlands eScience Center",
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "compression": "^1.7.0",
-    "express": "^4.15.4",
+    "compression": "^1.7.2",
+    "express": "^4.16.3",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "pg": "^7.3.0",
-    "react-grid-gallery": "^0.4.2"
+    "pg": "^7.4.1",
+    "react-grid-gallery": "^0.4.8",
+    "react-images": "^0.5.17"
   },
   "devDependencies": {
-    "bootstrap": "^3.3.7",
-    "npm-github-release": "^0.7.5",
-    "react": "^15.6.1",
-    "react-bootstrap": "^0.31.3",
-    "react-bootstrap-table": "^4.0.3",
-    "react-dom": "^15.6.1",
-    "react-modal": "^2.3.2",
-    "webpack": "^3.5.6"
+    "bootstrap": "^4.0.0",
+    "npm-github-release": "^0.9.0",
+    "react": "^16.2.0",
+    "react-bootstrap": "^0.32.1",
+    "react-bootstrap-table": "^4.3.1",
+    "react-dom": "^16.2.0",
+    "react-modal": "^3.3.2",
+    "update-to-latest": "^1.0.0",
+    "webpack": "^4.2.0",
+    "webpack-cli": "^2.0.12",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
   }
 }
