@@ -15,7 +15,7 @@ Information for each burst is divided into two categories: observed parameters f
 You may use the data presented in this catalogue for publications; however, we ask that you cite the paper (<a href="http://adsabs.harvard.edu/abs/2016PASA...33...45P">Petroff et al., 2016</a>) and provide the url (<a href="http://www.frbcat.org">http://www.frbcat.org</a>). Any issues relating to the use of the catalogue should be addressed to FRBCAT team (primary contact: Emily Petroff). 
           </p>
           <p>
-          An up-to-date CSV file containing all parameters for all FRBs is available at the following stable link: <a href={this.props.csv}>{this.props.csv}</a>
+          The most recent version of the catalogue database and previous versions are available in CSV format on Zenodo at the DOI: <a href={this.props.csv}>{this.props.csv}</a>
           </p>
           </div>
         );
