@@ -9,22 +9,12 @@ frbcat-web has two configuration files.
   * server/config.js
 
     This file contains the postgres connection string. Modify it to connect to your postgres installation and table. The connectionstring has the following format: 'postgres://someuser:somepassword@somehost:someport/somedatabase'
-
-
-    This file also contains the URL to the static csv file that should be on the webpage. 
+    
+    In addition, the file contains a link to the CSV location at Zenodo, e.g. https://doi.org/10.5281/zenodo.xxxxxxxx
  
   * server.js
   
     This file contains the express web server configuration. Here you can define the port the server is running on.
-
-
-The configuration parameters in these files can also be defined using environment variables. In that case the following environment variables must be set:
-
-  * databaseURL, connection string to database as defined above
-
-  * CSV_URL, link to CSV location at Zenodo, e.g. https://doi.org/10.5281/zenodo.xxxxxxxx
-
-  * PORT, port that the express web server should run on
 
 
 For further details on how to tune the express server for performance in a production environment see the [expressjs homepage](https://expressjs.com/en/advanced/best-practice-performance.html). This link contains information on how to set the NODE_ENV to production for different systems and how to make sure the server gets automatically restarted if it crashes.
