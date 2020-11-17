@@ -18,6 +18,6 @@ keywords:
   - "web-frontend"
 license: Apache-2.0
 message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/AA-ALERT/frbcat-web"
+repository-code: "https://github.com/TRASAL/frbcat-web"
 title: frbcat-web
 version: "2.1.1"

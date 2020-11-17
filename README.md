@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1400274.svg)](https://doi.org/10.5281/zenodo.1400274)
 
 # frbcat-web
-This is the web frontend to the FRB Catalogue. This catalogue contains up to date information for the published population of Fast Radio Bursts (FRBs). The catalog connects to a postgres database, which is defined in the frbcatdb python package. For detailed information on the database format, see the frbcatdb package, or directly the [create table script](https://github.com/AA-ALERT/frbcatdb/blob/master/db/create_db_tables.sql).
+This is the web frontend to the FRB Catalogue. This catalogue contains up to date information for the published population of Fast Radio Bursts (FRBs). The catalog connects to a postgres database, which is defined in the frbcatdb python package. For detailed information on the database format, see the frbcatdb package, or directly the [create table script](https://github.com/TRASAL/frbcatdb/blob/master/db/create_db_tables.sql).
 
 ### Configuration:
 frbcat-web has two configuration files.

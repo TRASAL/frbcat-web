@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AA-ALERT/frbcat-web"
+    "url": "https://github.com/TRASAL/frbcat-web"
   },
   "author": "Ronald van Haren, Netherlands eScience Center",
   "dependencies": {
